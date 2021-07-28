@@ -151,8 +151,8 @@
 			let form = document.querySelector("#settings");
 			form.style.display = "none";
 			let template = document.querySelector("#template").value;
-			let start = document.querySelector("#start").value;
-			let count = document.querySelector("#count").value;
+			let start = parseInt(document.querySelector("#start").value);
+			let count = parseInt(document.querySelector("#count").value);
 			generate(template, start, count);
 		}		
 	</script>
