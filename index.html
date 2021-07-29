@@ -20,7 +20,7 @@
 
 		th,
 		td {
-			padding: 4px;
+			padding: 7px 4px;
 			/* Поля вокруг содержимого ячеек */
 			border-bottom: 1px solid black;
 			/* Граница вокруг ячеек */
@@ -35,8 +35,24 @@
 			padding: 1;
 		}
 
-		th {
-			font-size: 12pt;
+		.male-female {
+			display: flex;
+			justify-content: space-evenly;
+		}
+		.male-female__item {
+			display: flex;
+			align-items: center;
+		}
+		.checkbox {
+			display: inline-block;
+			width: 20px;
+			height: 15px;
+			border: 1px solid black;
+			vertical-align: middle;
+			margin-right: 5px;
+		}
+		.male-female-td {
+			padding: 5px;
 		}
 	</style>
 </head>
@@ -46,8 +62,7 @@
 		<label>
 			Шаблон:
 			<select id="template">
-				<option value="#female">Женская одежда</option>
-				<option value="#male">Мужская одежда</option>
+				<option value="#female-male">Мужская и женская одежда</option>
 			</select>
 		</label>
 		<label>
@@ -60,13 +75,16 @@
 		</label>
 		<button onclick="generateClick()">Сгенерировать</button>
 	</div>
-	<template id="female">
+	<template id="female-male">
 		<div class="birka">
 			<table>
 				<tr>
-					<th colspan="2">
-						<center><b>Женская одежда</b></center>
-					</th>
+					<td class="male-female-td" colspan="2">
+						<div class="male-female">
+							<div class="male-female__item"><div class="checkbox" ></div> Женская</div>
+							<div class="male-female__item"><div class="checkbox" ></div> Мужская</div>
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td class="label"><b>Категория</b></td>
@@ -93,46 +111,6 @@
 					<td class="value"></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="bottom">
-						<center><svg class="code"></svg></center>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</template>
-	<template id="male">
-		<div class="birka">
-			<table>
-				<tr>
-					<th colspan="2">
-						<center><b>Мужская одежда</b></center>
-					</th>
-				</tr>
-				<tr>
-					<td class="label"><b>Категория</b></td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label"><b>Коробка</b></td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label"><b>Размер</b></td>
-					<td class="value""></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват груди, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват талии, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват бедер, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
 					<td class="label">Обхват шеи, см</td>
 					<td class="value"></td>
 				</tr>
@@ -144,7 +122,6 @@
 			</table>
 		</div>
 	</template>
-	
 
 
 	<script src="JsBarcode.code128.min.js"></script>
@@ -154,7 +131,7 @@
 			let code = template.content.querySelector(".code");
 			for (let i = start; i < (start + count); i++) {
 				JsBarcode(code, i, {
-					height: 40,
+					height: 35,
 					fontSize: 12
 				});
 				let clone = document.importNode(template.content, true);
