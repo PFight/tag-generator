@@ -20,12 +20,19 @@
 
 		th,
 		td {
-			padding: 5px;
+			padding: 4px;
 			/* Поля вокруг содержимого ячеек */
-			border: 1px solid black;
+			border-bottom: 1px solid black;
 			/* Граница вокруг ячеек */
-			width: 50%;
 			font-size: 9pt;
+			width: 50%;
+		}
+		td.label {
+			border-right: 1px solid black;
+		}
+		td.bottom {
+			border-bottom: 0;
+			padding: 1;
 		}
 
 		th {
@@ -62,27 +69,31 @@
 					</th>
 				</tr>
 				<tr>
-					<td><b>Категория</b></td>
+					<td class="label"><b>Категория</b></td>
+					<td class="value"></td>
+				</tr>
+				<tr>
+					<td class="label"><b>Коробка</b></td>
+					<td class="value"></td>
+				</tr>
+				<tr>
+					<td class="label"><b>Размер</b></td>
+					<td class="value"></td>
+				</tr>
+				<tr>
+					<td class="label">Полуобхват груди, см</td>
+					<td class="value"></td>
+				</tr>
+				<tr>
+					<td class="label">Полуобхват талии, см</td>
 					<td></td>
 				</tr>
 				<tr>
-					<td><b>Размер</b></td>
-					<td class="empty"></td>
+					<td class="label">Полуобхват бедер, см</td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td>Полуобхват груди, см</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>Полуобхват талии, см</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>Полуобхват бедер, см</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td colspan="2">
+					<td colspan="2" class="bottom">
 						<center><svg class="code"></svg></center>
 					</td>
 				</tr>
@@ -98,31 +109,35 @@
 					</th>
 				</tr>
 				<tr>
-					<td><b>Категория</b></td>
-					<td></td>
+					<td class="label"><b>Категория</b></td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td><b>Размер</b></td>
-					<td class="empty"></td>
+					<td class="label"><b>Коробка</b></td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td>Полуобхват груди, см</td>
-					<td></td>
+					<td class="label"><b>Размер</b></td>
+					<td class="value""></td>
 				</tr>
 				<tr>
-					<td>Полуобхват талии, см</td>
-					<td></td>
+					<td class="label">Полуобхват груди, см</td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td>Полуобхват бедер, см</td>
-					<td></td>
+					<td class="label">Полуобхват талии, см</td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td>Обхват шеи, см</td>
-					<td></td>
+					<td class="label">Полуобхват бедер, см</td>
+					<td class="value"></td>
 				</tr>
 				<tr>
-					<td colspan="2">
+					<td class="label">Обхват шеи, см</td>
+					<td class="value"></td>
+				</tr>
+				<tr>
+					<td colspan="2" class="bottom">
 						<center><svg class="code"></svg></center>
 					</td>
 				</tr>
