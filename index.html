@@ -1,153 +1,79 @@
 <html>
+	<head>
+		<link rel="stylesheet" href="app.css">
+	</head>
 
-<head>
-	<style>
-		body {
-			width: 230mm;
-		}
-
-		.birka {
-			display: inline-block;
-			width: 33%;
-		}
-
-		table {
-			width: 100%;			
-			/* Ширина таблицы */
-			border-collapse: collapse;
-			/* Отображать только одинарные линии */
-		}
-
-		th,
-		td {
-			padding: 7px 4px;
-			/* Поля вокруг содержимого ячеек */
-			border-bottom: 1px solid black;
-			/* Граница вокруг ячеек */
-			font-size: 9pt;
-			width: 50%;
-		}
-		td.label {
-			border-right: 1px solid black;
-		}
-		td.bottom {
-			border-bottom: 0;
-			padding: 1;
-		}
-
-		.male-female {
-			display: flex;
-			justify-content: space-evenly;
-		}
-		.male-female__item {
-			display: flex;
-			align-items: center;
-		}
-		.checkbox {
-			display: inline-block;
-			width: 20px;
-			height: 15px;
-			border: 1px solid black;
-			vertical-align: middle;
-			margin-right: 5px;
-		}
-		.male-female-td {
-			padding: 5px;
-		}
-	</style>
-</head>
-
-<body>
-	<div id="settings">
-		<label>
-			Шаблон:
-			<select id="template">
-				<option value="#female-male">Мужская и женская одежда</option>
-			</select>
-		</label>
-		<label>
-			Начальный номер:
-			<input id="start" type="number" value="1" />
-		</label>
-		<label>
-			Количество:
-			<input id="count" type="number" value="30" />
-		</label>
-		<button onclick="generateClick()">Сгенерировать</button>
-	</div>
-	<template id="female-male">
-		<div class="birka">
-			<table>
-				<tr>
-					<td class="male-female-td" colspan="2">
-						<div class="male-female">
-							<div class="male-female__item"><div class="checkbox" ></div> Женская</div>
-							<div class="male-female__item"><div class="checkbox" ></div> Мужская</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td class="label"><b>Категория</b></td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label"><b>Коробка</b></td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label"><b>Размер</b></td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват груди, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват талии, см</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="label">Полуобхват бедер, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td class="label">Обхват шеи, см</td>
-					<td class="value"></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="bottom">
-						<center><svg class="code"></svg></center>
-					</td>
-				</tr>
-			</table>
+	<body>
+		<div id="loading">Загрузка...</div>
+		<div id="settings">
+			<div class="settings__credentials">Свято-Троицкий клуб</div>
+			<div class="settings__credentials">Благотворительный вещевой склад при Свято-Троицком храме</div>
+			<div class="settings__title">Инструмент для создания бирок</div>
+			<label class="settings__option">
+				Шаблон:
+				<select id="template">
+					<option value="#female-male">Мужская и женская одежда</option>
+				</select>
+			</label>
+			<label class="settings__option">
+				Начальный номер:
+				<input id="start" type="number" value="1" />
+			</label>
+			<label class="settings__option">
+				Количество:
+				<input id="count" type="number" value="12" />
+			</label>
+			<button id="generate" class=settings__generate>Создать бирки</button>
 		</div>
-	</template>
-
-
-	<script src="JsBarcode.code128.min.js"></script>
-	<script>
-		function generate(templateSelector, start, count) {
-			let template = document.querySelector(templateSelector);
-			let code = template.content.querySelector(".code");
-			for (let i = start; i < (start + count); i++) {
-				JsBarcode(code, i, {
-					height: 35,
-					fontSize: 12
-				});
-				let clone = document.importNode(template.content, true);
-				document.body.appendChild(clone);
-			}
-		}
-
-		function generateClick() {
-			let form = document.querySelector("#settings");
-			form.style.display = "none";
-			let template = document.querySelector("#template").value;
-			let start = parseInt(document.querySelector("#start").value);
-			let count = parseInt(document.querySelector("#count").value);
-			generate(template, start, count);
-		}		
-	</script>
-</body>
-
+		<div id="print"></div>
+		<template id="female-male">
+			<div class="birka">
+				<table>
+					<tr>
+						<td class="male-female-td" colspan="2">
+							<div class="male-female">
+								<div class="male-female__item"><div class="checkbox" ></div> Женская</div>
+								<div class="male-female__item"><div class="checkbox" ></div> Мужская</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="label"><b>Категория</b></td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td class="label"><b>Коробка</b></td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td class="label"><b>Размер</b></td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td class="label">Полуобхват груди, см</td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td class="label">Полуобхват талии, см</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="label">Полуобхват бедер, см</td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td class="label">Обхват шеи, см</td>
+						<td class="value"></td>
+					</tr>
+					<tr>
+						<td colspan="2" class="bottom">
+							<center><svg class="code"></svg></center>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</template>
+		<script src="JsBarcode.code128.min.js"></script>
+		<script src="app.js"></script>
+	</body>
 </html>

@@ -1,0 +1,34 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "es6",
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "strict": true,
+    "removeComments": false,
+    "preserveConstEnums": true,    
+    "target": "esnext",
+    "noEmitOnError": false,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "lib": [ "dom", "es6", "es2017" ],
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "types": [],
+    "noErrorTruncation": true,
+    "keyofStringsOnly": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "outDir": "./build",
+    "paths": {
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": []
+}
