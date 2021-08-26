@@ -8,13 +8,18 @@ import "./main.css";
 const START_PARAM = "start";
 const COUNT_PARAM = "count";
 const TEMPLATE_PARAM = "template";
+const MAX_COUNT = 48;
 
 async function generateClick() {
     if (CurrentUser) {
-        document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
         let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
         let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
         let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
+        if (count > MAX_COUNT) {
+            alert("Вы пытаетесь создать слишком много бирок. Обратитесь к администраторам.");
+            return;
+        }
+        document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
         let generation = {
             start,
             end: start + count - 1,
