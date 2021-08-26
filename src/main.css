@@ -9,14 +9,13 @@
 
 table {
     width: 100%;			
-    /* Ширина таблицы */
     border-collapse: collapse;
-    /* Отображать только одинарные линии */
+    margin-bottom: 20px;
 }
 
 th,
 td {
-    padding: 6px 4px;
+    padding: 7px 4px;
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
