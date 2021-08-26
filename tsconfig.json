@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "module": "es6",
-    "sourceMap": false,
+    "sourceMap": true,
     "moduleResolution": "node",
     "strict": true,
     "removeComments": false,

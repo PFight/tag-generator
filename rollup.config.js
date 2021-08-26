@@ -37,7 +37,7 @@ var config = {
 	],
 	output: {
 		name: 'app',
-		file: './app.js',
+		file: './docs/app.js',
 		format: 'iife',
 		interop: true,
 		sourcemap: true
@@ -47,7 +47,7 @@ var config = {
 
 if (PROD) {
 	config.plugins.push(
-		terser({ sourcemap: true })
+		terser()
 	);
 }
 

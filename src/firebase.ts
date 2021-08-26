@@ -21,7 +21,9 @@ export async function getLastGeneration(): Promise<Generation> {
     return {
         start: latest.get("start"),
         end: latest.get("end"),
-        template: latest.get("template")
+        template: latest.get("template"),
+        userId: latest.get("userId"),
+        userName: latest.get("userName")
     };
 }
 
@@ -32,4 +34,7 @@ export async function saveLastGeneration(gen: Generation) {
         throw Error("Выделенные номера уже заняты. Пожалуйста, обновите страницу и попробуйте снова.");
     }
     await latestDoc.set(gen);
+
+    let historyRecort = firebase.firestore().collection("generation").doc();
+    await historyRecort.set(gen);
 }

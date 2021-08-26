@@ -1,3 +1,4 @@
+import { getAuthentication, login, logout, User } from "auth";
 import { getLastGeneration, saveLastGeneration } from "firebase";
 import { Generation } from "interfaces";
 import { protectGeneration } from "protection";
@@ -9,28 +10,33 @@ const COUNT_PARAM = "count";
 const TEMPLATE_PARAM = "template";
 
 async function generateClick() {
-    document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
-    let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
-    let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
-    let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
-    let generation = {
-        start,
-        end: start + count - 1,
-        template
-    };
-    try {
-        protectGeneration(count);        
-        await saveLastGeneration(generation);
-        window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`);
-    } catch (err) {
-        alert(err.message);
+    if (CurrentUser) {
+        document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
+        let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
+        let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
+        let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
+        let generation = {
+            start,
+            end: start + count - 1,
+            template,
+            userId: CurrentUser!.id,
+            userName: CurrentUser!.name
+        };
+        try {
+            protectGeneration(count);        
+            await saveLastGeneration(generation);
+            window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`);
+        } catch (err) {
+            alert(err.message);
+        }
+        document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
+        document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
     }
-    document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
-    document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
 }
 
 function initFormHandlers() {
     document.querySelector("#generate")?.addEventListener("click", generateClick);
+    document.querySelector("#login")?.addEventListener("click", login);
 }
 
 function processQueryParametes() {
@@ -48,24 +54,51 @@ function processQueryParametes() {
 
 
 async function loadLatestGeneration() {
-    document.querySelector<HTMLElement>("#settings")!.style.display = "none";
-    let lastGeneration: Generation;
-    try {
-        lastGeneration = await getLastGeneration();
-    } catch (err) {
-        alert(err.message);
-        return;
-    }
+    let lastGeneration = await getLastGeneration();    
     document.querySelector<HTMLInputElement>("#start")!.value = (lastGeneration.end + 1).toString();
-    document.querySelector<HTMLElement>("#settings")!.style.display = "";
-    document.querySelector<HTMLElement>("#loading")!.style.display = "none";
 }
+
+function showLoader(show: boolean) {
+    if (show) {
+        document.querySelector<HTMLElement>("#settings")!.style.display = "none";
+        document.querySelector<HTMLElement>("#loading")!.style.display = "";
+    } else {
+        document.querySelector<HTMLElement>("#settings")!.style.display = "";
+        document.querySelector<HTMLElement>("#loading")!.style.display = "none";
+    }
+}
+
+function showLogin(user: User | null) {
+    if (user) {
+        document.querySelector<HTMLElement>("#generate")!.style.display = "";
+        document.querySelector<HTMLElement>("#login")!.style.display = "none";
+        document.querySelector<HTMLElement>("#login-info")!.innerHTML = "Вы вошли как " + user.name;
+        let logoutLink = document.createElement("a");
+        logoutLink.innerText = "выйти";
+        logoutLink.addEventListener("click", logout);
+        document.querySelector<HTMLElement>("#login-info")!.appendChild(logoutLink);
+    } else {
+        document.querySelector<HTMLElement>("#generate")!.style.display = "none";
+        document.querySelector<HTMLElement>("#login")!.style.display = "";
+    }
+}
+
+var CurrentUser: User | null = null;
 
 async function onOpen() {
     let parametersExists = processQueryParametes();
     if (!parametersExists) {
-        await loadLatestGeneration();
-        initFormHandlers();
+        showLoader(true);
+        try {
+            await loadLatestGeneration();
+            CurrentUser = await getAuthentication();
+            showLoader(false);
+            initFormHandlers();
+            showLogin(CurrentUser);        
+        } catch (err) {
+            alert(err.message);
+            return;
+        }
     }
 }
 
