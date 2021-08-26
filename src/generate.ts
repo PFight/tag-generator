@@ -1,4 +1,4 @@
-export declare var JsBarcode: any;
+import JsBarcode from "jsbarcode";
 
 export function generate(templateSelector: string, start: number, count: number) {
     document.querySelector<HTMLElement>("#settings")!.style.display = "none";
@@ -10,10 +10,12 @@ export function generate(templateSelector: string, start: number, count: number)
     if (template) {
         let code = template.content.querySelector(".code");
         for (let i = start; i < (start + count); i++) {
-            JsBarcode(code, i, {
+            JsBarcode(code).options({
                 height: 35,
-                fontSize: 12
-            });
+                fontSize: 18
+            })
+            .CODE128(i.toString(), {})
+            .render();
             let clone = document.importNode(template.content, true);
             print.appendChild(clone);
         }

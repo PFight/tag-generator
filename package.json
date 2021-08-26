@@ -6,6 +6,7 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.17.0",
     "firebase": "^8.10.0",
+    "jsbarcode": "^3.11.4",
     "tslib": "^2.3.1"
   },
   "devDependencies": {

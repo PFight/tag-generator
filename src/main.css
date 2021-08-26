@@ -16,39 +16,45 @@ table {
 
 th,
 td {
-    padding: 7px 4px;
+    padding: 6px 4px;
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
     font-size: 9pt;
-    width: 50%;
+}
+td.male-female {
+    width: 0;
+    border-left: 1px solid black;
+    white-space: nowrap;
+    padding-right: 0;
+}
+td.category-value {
+    width: 50px;
+}
+.male-female__item {
+    display: inline-flex;
+    align-items: center;
+}
+.male-female__item:first-child {
+    padding-right: 5px;
 }
 td.label {
     border-right: 1px solid black;
+    width: 0;
+    white-space: nowrap;
 }
 td.bottom {
     border-bottom: 0;
     padding: 1;
 }
 
-.male-female {
-    display: flex;
-    justify-content: space-evenly;
-}
-.male-female__item {
-    display: flex;
-    align-items: center;
-}
 .checkbox {
     display: inline-block;
-    width: 20px;
+    width: 15px;
     height: 15px;
     border: 1px solid black;
     vertical-align: middle;
-    margin-right: 5px;
-}
-.male-female-td {
-    padding: 5px;
+    margin-right: 3px;
 }
 
 .settings__option {
