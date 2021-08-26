@@ -62,6 +62,7 @@ td.bottom {
 
 .settings__option_count {
     display: block;
+    text-align: center;
 }
 
 #settings {
@@ -85,7 +86,7 @@ td.bottom {
 
 .settings__login-info {
     color: gray;
-    padding: 10px;
+    padding: 35px
 }
 
 .settings__main-button {
