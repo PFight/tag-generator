@@ -9,23 +9,28 @@
 			<div class="settings__credentials">Свято-Троицкий клуб</div>
 			<div class="settings__credentials">Благотворительный вещевой склад при Свято-Троицком храме</div>
 			<div class="settings__title">Инструмент для создания бирок</div>
-			<label class="settings__option">
-				Шаблон:
-				<select id="template">
-					<option value="#female-male">Мужская и женская одежда</option>
-				</select>
-			</label>
-			<label class="settings__option">
-				Начальный номер:
-				<input id="start" type="number" value="1" />
-			</label>
-			<label class="settings__option">
-				Количество:
-				<input id="count" type="number" value="12" />
-			</label>
-			<div id="login-info" class="settings__login-info"></div>
-			<button id="generate" class=settings__main-button>Создать бирки</button>
-			<button id="login" class=settings__main-button>Войти</button>
+			<div id="login-block">
+				<div id="login-info" class="settings__login-info"></div>			
+				<button id="login" class=settings__main-button>Войти</button>			
+			</div>
+			<div id="generation-block">
+				<label class="settings__option">
+					Шаблон:
+					<select id="template">
+						<option value="#female-male">Мужская и женская одежда</option>
+					</select>
+				</label>
+				<label class="settings__option">
+					Начальный номер:
+					<input id="start" type="number" value="1" />
+				</label>
+				<label id="option-count" class="settings__option settings__option_count">
+					Количество:
+					<input id="count" type="number" value="12" />
+				</label>
+				
+				<button id="generate" class=settings__main-button>Создать бирки</button>
+			</div>
 		</div>
 		<div id="print"></div>
 		<template id="female-male">

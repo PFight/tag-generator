@@ -70,16 +70,17 @@ function showLoader(show: boolean) {
 
 function showLogin(user: User | null) {
     if (user) {
-        document.querySelector<HTMLElement>("#generate")!.style.display = "";
-        document.querySelector<HTMLElement>("#login")!.style.display = "none";
+        document.querySelector<HTMLElement>("#generation-block")!.style.display = "";
+        
+        document.querySelector<HTMLElement>("#login-block")!.style.display = "none";
         document.querySelector<HTMLElement>("#login-info")!.innerHTML = "Вы вошли как " + user.name;
         let logoutLink = document.createElement("a");
         logoutLink.innerText = "выйти";
         logoutLink.addEventListener("click", logout);
         document.querySelector<HTMLElement>("#login-info")!.appendChild(logoutLink);
     } else {
-        document.querySelector<HTMLElement>("#generate")!.style.display = "none";
-        document.querySelector<HTMLElement>("#login")!.style.display = "";
+        document.querySelector<HTMLElement>("#generation-block")!.style.display = "none";
+        document.querySelector<HTMLElement>("#login-block")!.style.display = "";
     }
 }
 

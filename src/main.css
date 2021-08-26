@@ -60,6 +60,10 @@ td.bottom {
     display: none;
 }
 
+.settings__option_count {
+    display: block;
+}
+
 #settings {
     display: flex;
     flex-direction: column;
