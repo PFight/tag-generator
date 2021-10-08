@@ -34,13 +34,16 @@ td.category-value {
     display: inline-flex;
     align-items: center;
 }
-.male-female__item:first-child {
+.male-female__item {
     padding-right: 5px;
 }
 td.label {
     border-right: 1px solid black;
-    width: 0;
+    width: 65px;
     white-space: nowrap;
+}
+td.label.right {
+    border-left: 1px solid black;
 }
 td.bottom {
     border-bottom: 0;
