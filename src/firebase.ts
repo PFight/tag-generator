@@ -27,6 +27,7 @@ export async function getLastGeneration(): Promise<Generation> {
     };
 }
 
+
 export async function saveLastGeneration(gen: Generation) {
     let latestDoc = firebase.firestore().doc("generation/latest");
     let latest = await firebase.firestore().doc("generation/latest").get();
