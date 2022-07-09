@@ -1,4 +1,3 @@
-import { getAuthentication, login, logout, User } from "auth";
 import { getLastGeneration, saveLastGeneration } from "firebase";
 import { Generation } from "interfaces";
 import { protectGeneration } from "protection";
@@ -11,7 +10,7 @@ const TEMPLATE_PARAM = "template";
 const MAX_COUNT = 48;
 
 async function generateClick() {
-    if (CurrentUser) {
+    //if (CurrentUser) {
         let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
         let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
         let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
@@ -24,8 +23,8 @@ async function generateClick() {
             start,
             end: start + count - 1,
             template,
-            userId: CurrentUser!.id,
-            userName: CurrentUser!.name
+            userId:'x',
+            userName: 'x'
         };
         try {
             protectGeneration(count);        
@@ -36,7 +35,7 @@ async function generateClick() {
         }
         document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
         document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
-    }
+    //}
 }
 
 function initFormHandlers() {
@@ -97,10 +96,10 @@ async function onOpen() {
         showLoader(true);
         try {
             await loadLatestGeneration();
-            CurrentUser = await getAuthentication();
+            // CurrentUser = await getAuthentication();
             showLoader(false);
             initFormHandlers();
-            showLogin(CurrentUser);        
+            // showLogin(CurrentUser);        
         } catch (err) {
             alert(err.message);
             return;
