@@ -21794,23 +21794,6 @@
         await historyRecort.set(gen);
     }
 
-    function protectGeneration(count) {
-        let generatedStr = localStorage.getItem("generated");
-        let totalCount = count;
-        if (generatedStr) {
-            let generated = JSON.parse(generatedStr);
-            const day = 86400000;
-            const maxCount = 24 * 10;
-            if (new Date().getTime() - (new Date(generated.date)).getTime() < day) {
-                if ((generated.count + count) >= maxCount) {
-                    throw new Error("Вы создали сегодня слишком много бирок. Обратитесь к организаторам склада.");
-                }
-                totalCount += generated.count;
-            }
-        }
-        localStorage.setItem("generated", JSON.stringify({ date: new Date(), count: totalCount }));
-    }
-
     var C__PFight_tagGenerator_node_modules_jsbarcode_bin_barcodes = {};
 
     var C__PFight_tagGenerator_node_modules_jsbarcode_bin_barcodes_CODE39 = {};
@@ -25168,16 +25151,15 @@
     const START_PARAM = "start";
     const COUNT_PARAM = "count";
     const TEMPLATE_PARAM = "template";
-    const MAX_COUNT = 48;
     async function generateClick() {
         //if (CurrentUser) {
         let template = document.querySelector("#template")?.value || "#female-male";
         let start = parseInt(document.querySelector("#start")?.value || "0");
         let count = parseInt(document.querySelector("#count")?.value || "12");
-        if (count > MAX_COUNT) {
+        /*if (count > MAX_COUNT) {
             alert("Вы пытаетесь создать слишком много бирок. Обратитесь к администраторам.");
             return;
-        }
+        }*/
         document.querySelector("#generate").disabled = true;
         let generation = {
             start,
@@ -25187,7 +25169,7 @@
             userName: 'x'
         };
         try {
-            protectGeneration(count);
+            // protectGeneration(count);        
             await saveLastGeneration(generation);
             window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`);
         }
