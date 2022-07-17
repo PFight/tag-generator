@@ -15,7 +15,7 @@ table {
 
 th,
 td {
-    padding: 15px 4px;
+    padding: 7px 4px;
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
