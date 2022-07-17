@@ -10,16 +10,15 @@
 table {
     width: 100%;			
     border-collapse: collapse;
-    margin-bottom: 20px;
 }
 
 th,
 td {
-    padding: 7px 4px;
+    padding: 3px 3px;
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
-    font-size: 9pt;
+    font-size: 13pt;
 }
 td.male-female {
     width: 0;
@@ -60,6 +59,46 @@ td.bottom {
 }
 
 .settings__option {
+    font-size: 1.5rem;
+}
+
+.setting-header {
+    display: inline-block;
+    width: 200px;
+}
+
+.settings__option label {
+    padding: 15px;
+    display: inline-block;
+    border: 1px solid gray;
+    margin: 5px;
+}
+
+.settings__option label:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.settings__option_categories {
+    display: flex;
+}
+
+.settings__option_categories .setting-header {
+    flex: 0 0 auto;
+}
+
+.settings__option_categories label {
+    width: 45%;
+    padding: 15px;
+}
+
+.setting-values-multiline {
+    display: inline-block;    
+    flex: 1 1 0%;
+    padding-left: 6px;
+}
+
+.settings__option_hidden {
     display: none;
 }
 
@@ -73,7 +112,7 @@ td.bottom {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding: 50px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
@@ -85,11 +124,6 @@ td.bottom {
     font-size: 1.5em;
     font-weight: bold;
     padding: 20px;
-}
-
-.settings__login-info {
-    color: gray;
-    padding: 35px
 }
 
 .settings__main-button {
@@ -105,9 +139,11 @@ td.bottom {
 	font-family:Arial;
 	font-size:23px;
 	font-weight:bold;
-	padding:14px 76px;
+	padding:20px 76px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #528009;
+    width: 50%;
+    margin-left: 25%;
 }
 .settings__main-button:hover {
 	background:linear-gradient(to bottom, #77a809 5%, #89c403 100%);

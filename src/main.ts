@@ -1,56 +1,90 @@
 import { getAuthentication, login, logout, User } from "auth";
 import { getLastGeneration, saveLastGeneration } from "firebase";
-import { Generation } from "interfaces";
+import { AGE_PARAM, CATEGORY_PARAM, COUNT_PARAM, GENDER_PARAM, Generation, QUALITY_PARAM, SIZE_PARAM, START_PARAM, STYLE_PARAM, TEMPLATE_PARAM } from "interfaces";
 import { protectGeneration } from "protection";
 import { generate } from "./generate";
 import "./main.css";
 
-const START_PARAM = "start";
-const COUNT_PARAM = "count";
-const TEMPLATE_PARAM = "template";
-const MAX_COUNT = 48;
+
 
 async function generateClick() {
-    if (CurrentUser) {
-        let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
-        let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
-        let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
-        if (count > MAX_COUNT) {
-            alert("Вы пытаетесь создать слишком много бирок. Обратитесь к администраторам.");
-            return;
+    let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
+    let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
+    let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
+    let gender = getRadio(GENDER_PARAM);
+    let category = getRadio(CATEGORY_PARAM);
+    let size = getRadio(SIZE_PARAM);
+    let quality = getRadio(QUALITY_PARAM);
+    let style = getRadio(STYLE_PARAM);
+    let age = getRadio(AGE_PARAM);
+
+    if (!gender || !category || !size || !quality || !style || !age) {
+        alert("Не все поля заполнены!")
+        return;
+    }
+
+    document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
+    let generation = {
+        start,
+        end: start + count - 1,
+        template,
+        userId: 'x',
+        userName: 'x',
+        gender,
+        category,
+        size,
+        quality,
+        style,
+        age
+    };
+    try {        
+        await saveLastGeneration(generation);
+        let openedWindow = window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}` +
+            `&${TEMPLATE_PARAM}=${encodeURIComponent(template)}` +
+            `&${GENDER_PARAM}=${gender}` +
+            `&${CATEGORY_PARAM}=${category}` +
+            `&${SIZE_PARAM}=${size}`+
+            `&${STYLE_PARAM}=${style}` +
+            `&${AGE_PARAM}=${age}` +
+            `&${QUALITY_PARAM}=${quality}`,
+            'width=200,height=100');
+    } catch (err: any) {
+        alert(err.message);
+    }
+    document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
+    document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
+}
+
+function getRadio(name: string) {
+    var radio = document.getElementsByName(name);
+    for (var i=0; i < radio.length; i++) {
+        let item = radio[i] as HTMLInputElement;
+        if (item.checked) {
+            return item.value;
         }
-        document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
-        let generation = {
-            start,
-            end: start + count - 1,
-            template,
-            userId: CurrentUser!.id,
-            userName: CurrentUser!.name
-        };
-        try {
-            protectGeneration(count);        
-            await saveLastGeneration(generation);
-            window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`);
-        } catch (err) {
-            alert(err.message);
-        }
-        document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
-        document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
     }
 }
 
 function initFormHandlers() {
     document.querySelector("#generate")?.addEventListener("click", generateClick);
-    document.querySelector("#login")?.addEventListener("click", login);
 }
+
 
 function processQueryParametes() {
     const urlParams = new URLSearchParams(window.location.search);
     const start = urlParams.get(START_PARAM);
     const count = urlParams.get(COUNT_PARAM);
     const template = urlParams.get(TEMPLATE_PARAM);
+    const age = urlParams.get(AGE_PARAM);
+    const gender = urlParams.get(GENDER_PARAM);
+    const category = urlParams.get(CATEGORY_PARAM);
+    const size = urlParams.get(SIZE_PARAM);
+    const style = urlParams.get(STYLE_PARAM);
+    const quality = urlParams.get(QUALITY_PARAM);
     if (start && count && template) {
-        generate(template, parseInt(start), parseInt(count));
+        generate(template, parseInt(start), parseInt(count), {
+            age, gender, category, size, style, quality
+        });
         return true;
     } else {
         return false;
@@ -73,23 +107,40 @@ function showLoader(show: boolean) {
     }
 }
 
-function showLogin(user: User | null) {
-    if (user) {
-        document.querySelector<HTMLElement>("#generation-block")!.style.display = "";
-        
-        document.querySelector<HTMLElement>("#login-block")!.style.display = "none";
-        document.querySelector<HTMLElement>("#login-info")!.innerHTML = "Вы вошли как " + user.name;
-        let logoutLink = document.createElement("a");
-        logoutLink.innerText = "выйти";
-        logoutLink.addEventListener("click", logout);
-        document.querySelector<HTMLElement>("#login-info")!.appendChild(logoutLink);
-    } else {
-        document.querySelector<HTMLElement>("#generation-block")!.style.display = "none";
-        document.querySelector<HTMLElement>("#login-block")!.style.display = "";
+function onGenderChange() {
+    let gender = getRadio(GENDER_PARAM);
+    let age = getRadio(AGE_PARAM);
+    let male = document.getElementById("maleCategories");
+    let female = document.getElementById("femaleCategories");
+    let baby = document.getElementById("babyСategories");
+    let categories = [male, female, baby ];
+
+    let selectedCategory = null;
+    
+    if (age == "adult" || age == "kid") {
+        if (gender === "male") {
+            selectedCategory = male;
+        } else if (gender === "female") {
+            selectedCategory = female;
+        } else {
+            selectedCategory = male;
+        }
+    } else if (age === "baby") {
+        selectedCategory = baby;
+    }
+    else {
+        selectedCategory = female;
+    }
+    for (let category of categories) {
+        if (category == selectedCategory) {
+            category!.style.display = '';
+        } else {
+            category!.style.display = 'none';
+        }
     }
 }
 
-var CurrentUser: User | null = null;
+(window as any)["onGenderChange"] = onGenderChange;
 
 async function onOpen() {
     let parametersExists = processQueryParametes();
@@ -97,11 +148,10 @@ async function onOpen() {
         showLoader(true);
         try {
             await loadLatestGeneration();
-            CurrentUser = await getAuthentication();
             showLoader(false);
-            initFormHandlers();
-            showLogin(CurrentUser);        
-        } catch (err) {
+            initFormHandlers();      
+            onGenderChange();
+        } catch (err: any) {
             alert(err.message);
             return;
         }
