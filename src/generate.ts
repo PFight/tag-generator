@@ -45,6 +45,7 @@ export function generate(templateSelector: string, start: number, count: number,
             print.appendChild(clone);
         }
         window.print();
+        window.onafterprint = () => window.close();
     } else {
         alert("Template not found!");
     }

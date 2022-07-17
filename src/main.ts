@@ -47,7 +47,8 @@ async function generateClick() {
             `&${STYLE_PARAM}=${style}` +
             `&${AGE_PARAM}=${age}` +
             `&${QUALITY_PARAM}=${quality}`,
-            'width=200,height=100');
+            'Print',
+            'width=1000,height=800,left=300,top=200');
     } catch (err: any) {
         alert(err.message);
     }
