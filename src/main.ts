@@ -14,10 +14,10 @@ async function generateClick() {
         let template = document.querySelector<HTMLInputElement>("#template")?.value || "#female-male";
         let start = parseInt(document.querySelector<HTMLInputElement>("#start")?.value  || "0");
         let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
-        /*if (count > MAX_COUNT) {
+        if (count > MAX_COUNT) {
             alert("Вы пытаетесь создать слишком много бирок. Обратитесь к администраторам.");
             return;
-        }*/
+        }
         document.querySelector<HTMLButtonElement>("#generate")!.disabled = true;
         let generation = {
             start,
@@ -27,7 +27,7 @@ async function generateClick() {
             userName: 'x'
         };
         try {
-            // protectGeneration(count);        
+            protectGeneration(count);        
             await saveLastGeneration(generation);
             window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`);
         } catch (err) {
