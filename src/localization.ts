@@ -74,7 +74,7 @@ export const styleLocalization: any = {
 };
 
 export const qualityLocalization: any = {
-    'low': "1",
+    'low': "3",
     'middle': "2",
-    'high': "3"
+    'high': "1"
 };
