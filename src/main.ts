@@ -50,7 +50,7 @@ async function generateClick() {
             'Print',
             'width=1000,height=800,left=300,top=200');
     } catch (err: any) {
-        alert(err.message);
+        alert(err.message);0
     }
     document.querySelector<HTMLInputElement>("#start")!.value = (generation.end + 1).toString();
     document.querySelector<HTMLButtonElement>("#generate")!.disabled = false;
@@ -108,7 +108,7 @@ function showLoader(show: boolean) {
     }
 }
 
-function onGenderChange() {
+function onInputChange() {
     let gender = getRadio(GENDER_PARAM);
     let age = getRadio(AGE_PARAM);
     let male = document.getElementById("maleCategories");
@@ -139,9 +139,16 @@ function onGenderChange() {
             category!.style.display = 'none';
         }
     }
+
+    let genderKid = document.getElementById("genderKidLabel");
+    genderKid!.style.display = age === "baby" ? "" : "none";
+
+    let category = getRadio(CATEGORY_PARAM);
+    let size = document.getElementById("size");
+    size!.style.display = (category == "G" || age === "baby") ? "none" : "";
 }
 
-(window as any)["onGenderChange"] = onGenderChange;
+(window as any)["onGenderChange"] = onInputChange;
 
 async function onOpen() {
     let parametersExists = processQueryParametes();
@@ -150,8 +157,11 @@ async function onOpen() {
         try {
             await loadLatestGeneration();
             showLoader(false);
-            initFormHandlers();      
-            onGenderChange();
+            initFormHandlers();
+            [].forEach.call(document.querySelectorAll("input"), (input: HTMLElement) => {
+                input.addEventListener("change", onInputChange);
+            });
+            onInputChange();
         } catch (err: any) {
             alert(err.message);
             return;

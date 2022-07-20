@@ -1,7 +1,7 @@
 <html>
 	<meta charset="UTF-8">
 	<head>
-		<link rel="stylesheet" href="app.css?v=3">
+		<link rel="stylesheet" href="app.css?v=6">
 	</head>
 
 	<body>
@@ -38,7 +38,7 @@
 						<input type="radio" name="gender" id="genderMale" value="male" onchange="onGenderChange()">
 						Мужская
 					</label>
-					<label>
+					<label id="genderKidLabel">
 						<input type="radio" name="gender" id="genderKid" value="universal" onchange="onGenderChange()">
 						Универсальная
 					</label>
@@ -263,7 +263,7 @@
 							<span id="categoryValue"></span>
 						</td>
 					</tr>
-					<tr>
+					<tr id="sizeRow">
 						<td class="label" ><b>Размер:</b></td>
 						<td class="value" colspan="3">
 							<span id="sizeValue"></span>
@@ -289,6 +289,6 @@
 				</table>
 			</div>
 		</template>
-		<script src="app.js?v=5"></script>
+		<script src="app.js?v=6"></script>
 	</body>
 </html>

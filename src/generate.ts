@@ -33,8 +33,13 @@ export function generate(templateSelector: string, start: number, count: number,
             const category = clone.querySelector('#' + CATEGORY_PARAM + "Value")!;
             category.textContent = categoryLocalization[options.category as string];
 
-            const size = clone.querySelector('#' + SIZE_PARAM + "Value")!;
-            size.textContent = sizeLocalization[options.age as string][options.gender as string][options.size as string];
+            if (options.age !== "baby") {
+                const size = clone.querySelector('#' + SIZE_PARAM + "Value")!;
+                size.textContent = sizeLocalization[options.age as string][options.gender as string][options.size as string];
+            } else {
+                const sizeRow = clone.querySelector<HTMLElement>("#sizeRow");
+                sizeRow!.style.display = "none";
+            }
 
             const style = clone.querySelector('#' + STYLE_PARAM + "Value")!;
             style.textContent = styleLocalization[options.style as string];
