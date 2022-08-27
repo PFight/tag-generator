@@ -13,13 +13,13 @@ async function generateClick() {
     let count = parseInt(document.querySelector<HTMLInputElement>("#count")?.value || "12");
     let gender = getRadio(GENDER_PARAM);
     let category = getRadio(CATEGORY_PARAM);
-    let size = getRadio(SIZE_PARAM);
-    let quality = getRadio(QUALITY_PARAM);
-    let style = getRadio(STYLE_PARAM);
+    let size = getRadio(SIZE_PARAM) || '';
+    let quality = getRadio(QUALITY_PARAM) || '';
+    let style = getRadio(STYLE_PARAM) || '';
     let age = getRadio(AGE_PARAM);
 
-    if (!gender || !category || !size || !quality || !style || !age) {
-        alert("Не все поля заполнены!")
+    if (!gender || !category || !age) {
+        alert("Не все обязательные поля заполнены (пол, категория, возраст)!")
         return;
     }
 
