@@ -21,7 +21,7 @@ td {
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
-    font-size: 7pt;
+    font-size: 11pt;
 }
 td.male-female {
     width: 0;
