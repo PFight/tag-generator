@@ -1,10 +1,13 @@
 #print {
-    width: 230mm;
+    width: 100vw;
+    height: 100vh;
 }
 
 .birka {
-    display: inline-block;
-    width: 33%;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    page-break-after: always;
 }
 
 table {
@@ -14,11 +17,11 @@ table {
 
 th,
 td {
-    padding: 3px 3px;
+    padding: 1px 2px;
     /* Поля вокруг содержимого ячеек */
     border-bottom: 1px solid black;
     /* Граница вокруг ячеек */
-    font-size: 13pt;
+    font-size: 7pt;
 }
 td.male-female {
     width: 0;
@@ -38,7 +41,7 @@ td.category-value {
 }
 td.label {
     border-right: 1px solid black;
-    width: 65px;
+    width: 45px;
     white-space: nowrap;
 }
 td.label.right {
