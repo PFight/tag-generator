@@ -5,18 +5,96 @@
 	</head>
     <body>
         <div id="pageType" data-value="gift"></div>
-        <div class="add-item">
-            <input id="addItemName" class="add-item__input" />
-            <button id="addItemButton" class="add-item__button" >Добавить</button>
+        <div class="gift-fields">
+            <label class="gift-field">
+                <div class="gift-field__label">ФИО: </div>
+                <div class="gift-field__input-container">
+                    <input id="fioInput" class="gift-field__input" />
+                </div>
+            </label>
+            <label class="gift-field">
+                <div class="gift-field__label">Номер телефона: </div>
+                <div class="gift-field__input-container">
+                    <input id="phoneInput" class="gift-field__input" />
+                </div>
+            </label>
+            <div class="gift-field gift-add-item">
+                <div class="gift-field__label">Вещь (название или код): </div>
+                <div class="gift-field__input-container">
+                    <input id="addItemName" class="gift-add-item__input" />
+                    <button id="addItemButton" class="gift-add-item__button" >Добавить</button>
+                </div>
+            </div>
         </div>
-        <ol id="giftItems" class="gift-items">
-        </ol>
-        <template id="giftItemTemplate">
-            <li class="gift-item" >
-                <span class="gift-item__id"></span>
-                <span class="gift-item__name"></span>                
-            </li>
-        </template>
+        <div class="gift-header">
+            <p>Добро пожаловать в Свято-Троицкий центр нужных вещей <br/>
+            «В добрые руки»!</p>
+            <p></p>
+            <p>Пожалуйста, заполните  лист посетителя.</p>
+        </div>
+        <table class="gift-table">
+            <tr class="gift-field-row">
+                <td class="gift-field-row__label gift-label">ФИО:</td>
+                <td class="gift-field-row__value" colspan="3"><span id="fioView"></span></td>
+            </tr>
+            <tr class="gift-field-row">
+                <td class="gift-field-row__label gift-label">Номер телефона:</td>
+                <td class="gift-field-row__value"><span id="phoneView"></span></td>
+                <td class="gift-field-row__label gift-label">Дата:</td>
+                <td class="gift-field-row__value"><span id="dateView"></span></td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    <span class="gift-label">Даю согласие на обработку персональных данных:</span>     _________________   (подпись)
+                </td>
+            </tr>
+            <tr class="gift-items-row">
+                <td colspan="4">
+                    <span class="gift-label">Список того, что подошло:</span>
+                    <ol id="giftItems" class="gift-items">
+                        <template id="giftItemTemplate">
+                            <li class="gift-item" >
+                                <span class="gift-item__id"></span>
+                                <span class="gift-item__name"></span>                
+                            </li>
+                        </template>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    <span class="gift-label">Список того, что не удалось найти (укажите пол,  размер  и другие пожелания):</span>
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    1.
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    2.
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    3.
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    4.
+                </td>
+            </tr>
+            <tr class="gift-field-row">
+                <td colspan="4">
+                    <span class="gift-label">Ваши пожелания центру:</span>
+                </td>
+            </tr>
+            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
+            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
+            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
+        </table>
         <script src="app.js?v=7"></script>
 	</body>
 </html>

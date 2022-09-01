@@ -27,16 +27,12 @@ export async function getLastGeneration(): Promise<Generation> {
     };
 }
 
-export async function findGeneration(num: number): Promise<any> {
-    let generation = await firebase.firestore().collection("generation");
-    let result = await generation.where("start", "<=", num).where("end", ">=", num).get();
-    if (result.docs.length > 0) {
-        let doc = result.docs[0];
-        return getGeneration(doc);
-    }
+export async function getItem(num: number): Promise<any> {
+    let item = await firebase.firestore().doc(`items/${num}`).get();
+    return makeGenerationModel(item);
 }
 
-function getGeneration(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>): any {
+function makeGenerationModel(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData | undefined>): any {
     return {
         start: doc.get("start"),
         end: doc.get("end"),
@@ -57,7 +53,7 @@ export async function fillItemsFromGenerations() {
     let generations = await generation.get();
     for (var gen of generations.docs) {
         if (gen.id !== "latest") {
-            await createItems(getGeneration(gen));
+            await createItems(makeGenerationModel(gen));
         }
     }
 }

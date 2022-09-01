@@ -1,0 +1,64 @@
+.gift-table, .gift-table td {
+    border: 1px solid black;
+}
+
+.gift-field-row__label {
+    width: 0;
+    white-space: nowrap;
+    padding-right: 1em;
+}
+.gift-label {
+    font-weight: bold;
+}
+.gift-table td {
+    padding: 0.3em 0.5em;
+}
+.gift-field-row__value {
+    width: 50%;
+}
+
+
+@media print
+{    
+    .gift-fields
+    {
+        display: none !important;
+    }
+}
+
+.gift-fields {
+    display: table;
+    border: 1px dashed black;
+    padding: 1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.gift-items {
+    min-height: 450px;;
+}
+
+.gift-field {
+    display: table-row;
+}
+.gift-field__label {
+    display: table-cell;
+    padding: 0.3em;
+    white-space: nowrap;
+    width: 0;    
+}
+.gift-field__input {
+    width: 600px;
+}
+.gift-field__input-container {
+    display: table-cell;
+}
+
+.gift-add-item__input {
+    width: 600px;
+}
+
+.gift-header {
+    font-size: 110%;
+    text-align: center;
+}

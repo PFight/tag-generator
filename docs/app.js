@@ -21783,15 +21783,11 @@
             userName: latest.get("userName")
         };
     }
-    async function findGeneration(num) {
-        let generation = await firebase.firestore().collection("generation");
-        let result = await generation.where("start", "<=", num).where("end", ">=", num).get();
-        if (result.docs.length > 0) {
-            let doc = result.docs[0];
-            return getGeneration(doc);
-        }
+    async function getItem(num) {
+        let item = await firebase.firestore().doc(`items/${num}`).get();
+        return makeGenerationModel(item);
     }
-    function getGeneration(doc) {
+    function makeGenerationModel(doc) {
         return {
             start: doc.get("start"),
             end: doc.get("end"),
@@ -21805,15 +21801,6 @@
             quality: doc.get("quality"),
             size: doc.get("size")
         };
-    }
-    async function fillItemsFromGenerations() {
-        let generation = await firebase.firestore().collection("generation");
-        let generations = await generation.get();
-        for (var gen of generations.docs) {
-            if (gen.id !== "latest") {
-                await createItems(getGeneration(gen));
-            }
-        }
     }
     async function saveLastGeneration(gen) {
         let latestDoc = firebase.firestore().doc("generation/latest");
@@ -21923,11 +21910,23 @@
         let addItemButton = document.getElementById("addItemButton");
         let items = document.getElementById("giftItems");
         let itemTemplate = document.getElementById("giftItemTemplate");
+        let fioInput = document.getElementById("fioInput");
+        let phoneInput = document.getElementById("phoneInput");
+        let fioView = document.getElementById("fioView");
+        let phoneView = document.getElementById("phoneView");
+        let dateView = document.getElementById("dateView");
+        dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
+        fioInput.addEventListener("change", (ev) => {
+            fioView.textContent = fioInput.value;
+        });
+        phoneInput.addEventListener("change", (ev) => {
+            phoneView.textContent = phoneInput.value;
+        });
         let addItemFromBase = async (id) => {
-            let gen = await findGeneration(parseInt(id));
+            let gen = await getItem(parseInt(id));
             if (gen) {
                 let itemElement = document.importNode(itemTemplate.content, true);
-                let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.age] + " / " + categoryLocalization[gen.category];
+                let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.gender] + " / " + categoryLocalization[gen.category];
                 itemElement.querySelector(".gift-item__name").textContent = name;
                 itemElement.querySelector(".gift-item__id").textContent = id;
                 items.appendChild(itemElement);
@@ -21949,10 +21948,7 @@
                 addItem();
             }
         });
-        addItemButton.addEventListener("click", () => {
-            fillItemsFromGenerations();
-            alert("done!");
-        });
+        addItemButton.addEventListener("click", addItem);
     }
 
     const START_PARAM = "start";
