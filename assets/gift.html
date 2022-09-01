@@ -1,0 +1,22 @@
+<html>
+	<meta charset="UTF-8">
+	<head>
+		<link rel="stylesheet" href="app.css?v=7">
+	</head>
+    <body>
+        <div id="pageType" data-value="gift"></div>
+        <div class="add-item">
+            <input id="addItemName" class="add-item__input" />
+            <button id="addItemButton" class="add-item__button" >Добавить</button>
+        </div>
+        <ol id="giftItems" class="gift-items">
+        </ol>
+        <template id="giftItemTemplate">
+            <li class="gift-item" >
+                <span class="gift-item__id"></span>
+                <span class="gift-item__name"></span>                
+            </li>
+        </template>
+        <script src="app.js?v=7"></script>
+	</body>
+</html>

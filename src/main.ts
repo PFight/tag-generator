@@ -1,5 +1,6 @@
 import { getAuthentication, login, logout, User } from "auth";
-import { getLastGeneration, saveLastGeneration } from "firebase";
+import { findGeneration, getLastGeneration, saveLastGeneration } from "firebase";
+import { onGiftsOpen } from "gifts";
 import { AGE_PARAM, CATEGORY_PARAM, COUNT_PARAM, GENDER_PARAM, Generation, QUALITY_PARAM, SIZE_PARAM, START_PARAM, STYLE_PARAM, TEMPLATE_PARAM } from "interfaces";
 import { protectGeneration } from "protection";
 import { generate } from "./generate";
@@ -151,21 +152,26 @@ function onInputChange() {
 (window as any)["onGenderChange"] = onInputChange;
 
 async function onOpen() {
-    let parametersExists = processQueryParametes();
-    if (!parametersExists) {
-        showLoader(true);
-        try {
-            await loadLatestGeneration();
-            showLoader(false);
-            initFormHandlers();
-            [].forEach.call(document.querySelectorAll("input"), (input: HTMLElement) => {
-                input.addEventListener("change", onInputChange);
-            });
-            onInputChange();
-        } catch (err: any) {
-            alert(err.message);
-            return;
+    let pageType = document.getElementById("pageType")?.getAttribute("data-value");
+    if (pageType == "generation") {   
+        let parametersExists = processQueryParametes();
+        if (!parametersExists) {
+            showLoader(true);
+            try {
+                await loadLatestGeneration();
+                showLoader(false);
+                initFormHandlers();
+                [].forEach.call(document.querySelectorAll("input"), (input: HTMLElement) => {
+                    input.addEventListener("change", onInputChange);
+                });
+                onInputChange();
+            } catch (err: any) {
+                alert(err.message);
+                return;
+            }
         }
+    } else if (pageType == "gift") {
+        onGiftsOpen();
     }
 }
 

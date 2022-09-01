@@ -21783,6 +21783,38 @@
             userName: latest.get("userName")
         };
     }
+    async function findGeneration(num) {
+        let generation = await firebase.firestore().collection("generation");
+        let result = await generation.where("start", "<=", num).where("end", ">=", num).get();
+        if (result.docs.length > 0) {
+            let doc = result.docs[0];
+            return getGeneration(doc);
+        }
+    }
+    function getGeneration(doc) {
+        return {
+            start: doc.get("start"),
+            end: doc.get("end"),
+            template: doc.get("template"),
+            userId: doc.get("userId"),
+            userName: doc.get("userName"),
+            age: doc.get("age"),
+            style: doc.get("style"),
+            category: doc.get("category"),
+            gender: doc.get("gender"),
+            quality: doc.get("quality"),
+            size: doc.get("size")
+        };
+    }
+    async function fillItemsFromGenerations() {
+        let generation = await firebase.firestore().collection("generation");
+        let generations = await generation.get();
+        for (var gen of generations.docs) {
+            if (gen.id !== "latest") {
+                await createItems(getGeneration(gen));
+            }
+        }
+    }
     async function saveLastGeneration(gen) {
         let latestDoc = firebase.firestore().doc("generation/latest");
         let latest = await firebase.firestore().doc("generation/latest").get();
@@ -21792,6 +21824,135 @@
         await latestDoc.set(gen);
         let historyRecort = firebase.firestore().collection("generation").doc();
         await historyRecort.set(gen);
+        await createItems(gen);
+    }
+    async function createItems(gen) {
+        for (let i = gen.start; i <= gen.end; i++) {
+            let item = firebase.firestore().collection("items").doc(i.toString());
+            await item.set({
+                age: gen.age,
+                gender: gen.gender,
+                category: gen.category,
+                size: gen.size,
+                style: gen.style,
+                quality: gen.quality,
+                template: gen.template
+            });
+        }
+    }
+
+    const ageLocalization = {
+        'adult': "Взрослое",
+        'kid': "Детское",
+        'baby': "Младенческое"
+    };
+    const genderLocalization = {
+        'male': "Мужское",
+        'female': "Женское",
+        'universal': "Универсальная"
+    };
+    const categoryLocalization = {
+        'F': "Ф (футболки, майки, блузы, топы)",
+        'S': "С (свитеры, олимпийки, кардиганы)",
+        'B': "Б (брюки, джинсы и шорты)",
+        'D': "Д (домашняя одежда, ночнушки, халаты и т.д.)",
+        'P': "П (платья и сарафаны)",
+        'U': "Ю (юбки)",
+        'G': "Г (головные уборы)",
+        'V': "В (верхняя одежда)",
+        'R': "Р (рубашки)",
+        'BK': "БК (боди)",
+        'BM': "Б (штанишки, шорты и ползунки)",
+        'SM': "С (свитеры, распашонки, кофточки, жакеты, джемперы)"
+    };
+    const sizeLocalization = {
+        'adult': {
+            'male': {
+                'XS': "XS (< 44)",
+                'S': "S (44)",
+                'M': "M (46-48)",
+                'L': "L (50-52)",
+                'XL': "XL (54-56)",
+                'XXL': "XXL (58-62)",
+                'XXXL': "XXXL+ (64+)"
+            },
+            'female': {
+                'XS': "XS (< 38)",
+                'S': "S (40-42)",
+                'M': "M (44-46)",
+                'L': "L (48-50)",
+                'XL': "XL (52-54)",
+                'XXL': "XXL (56)",
+                'XXXL': "XXXL+ (58+)"
+            },
+        },
+        'kid': {
+            'male': {
+                'XS': "50-62",
+                'S': "68-86",
+                'M': "92-110",
+                'L': "116-128",
+                'XL': "134-140",
+                'XXL': "146-152",
+                'XXXL': "158+"
+            },
+            'female': {
+                'XS': "50-62",
+                'S': "68-86",
+                'M': "92-110",
+                'L': "116-128",
+                'XL': "134-140",
+                'XXL': "146-152",
+                'XXXL': "158+"
+            }
+        }
+    };
+    const styleLocalization = {
+        'neutral': "1",
+        'bright': "2",
+        'expressive': "3"
+    };
+    const qualityLocalization = {
+        'low': "3",
+        'middle': "2",
+        'high': "1"
+    };
+
+    function onGiftsOpen() {
+        let addItemInput = document.getElementById("addItemName");
+        let addItemButton = document.getElementById("addItemButton");
+        let items = document.getElementById("giftItems");
+        let itemTemplate = document.getElementById("giftItemTemplate");
+        let addItemFromBase = async (id) => {
+            let gen = await findGeneration(parseInt(id));
+            if (gen) {
+                let itemElement = document.importNode(itemTemplate.content, true);
+                let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.age] + " / " + categoryLocalization[gen.category];
+                itemElement.querySelector(".gift-item__name").textContent = name;
+                itemElement.querySelector(".gift-item__id").textContent = id;
+                items.appendChild(itemElement);
+            }
+            else {
+                let itemElement = document.importNode(itemTemplate.content, true);
+                itemElement.querySelector(".gift-item__id").textContent = id;
+                items.appendChild(itemElement);
+            }
+        };
+        let addItem = () => {
+            addItemFromBase(addItemInput.value);
+            addItemInput.value = "";
+            addItemInput.focus();
+        };
+        addItemInput.addEventListener("keypress", (ev) => {
+            if (ev.key === "Enter") {
+                ev?.preventDefault();
+                addItem();
+            }
+        });
+        addItemButton.addEventListener("click", () => {
+            fillItemsFromGenerations();
+            alert("done!");
+        });
     }
 
     const START_PARAM = "start";
@@ -25134,83 +25295,6 @@
     // Export to commonJS
     var JsBarcode_1 = JsBarcode;
 
-    const ageLocalization = {
-        'adult': "Взрослое",
-        'kid': "Детское",
-        'baby': "Младенческое"
-    };
-    const genderLocalization = {
-        'male': "Мужское",
-        'female': "Женское",
-        'universal': "Универсальная"
-    };
-    const categoryLocalization = {
-        'F': "Ф (футболки, майки, блузы, топы)",
-        'S': "С (свитеры, олимпийки, кардиганы)",
-        'B': "Б (брюки, джинсы и шорты)",
-        'D': "Д (домашняя одежда, ночнушки, халаты и т.д.)",
-        'P': "П (платья и сарафаны)",
-        'U': "Ю (юбки)",
-        'G': "Г (головные уборы)",
-        'V': "В (верхняя одежда)",
-        'R': "Р (рубашки)",
-        'BK': "БК (боди)",
-        'BM': "Б (штанишки, шорты и ползунки)",
-        'SM': "С (свитеры, распашонки, кофточки, жакеты, джемперы)"
-    };
-    const sizeLocalization = {
-        'adult': {
-            'male': {
-                'XS': "XS (< 44)",
-                'S': "S (44)",
-                'M': "M (46-48)",
-                'L': "L (50-52)",
-                'XL': "XL (54-56)",
-                'XXL': "XXL (58-62)",
-                'XXXL': "XXXL+ (64+)"
-            },
-            'female': {
-                'XS': "XS (< 38)",
-                'S': "S (40-42)",
-                'M': "M (44-46)",
-                'L': "L (48-50)",
-                'XL': "XL (52-54)",
-                'XXL': "XXL (56)",
-                'XXXL': "XXXL+ (58+)"
-            },
-        },
-        'kid': {
-            'male': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            },
-            'female': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            }
-        }
-    };
-    const styleLocalization = {
-        'neutral': "1",
-        'bright': "2",
-        'expressive': "3"
-    };
-    const qualityLocalization = {
-        'low': "3",
-        'middle': "2",
-        'high': "1"
-    };
-
     function generate(templateSelector, start, count, options) {
         document.querySelector("#settings").style.display = "none";
         document.querySelector("#loading").style.display = "none";
@@ -25388,22 +25472,28 @@
     }
     window["onGenderChange"] = onInputChange;
     async function onOpen() {
-        let parametersExists = processQueryParametes();
-        if (!parametersExists) {
-            showLoader(true);
-            try {
-                await loadLatestGeneration();
-                showLoader(false);
-                initFormHandlers();
-                [].forEach.call(document.querySelectorAll("input"), (input) => {
-                    input.addEventListener("change", onInputChange);
-                });
-                onInputChange();
+        let pageType = document.getElementById("pageType")?.getAttribute("data-value");
+        if (pageType == "generation") {
+            let parametersExists = processQueryParametes();
+            if (!parametersExists) {
+                showLoader(true);
+                try {
+                    await loadLatestGeneration();
+                    showLoader(false);
+                    initFormHandlers();
+                    [].forEach.call(document.querySelectorAll("input"), (input) => {
+                        input.addEventListener("change", onInputChange);
+                    });
+                    onInputChange();
+                }
+                catch (err) {
+                    alert(err.message);
+                    return;
+                }
             }
-            catch (err) {
-                alert(err.message);
-                return;
-            }
+        }
+        else if (pageType == "gift") {
+            onGiftsOpen();
         }
     }
     onOpen();

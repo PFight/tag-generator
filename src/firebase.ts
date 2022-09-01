@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { Generation } from "interfaces";
+import { GenerateOptions, Generation } from "interfaces";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -27,8 +27,42 @@ export async function getLastGeneration(): Promise<Generation> {
     };
 }
 
+export async function findGeneration(num: number): Promise<any> {
+    let generation = await firebase.firestore().collection("generation");
+    let result = await generation.where("start", "<=", num).where("end", ">=", num).get();
+    if (result.docs.length > 0) {
+        let doc = result.docs[0];
+        return getGeneration(doc);
+    }
+}
 
-export async function saveLastGeneration(gen: Generation) {
+function getGeneration(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>): any {
+    return {
+        start: doc.get("start"),
+        end: doc.get("end"),
+        template: doc.get("template"),
+        userId: doc.get("userId"),
+        userName: doc.get("userName"),
+        age: doc.get("age"),
+        style: doc.get("style"),
+        category: doc.get("category"),
+        gender: doc.get("gender"),
+        quality: doc.get("quality"),
+        size: doc.get("size")
+    };
+}
+
+export async function fillItemsFromGenerations() {
+    let generation = await firebase.firestore().collection("generation");
+    let generations = await generation.get();
+    for (var gen of generations.docs) {
+        if (gen.id !== "latest") {
+            await createItems(getGeneration(gen));
+        }
+    }
+}
+
+export async function saveLastGeneration(gen: Generation & GenerateOptions) {
     let latestDoc = firebase.firestore().doc("generation/latest");
     let latest = await firebase.firestore().doc("generation/latest").get();
     if (latest.get("end") > gen.end) {
@@ -38,4 +72,21 @@ export async function saveLastGeneration(gen: Generation) {
 
     let historyRecort = firebase.firestore().collection("generation").doc();
     await historyRecort.set(gen);
+
+    await createItems(gen);
+}
+
+async function createItems(gen: Generation & GenerateOptions) {
+    for (let i = gen.start; i <= gen.end; i++) {
+        let item = firebase.firestore().collection("items").doc(i.toString());
+        await item.set({
+            age: gen.age,
+            gender: gen.gender,
+            category: gen.category,
+            size: gen.size,
+            style: gen.style,
+            quality: gen.quality,
+            template: gen.template
+        });
+    }
 }
