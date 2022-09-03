@@ -15,6 +15,13 @@ export interface GenerateOptions {
     quality: string | null;
 }
 
+export interface Gift {
+    id: string;
+    fio: string;
+    phone: string;
+    items: string[];
+}
+
 export const START_PARAM = "start";
 export const COUNT_PARAM = "count";
 export const TEMPLATE_PARAM = "template";
