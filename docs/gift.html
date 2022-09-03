@@ -25,12 +25,19 @@
                     <button id="addItemButton" class="gift-add-item__button" >Добавить</button>
                 </div>
             </div>
+            <div class="gift-field">
+                <div class="gift-field-label"></div>
+                <div class="gift-field__input-container">
+                    <button id="save" class="gift-save">Сохранить</button>
+                    <button id="saveAndPrint" class="gift-save">Сохранить и распечатать</button>
+                </div>
+            </div>
         </div>
         <div class="gift-header">
             <p>Добро пожаловать в Свято-Троицкий центр нужных вещей <br/>
             «В добрые руки»!</p>
             <p></p>
-            <p>Пожалуйста, заполните  лист посетителя.</p>
+            <p>Лист посетителя №<span id="giftNumber"></span></p>
         </div>
         <table class="gift-table">
             <tr class="gift-field-row">
@@ -56,6 +63,7 @@
                             <li class="gift-item" >
                                 <span class="gift-item__id"></span>
                                 <span class="gift-item__name"></span>                
+                                <button class="gift-item__delete">x</button>
                             </li>
                         </template>
                     </ol>

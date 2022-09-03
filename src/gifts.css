@@ -37,6 +37,12 @@
 .gift-items {
     min-height: 450px;;
 }
+.gift-item__delete {
+    border: none;
+    box-shadow: none;
+    background: none;
+    cursor: pointer;
+}
 
 .gift-field {
     display: table-row;
@@ -61,4 +67,8 @@
 .gift-header {
     font-size: 110%;
     text-align: center;
+}
+
+.gift-save {
+    margin-top: 10px;
 }

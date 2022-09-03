@@ -21827,6 +21827,23 @@
             });
         }
     }
+    async function saveGift(gift) {
+        if (!gift.id) {
+            let latest = firebase.firestore().collection("gifts").doc("latest");
+            let latestGift = await latest.get();
+            gift.id = (latestGift.get("code") + 1).toString();
+            await latestGift.ref.set({
+                code: latestGift.get("code") + 1
+            });
+        }
+        let doc = firebase.firestore().collection("gifts").doc(gift.id);
+        await doc.set({
+            fio: gift.fio,
+            phone: gift.phone,
+            items: gift.items
+        });
+        return gift.id;
+    }
 
     const ageLocalization = {
         'adult': "Взрослое",
@@ -21916,39 +21933,73 @@
         let phoneView = document.getElementById("phoneView");
         let dateView = document.getElementById("dateView");
         dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
+        let saveButton = document.getElementById("save");
+        let saveAndPrintButton = document.getElementById("saveAndPrint");
+        let giftNumber = document.getElementById("giftNumber");
         fioInput.addEventListener("change", (ev) => {
             fioView.textContent = fioInput.value;
         });
         phoneInput.addEventListener("change", (ev) => {
             phoneView.textContent = phoneInput.value;
         });
-        let addItemFromBase = async (id) => {
-            let gen = await getItem(parseInt(id));
-            if (gen) {
+        let addItem = async (id) => {
+            let code = null;
+            try {
+                code = parseInt(id);
+            }
+            catch {
+            }
+            let deleteItem = (ev) => {
+                ev.target.parentElement.remove();
+            };
+            if (code) {
+                let gen = await getItem(code);
                 let itemElement = document.importNode(itemTemplate.content, true);
                 let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.gender] + " / " + categoryLocalization[gen.category];
                 itemElement.querySelector(".gift-item__name").textContent = name;
                 itemElement.querySelector(".gift-item__id").textContent = id;
+                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
                 items.appendChild(itemElement);
             }
             else {
                 let itemElement = document.importNode(itemTemplate.content, true);
                 itemElement.querySelector(".gift-item__id").textContent = id;
+                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
                 items.appendChild(itemElement);
             }
         };
-        let addItem = () => {
-            addItemFromBase(addItemInput.value);
+        let onAddItem = () => {
+            addItem(addItemInput.value);
             addItemInput.value = "";
             addItemInput.focus();
         };
         addItemInput.addEventListener("keypress", (ev) => {
             if (ev.key === "Enter") {
                 ev?.preventDefault();
-                addItem();
+                onAddItem();
             }
         });
-        addItemButton.addEventListener("click", addItem);
+        addItemButton.addEventListener("click", onAddItem);
+        let save = async () => {
+            let itemsElements = document.querySelectorAll(".gift-item");
+            let items = [].map.call(itemsElements, (element) => {
+                let id = element.querySelector(".gift-item__id").textContent;
+                let name = element.querySelector(".gift-item__name").textContent;
+                return id || name;
+            });
+            let id = await saveGift({
+                id: giftNumber.textContent,
+                fio: fioInput.value,
+                phone: phoneInput.value,
+                items
+            });
+            giftNumber.textContent = id;
+        };
+        saveButton.addEventListener("click", save);
+        saveAndPrintButton.addEventListener("click", async () => {
+            await save();
+            window.print();
+        });
     }
 
     const START_PARAM = "start";
