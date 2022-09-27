@@ -6,16 +6,22 @@
     <body>
         <div id="pageType" data-value="gift"></div>
         <div class="gift-fields">
-            <label class="gift-field">
+            <label class="gift-field settings__option_hidden">
                 <div class="gift-field__label">ФИО: </div>
                 <div class="gift-field__input-container">
                     <input id="fioInput" class="gift-field__input" />
                 </div>
             </label>
             <label class="gift-field">
-                <div class="gift-field__label">Номер телефона: </div>
+                <div class="gift-field__label">Последние 4 цифры номера телефона: </div>
                 <div class="gift-field__input-container">
                     <input id="phoneInput" class="gift-field__input" />
+                </div>
+            </label>
+            <label class="gift-field">
+                <div class="gift-field__label">Дата: </div>
+                <div class="gift-field__input-container">
+                    <input id="dateInput" type="date" class="gift-field__input" />
                 </div>
             </label>
             <div class="gift-field gift-add-item">
@@ -29,7 +35,7 @@
                 <div class="gift-field-label"></div>
                 <div class="gift-field__input-container">
                     <button id="save" class="gift-save">Сохранить</button>
-                    <button id="saveAndPrint" class="gift-save">Сохранить и распечатать</button>
+                    <button id="saveAndPrint" class="gift-save settings__option_hidden">Сохранить и распечатать</button>
                 </div>
             </div>
         </div>

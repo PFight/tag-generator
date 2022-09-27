@@ -100,6 +100,7 @@ export async function saveGift(gift: Gift) {
     await doc.set({
         fio: gift.fio,
         phone: gift.phone,
+        date: gift.date,
         items: gift.items
     });
     return gift.id;

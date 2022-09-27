@@ -12,6 +12,8 @@ export function onGiftsOpen() {
     let phoneInput = document.getElementById("phoneInput")! as HTMLInputElement;
     let fioView = document.getElementById("fioView")!;
     let phoneView = document.getElementById("phoneView")!;
+    let dateInput = document.getElementById("dateInput")! as HTMLInputElement;
+    dateInput.valueAsDate = new Date();
     let dateView = document.getElementById("dateView")!;
     dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
     let saveButton = document.getElementById("save")!;
@@ -23,7 +25,10 @@ export function onGiftsOpen() {
     });
     phoneInput.addEventListener("change", (ev) => {
         phoneView.textContent = phoneInput.value;
-    });    
+    });   
+    dateInput.addEventListener("change", (ev) => {
+        dateView.textContent = dateInput.valueAsDate!.toLocaleDateString("ru-RU");
+    });  
 
     let addItem = async (id: string) => {
         let code: number | null = null;
@@ -73,6 +78,7 @@ export function onGiftsOpen() {
             id: giftNumber.textContent,
             fio: fioInput.value,
             phone: phoneInput.value,
+            date: dateInput.valueAsDate,
             items
         } as any);
         giftNumber.textContent = id;

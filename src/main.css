@@ -162,3 +162,7 @@ td.bottom {
     cursor: pointer;
     text-decoration: underline;
 }
+
+.hide {
+    display: none !important;
+}

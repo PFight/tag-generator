@@ -21821,6 +21821,7 @@
         await doc.set({
             fio: gift.fio,
             phone: gift.phone,
+            date: gift.date,
             items: gift.items
         });
         return gift.id;
@@ -21888,6 +21889,8 @@
         let phoneInput = document.getElementById("phoneInput");
         let fioView = document.getElementById("fioView");
         let phoneView = document.getElementById("phoneView");
+        let dateInput = document.getElementById("dateInput");
+        dateInput.valueAsDate = new Date();
         let dateView = document.getElementById("dateView");
         dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
         let saveButton = document.getElementById("save");
@@ -21898,6 +21901,9 @@
         });
         phoneInput.addEventListener("change", (ev) => {
             phoneView.textContent = phoneInput.value;
+        });
+        dateInput.addEventListener("change", (ev) => {
+            dateView.textContent = dateInput.valueAsDate.toLocaleDateString("ru-RU");
         });
         let addItem = async (id) => {
             let code = null;
@@ -21947,6 +21953,7 @@
                 id: giftNumber.textContent,
                 fio: fioInput.value,
                 phone: phoneInput.value,
+                date: dateInput.valueAsDate,
                 items
             });
             giftNumber.textContent = id;

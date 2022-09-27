@@ -19,6 +19,7 @@ export interface Gift {
     id: string;
     fio: string;
     phone: string;
+    date: Date;
     items: string[];
 }
 
