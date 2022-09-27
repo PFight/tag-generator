@@ -1,4 +1,5 @@
 import { fillItemsFromGenerations, getItem, saveGift } from "firebase";
+import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./gifts.css";
 
@@ -25,7 +26,7 @@ export function onGiftsOpen() {
     });    
 
     let addItem = async (id: string) => {
-        let code = null;
+        let code: number | null = null;
         try {
             code = parseInt(id)
         } catch {
@@ -34,9 +35,8 @@ export function onGiftsOpen() {
             (ev.target as HTMLElement).parentElement!.remove();
         }
         if (code) {
-            let gen = await getItem(code);
+            let name = itemNames[code];
             let itemElement = document.importNode(itemTemplate.content, true);
-            let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.gender] + " / " + categoryLocalization[gen.category];
             itemElement.querySelector(".gift-item__name")!.textContent = name;
             itemElement.querySelector(".gift-item__id")!.textContent = id;
             itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem)

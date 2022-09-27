@@ -21783,25 +21783,6 @@
             userName: latest.get("userName")
         };
     }
-    async function getItem(num) {
-        let item = await firebase.firestore().doc(`items/${num}`).get();
-        return makeGenerationModel(item);
-    }
-    function makeGenerationModel(doc) {
-        return {
-            start: doc.get("start"),
-            end: doc.get("end"),
-            template: doc.get("template"),
-            userId: doc.get("userId"),
-            userName: doc.get("userName"),
-            age: doc.get("age"),
-            style: doc.get("style"),
-            category: doc.get("category"),
-            gender: doc.get("gender"),
-            quality: doc.get("quality"),
-            size: doc.get("size")
-        };
-    }
     async function saveLastGeneration(gen) {
         let latestDoc = firebase.firestore().doc("generation/latest");
         let latest = await firebase.firestore().doc("generation/latest").get();
@@ -21845,81 +21826,57 @@
         return gift.id;
     }
 
-    const ageLocalization = {
-        'adult': "Взрослое",
-        'kid': "Детское",
-        'baby': "Младенческое"
-    };
-    const genderLocalization = {
-        'male': "Мужское",
-        'female': "Женское",
-        'universal': "Универсальная"
-    };
-    const categoryLocalization = {
-        'F': "Ф (футболки, майки, блузы, топы)",
-        'S': "С (свитеры, олимпийки, кардиганы)",
-        'B': "Б (брюки, джинсы и шорты)",
-        'D': "Д (домашняя одежда, ночнушки, халаты и т.д.)",
-        'P': "П (платья и сарафаны)",
-        'U': "Ю (юбки)",
-        'G': "Г (головные уборы)",
-        'V': "В (верхняя одежда)",
-        'R': "Р (рубашки)",
-        'BK': "БК (боди)",
-        'BM': "Б (штанишки, шорты и ползунки)",
-        'SM': "С (свитеры, распашонки, кофточки, жакеты, джемперы)"
-    };
-    const sizeLocalization = {
-        'adult': {
-            'male': {
-                'XS': "XS (< 44)",
-                'S': "S (44)",
-                'M': "M (46-48)",
-                'L': "L (50-52)",
-                'XL': "XL (54-56)",
-                'XXL': "XXL (58-62)",
-                'XXXL': "XXXL+ (64+)"
-            },
-            'female': {
-                'XS': "XS (< 38)",
-                'S': "S (40-42)",
-                'M': "M (44-46)",
-                'L': "L (48-50)",
-                'XL': "XL (52-54)",
-                'XXL': "XXL (56)",
-                'XXXL': "XXXL+ (58+)"
-            },
-        },
-        'kid': {
-            'male': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            },
-            'female': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            }
-        }
-    };
-    const styleLocalization = {
-        'neutral': "1",
-        'bright': "2",
-        'expressive': "3"
-    };
-    const qualityLocalization = {
-        'low': "3",
-        'middle': "2",
-        'high': "1"
+    const itemNames = {
+        1: "Жилет/костюм женский",
+        2: "Брюки / шорты женские",
+        3: "Платье женское",
+        4: "Домашняя одежда",
+        5: "Обувь женская",
+        6: "Свитер / джемпер женский",
+        7: "Головной убор/шарф женский",
+        8: "Верхняя одежда женская",
+        9: "Блузка / рубашка женская",
+        10: "Юбка женская",
+        11: "Головной убор/шарф мужской",
+        12: "Верхняя одежда мужская",
+        13: "Свитер мужской",
+        14: "Брюки/джинсы/шорты мужские",
+        15: "Обувь мужская",
+        16: "Пиджак / костюм мужской",
+        17: "Рубашка мужская",
+        18: "Футболка / майка мужская",
+        19: "Свитер/джемпер девочки",
+        20: "Платье девочки",
+        21: "Домашняя одежда",
+        22: "Обувь девочки",
+        23: "Блузка / рубашка девочки",
+        24: "Головной убор, шарф девочки",
+        25: "Верхняя одежда девочки",
+        26: "Юбка девочки",
+        27: "Свитер /джемпер мальчика",
+        28: "Майка / рубашка мальчика",
+        29: "Брюки / шорты мальчика",
+        30: "Обувь мальчика",
+        31: "Головной убор, шарф мальчика",
+        32: "Верхняя одежда мальчика",
+        33: "Боди",
+        34: "Футболка / майка младенца",
+        35: "Брючки младенца",
+        36: "Обувь младенца",
+        37: "Платье маленькой девочки",
+        38: "Юбка маленькой девочки",
+        39: "Головной убор младенца",
+        40: "Верхняя одежда",
+        41: "Брюки / шорты девочки",
+        42: "Свитер младенца",
+        43: "Игрушка детская",
+        44: "Сумка / рюкзак",
+        45: "Посуда",
+        46: "Бытовая техника",
+        47: "Аксесуары",
+        48: "Бытовые принадлежности",
+        49: "Другое",
+        50: "Ремни, пояса",
     };
 
     function onGiftsOpen() {
@@ -21953,9 +21910,8 @@
                 ev.target.parentElement.remove();
             };
             if (code) {
-                let gen = await getItem(code);
+                let name = itemNames[code];
                 let itemElement = document.importNode(itemTemplate.content, true);
-                let name = ageLocalization[gen.age] + " / " + genderLocalization[gen.gender] + " / " + categoryLocalization[gen.category];
                 itemElement.querySelector(".gift-item__name").textContent = name;
                 itemElement.querySelector(".gift-item__id").textContent = id;
                 itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
@@ -25341,6 +25297,83 @@
 
     // Export to commonJS
     var JsBarcode_1 = JsBarcode;
+
+    const ageLocalization = {
+        'adult': "Взрослое",
+        'kid': "Детское",
+        'baby': "Младенческое"
+    };
+    const genderLocalization = {
+        'male': "Мужское",
+        'female': "Женское",
+        'universal': "Универсальная"
+    };
+    const categoryLocalization = {
+        'F': "Ф (футболки, майки, блузы, топы)",
+        'S': "С (свитеры, олимпийки, кардиганы)",
+        'B': "Б (брюки, джинсы и шорты)",
+        'D': "Д (домашняя одежда, ночнушки, халаты и т.д.)",
+        'P': "П (платья и сарафаны)",
+        'U': "Ю (юбки)",
+        'G': "Г (головные уборы)",
+        'V': "В (верхняя одежда)",
+        'R': "Р (рубашки)",
+        'BK': "БК (боди)",
+        'BM': "Б (штанишки, шорты и ползунки)",
+        'SM': "С (свитеры, распашонки, кофточки, жакеты, джемперы)"
+    };
+    const sizeLocalization = {
+        'adult': {
+            'male': {
+                'XS': "XS (< 44)",
+                'S': "S (44)",
+                'M': "M (46-48)",
+                'L': "L (50-52)",
+                'XL': "XL (54-56)",
+                'XXL': "XXL (58-62)",
+                'XXXL': "XXXL+ (64+)"
+            },
+            'female': {
+                'XS': "XS (< 38)",
+                'S': "S (40-42)",
+                'M': "M (44-46)",
+                'L': "L (48-50)",
+                'XL': "XL (52-54)",
+                'XXL': "XXL (56)",
+                'XXXL': "XXXL+ (58+)"
+            },
+        },
+        'kid': {
+            'male': {
+                'XS': "50-62",
+                'S': "68-86",
+                'M': "92-110",
+                'L': "116-128",
+                'XL': "134-140",
+                'XXL': "146-152",
+                'XXXL': "158+"
+            },
+            'female': {
+                'XS': "50-62",
+                'S': "68-86",
+                'M': "92-110",
+                'L': "116-128",
+                'XL': "134-140",
+                'XXL': "146-152",
+                'XXXL': "158+"
+            }
+        }
+    };
+    const styleLocalization = {
+        'neutral': "1",
+        'bright': "2",
+        'expressive': "3"
+    };
+    const qualityLocalization = {
+        'low': "3",
+        'middle': "2",
+        'high': "1"
+    };
 
     function generate(templateSelector, start, count, options) {
         document.querySelector("#settings").style.display = "none";
