@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import firebase from "firebase/app";
 import "firebase/firestore";
+import Firebase from "firebase/index";
 import { GenerateOptions, Generation, Gift } from "interfaces";
 
 // Your web app's Firebase configuration
@@ -96,6 +97,7 @@ export async function saveGift(gift: Gift) {
             code: latestGift.get("code") + 1
         });
     }
+
     let doc = firebase.firestore().collection("gifts").doc(gift.id);
     await doc.set({
         fio: gift.fio,
@@ -104,4 +106,24 @@ export async function saveGift(gift: Gift) {
         items: gift.items
     });
     return gift.id;
+}
+
+export async function getGifts(from?: Date | null, to?: Date | null) {
+    let giftsRequest = firebase.firestore().collection("gifts") as firebase.firestore.Query<any>;
+    if (from) {
+       giftsRequest = giftsRequest.where("date", ">=", from);
+    }
+    if (to) {
+        giftsRequest = giftsRequest.where("date", "<=", to);
+    }
+    let gifts = await giftsRequest.get();
+    var result = [];
+    for (var gen of gifts.docs) {
+        result.push({
+            phone: gen.get("phone"),
+            items: gen.get("items"),
+            date: gen.get("date")?.toDate()
+        });
+    }
+    return result;
 }

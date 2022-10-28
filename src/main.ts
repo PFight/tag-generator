@@ -1,5 +1,6 @@
+import { generateReport } from "analyze";
 import { getAuthentication, login, logout, User } from "auth";
-import { findGeneration, getLastGeneration, saveLastGeneration } from "firebase";
+import { findGeneration, getGifts, getLastGeneration, saveLastGeneration } from "firebase";
 import { onGiftsOpen } from "gifts";
 import { AGE_PARAM, CATEGORY_PARAM, COUNT_PARAM, GENDER_PARAM, Generation, QUALITY_PARAM, SIZE_PARAM, START_PARAM, STYLE_PARAM, TEMPLATE_PARAM } from "interfaces";
 import { protectGeneration } from "protection";
@@ -172,6 +173,8 @@ async function onOpen() {
         }
     } else if (pageType == "gift") {
         onGiftsOpen();
+    } else if (pageType =="report") {
+        generateReport();
     }
 }
 

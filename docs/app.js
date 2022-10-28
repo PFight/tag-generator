@@ -21826,6 +21826,25 @@
         });
         return gift.id;
     }
+    async function getGifts(from, to) {
+        let giftsRequest = firebase.firestore().collection("gifts");
+        if (from) {
+            giftsRequest = giftsRequest.where("date", ">=", from);
+        }
+        if (to) {
+            giftsRequest = giftsRequest.where("date", "<=", to);
+        }
+        let gifts = await giftsRequest.get();
+        var result = [];
+        for (var gen of gifts.docs) {
+            result.push({
+                phone: gen.get("phone"),
+                items: gen.get("items"),
+                date: gen.get("date")?.toDate()
+            });
+        }
+        return result;
+    }
 
     const itemNames = {
         1: "Жилет/костюм женский",
@@ -21834,31 +21853,31 @@
         4: "Домашняя одежда",
         5: "Обувь женская",
         6: "Свитер / джемпер женский",
-        7: "Головной убор/шарф женский",
+        7: "Головной убор / шарф женский",
         8: "Верхняя одежда женская",
         9: "Блузка / рубашка женская",
         10: "Юбка женская",
-        11: "Головной убор/шарф мужской",
+        11: "Головной убор / шарф мужской",
         12: "Верхняя одежда мужская",
         13: "Свитер мужской",
-        14: "Брюки/джинсы/шорты мужские",
+        14: "Брюки / джинсы / шорты мужские",
         15: "Обувь мужская",
         16: "Пиджак / костюм мужской",
         17: "Рубашка мужская",
         18: "Футболка / майка мужская",
-        19: "Свитер/джемпер девочки",
+        19: "Свитер / джемпер девочки",
         20: "Платье девочки",
         21: "Домашняя одежда",
         22: "Обувь девочки",
         23: "Блузка / рубашка девочки",
-        24: "Головной убор, шарф девочки",
+        24: "Головной убор / шарф девочки",
         25: "Верхняя одежда девочки",
         26: "Юбка девочки",
         27: "Свитер /джемпер мальчика",
         28: "Майка / рубашка мальчика",
         29: "Брюки / шорты мальчика",
         30: "Обувь мальчика",
-        31: "Головной убор, шарф мальчика",
+        31: "Головной убор / шарф мальчика",
         32: "Верхняя одежда мальчика",
         33: "Боди",
         34: "Футболка / майка младенца",
@@ -21877,8 +21896,97 @@
         47: "Аксесуары",
         48: "Бытовые принадлежности",
         49: "Другое",
-        50: "Ремни, пояса",
+        50: "Ремни / пояса",
     };
+
+    async function generateReport() {
+        let generateByVisitors = document.getElementById("generateByVisitors");
+        let generateByDays = document.getElementById("generateByDays");
+        let generateByCategories = document.getElementById("generateByCategories");
+        let from = document.getElementById("from");
+        let to = document.getElementById("to");
+        generateByVisitors?.addEventListener("click", async () => {
+            let data = await getGifts(from.valueAsDate, to.valueAsDate);
+            let csv = "Дата, Количество вещей, Номер, Вещи" + "\r\n";
+            for (let gift of data) {
+                if (gift.date) {
+                    csv += new Date(gift.date).toLocaleDateString() + ", " +
+                        (gift.items?.length ?? 0) + ", " +
+                        gift.phone + ", " +
+                        (gift.items?.join(' ') ?? "") +
+                        "\r\n";
+                }
+            }
+            let fileName = getFileName("visitors", from, to);
+            download(fileName, csv);
+        });
+        generateByDays?.addEventListener("click", async () => {
+            let data = await getGifts(from.valueAsDate, to.valueAsDate);
+            let daysData = {};
+            for (let gift of data) {
+                if (gift.date) {
+                    let key = gift.date.toLocaleDateString();
+                    daysData[key] = daysData[key] || [];
+                    daysData[key].push(gift);
+                }
+            }
+            let csv = "Дата, Количество посетителей, Количество вещей" + "\r\n";
+            for (let day in daysData) {
+                csv += day + ", " +
+                    daysData[day].length + ", " +
+                    daysData[day].reduce((a, b) => a + b.items?.length, 0) +
+                    "\r\n";
+            }
+            let fileName = getFileName("days", from, to);
+            download(fileName, csv);
+        });
+        generateByCategories?.addEventListener("click", async () => {
+            let data = await getGifts(from.valueAsDate, to.valueAsDate);
+            let categoriesData = {};
+            for (let gift of data) {
+                if (gift.items) {
+                    let visitorUniqueItems = [];
+                    for (let item of gift.items) {
+                        categoriesData[item] = categoriesData[item] || { count: 0, visitors: 0 };
+                        categoriesData[item].count += 1;
+                        if (!visitorUniqueItems.includes(item)) {
+                            categoriesData[item].visitors += 1;
+                            visitorUniqueItems.push(item);
+                        }
+                    }
+                }
+            }
+            let csv = "Категория, Количество вещей выдано, Количество посетителей взяли" + "\r\n";
+            for (let category in categoriesData) {
+                csv += (itemNames[category] ?? category) + ", " +
+                    categoriesData[category].count + ", " +
+                    categoriesData[category].visitors +
+                    "\r\n";
+            }
+            let fileName = getFileName("categories", from, to);
+            download(fileName, csv);
+        });
+    }
+    function getFileName(baseName, from, to) {
+        let fileName = baseName;
+        if (from.valueAsDate) {
+            fileName += " from " + from.valueAsDate.toLocaleDateString();
+        }
+        if (to.valueAsDate) {
+            fileName += " to " + to.valueAsDate.toLocaleDateString();
+        }
+        fileName += ".csv";
+        return fileName;
+    }
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
 
     function onGiftsOpen() {
         let addItemInput = document.getElementById("addItemName");
@@ -25581,6 +25689,9 @@
         }
         else if (pageType == "gift") {
             onGiftsOpen();
+        }
+        else if (pageType == "report") {
+            generateReport();
         }
     }
     onOpen();
