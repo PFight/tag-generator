@@ -47,6 +47,7 @@
 .gift-field {
     display: table-row;
 }
+
 .gift-field__label {
     display: table-cell;
     padding: 0.3em;
@@ -71,6 +72,9 @@
 
 .gift-save {
     margin-top: 10px;
+    margin-bottom: 10px;
+    width: 200px;
+    height: 25px;
 }
 #print {
     width: 100vw;

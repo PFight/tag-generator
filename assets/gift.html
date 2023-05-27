@@ -1,7 +1,7 @@
 <html>
 	<meta charset="UTF-8">
 	<head>
-		<link rel="stylesheet" href="app.css?v=7">
+		<link rel="stylesheet" href="app.css?v=9">
 	</head>
     <body>
         <div id="pageType" data-value="gift"></div>
@@ -13,102 +13,61 @@
                 </div>
             </label>
             <label class="gift-field">
-                <div class="gift-field__label">Последние 4 цифры номера телефона: </div>
+                <div class="gift-field__label">Последние 4 цифры номера телефона или паспорта: </div>
                 <div class="gift-field__input-container">
                     <input id="phoneInput" class="gift-field__input" />
                 </div>
             </label>
+            <label class="gift-field">
+                <div class="gift-field__label">Дата: </div>
+                <div class="gift-field__input-container">
+                    <input id="dateInput" type="datetime-local" class="gift-field__input" />
+                </div>
+            </label>
+            <div class="gift-field gift-add-item">
+                <div class="gift-field__label">Имя: </div>
+                <div class="gift-field__input-container">
+                    <input id="addItemPerson" class="gift-add-item__input" />
+                    <button id="nextPersonButton" class="gift-add-item__button" >Следующий</button>
+                </div>
+            </div>
             <div class="gift-field gift-add-item">
                 <div class="gift-field__label">Вещь (название или код): </div>
                 <div class="gift-field__input-container">
                     <input id="addItemName" class="gift-add-item__input" />
                     <button id="addItemButton" class="gift-add-item__button" >Добавить</button>
                 </div>
-            </div>
-            <label class="gift-field">
-                <div class="gift-field__label">Дата: </div>
-                <div class="gift-field__input-container">
-                    <input id="dateInput" type="date" class="gift-field__input" />
-                </div>
-            </label>
+            </div>            
             <div class="gift-field">
                 <div class="gift-field-label"></div>
                 <div class="gift-field__input-container">
                     <button id="save" class="gift-save">Сохранить</button>
-                    <button id="saveAndPrint" class="gift-save settings__option_hidden">Сохранить и распечатать</button>
+                </div>
+            </div>
+            <div class="gift-field gift-number">
+                <div class="gift-field__label">Номер посещения: </div>
+                <div class="gift-field__input-container">
+                    <input id="giftNumber" class="gift-add-item__input"></span>
+                    <button id="loadGift" class="gift-add-item__button" >Загрузить</button>
                 </div>
             </div>
         </div>
-        <div class="gift-header">
-            <p>Добро пожаловать в Свято-Троицкий центр нужных вещей <br/>
-            «В добрые руки»!</p>
-            <p></p>
-            <p>Лист посетителя №<span id="giftNumber"></span></p>
-        </div>
         <table class="gift-table">
-            <tr class="gift-field-row">
-                <td class="gift-field-row__label gift-label">ФИО:</td>
-                <td class="gift-field-row__value" colspan="3"><span id="fioView"></span></td>
-            </tr>
-            <tr class="gift-field-row">
-                <td class="gift-field-row__label gift-label">Номер телефона:</td>
-                <td class="gift-field-row__value"><span id="phoneView"></span></td>
-                <td class="gift-field-row__label gift-label">Дата:</td>
-                <td class="gift-field-row__value"><span id="dateView"></span></td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    <span class="gift-label">Даю согласие на обработку персональных данных:</span>     _________________   (подпись)
-                </td>
-            </tr>
             <tr class="gift-items-row">
                 <td colspan="4">
-                    <span class="gift-label">Список того, что подошло:</span>
-                    <ol id="giftItems" class="gift-items">
+                    <ul id="giftItems" class="gift-items">
                         <template id="giftItemTemplate">
                             <li class="gift-item" >
                                 <span class="gift-item__id"></span>
+                                <span class="gift-item__person"></span>
                                 <span class="gift-item__name"></span>                
                                 <button class="gift-item__delete">x</button>
                             </li>
                         </template>
-                    </ol>
+                    </ul>
                 </td>
             </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    <span class="gift-label">Список того, что не удалось найти (укажите пол,  размер  и другие пожелания):</span>
-                </td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    1.
-                </td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    2.
-                </td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    3.
-                </td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    4.
-                </td>
-            </tr>
-            <tr class="gift-field-row">
-                <td colspan="4">
-                    <span class="gift-label">Ваши пожелания центру:</span>
-                </td>
-            </tr>
-            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
-            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
-            <tr class="gift-field-row"><td colspan="4">&nbsp;</td></tr>
         </table>
-        <script src="app.js?v=7"></script>
+        <script src="app.js?v=9"></script>
 	</body>
 </html>

@@ -2,7 +2,7 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 import Firebase from "firebase/index";
-import { GenerateOptions, Generation, Gift } from "interfaces";
+import { GenerateOptions, Generation, Gift, GiftItem } from "interfaces";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -126,4 +126,37 @@ export async function getGifts(from?: Date | null, to?: Date | null) {
         });
     }
     return result;
+}
+
+export async function getGift(id: string): Promise<Gift> {
+    let gift = await firebase.firestore().collection("gifts").doc(id).get();
+
+    return {
+        id: gift.id,
+        fio: "",
+        phone: gift.get("phone"),
+        items: getGiftItems(gift),
+        date: gift.get("date")?.toDate() as Date
+    };
+}
+
+export async function getVisitorGifts(code: string): Promise<Gift[]> {
+    let giftsRequest = firebase.firestore().collection("gifts")
+        .where("phone", "==", code) as firebase.firestore.Query<any>;
+    let gifts = await giftsRequest.get();
+    var result = [];
+    for (var gift of gifts.docs) {
+        result.push({
+            id: gift.id,
+            fio: '',
+            phone: gift.get("phone") as string,
+            items: getGiftItems(gift),
+            date: gift.get("date")?.toDate() as Date
+        });
+    }
+    return result;
+}
+
+function getGiftItems(gen: firebase.firestore.QueryDocumentSnapshot<any>) {
+    return (gen.get("items") as string[]).map(x => JSON.parse(x)) as (GiftItem | number | string)[];
 }

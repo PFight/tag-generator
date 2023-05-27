@@ -21845,6 +21845,35 @@
         }
         return result;
     }
+    async function getGift(id) {
+        let gift = await firebase.firestore().collection("gifts").doc(id).get();
+        return {
+            id: gift.id,
+            fio: "",
+            phone: gift.get("phone"),
+            items: getGiftItems(gift),
+            date: gift.get("date")?.toDate()
+        };
+    }
+    async function getVisitorGifts(code) {
+        let giftsRequest = firebase.firestore().collection("gifts")
+            .where("phone", "==", code);
+        let gifts = await giftsRequest.get();
+        var result = [];
+        for (var gift of gifts.docs) {
+            result.push({
+                id: gift.id,
+                fio: '',
+                phone: gift.get("phone"),
+                items: getGiftItems(gift),
+                date: gift.get("date")?.toDate()
+            });
+        }
+        return result;
+    }
+    function getGiftItems(gen) {
+        return gen.get("items").map(x => JSON.parse(x));
+    }
 
     const itemNames = {
         1: "Жилет/костюм женский",
@@ -21991,29 +22020,22 @@
     function onGiftsOpen() {
         let addItemInput = document.getElementById("addItemName");
         let addItemButton = document.getElementById("addItemButton");
+        let addItemPersonInput = document.getElementById("addItemPerson");
+        let nextPersonButton = document.getElementById("nextPersonButton");
         let items = document.getElementById("giftItems");
         let itemTemplate = document.getElementById("giftItemTemplate");
         let fioInput = document.getElementById("fioInput");
         let phoneInput = document.getElementById("phoneInput");
-        let fioView = document.getElementById("fioView");
-        let phoneView = document.getElementById("phoneView");
         let dateInput = document.getElementById("dateInput");
-        dateInput.valueAsDate = new Date();
-        let dateView = document.getElementById("dateView");
-        dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
+        dateInput.value = getDateTimeInputValue(new Date());
         let saveButton = document.getElementById("save");
-        let saveAndPrintButton = document.getElementById("saveAndPrint");
         let giftNumber = document.getElementById("giftNumber");
-        fioInput.addEventListener("change", (ev) => {
-            fioView.textContent = fioInput.value;
+        let loadGiftButton = document.getElementById("loadGift");
+        nextPersonButton.addEventListener("click", () => {
+            addItemPersonInput.value = "";
+            addItemPersonInput.focus();
         });
-        phoneInput.addEventListener("change", (ev) => {
-            phoneView.textContent = phoneInput.value;
-        });
-        dateInput.addEventListener("change", (ev) => {
-            dateView.textContent = dateInput.valueAsDate.toLocaleDateString("ru-RU");
-        });
-        let addItem = async (id) => {
+        let addItem = async (id, person) => {
             let code = null;
             try {
                 code = parseInt(id);
@@ -22027,19 +22049,21 @@
                 let name = itemNames[code];
                 let itemElement = document.importNode(itemTemplate.content, true);
                 itemElement.querySelector(".gift-item__name").textContent = name;
+                itemElement.querySelector(".gift-item__person").textContent = person;
                 itemElement.querySelector(".gift-item__id").textContent = id;
                 itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                items.appendChild(itemElement);
+                items.prepend(itemElement);
             }
             else {
                 let itemElement = document.importNode(itemTemplate.content, true);
                 itemElement.querySelector(".gift-item__id").textContent = id;
+                itemElement.querySelector(".gift-item__person").textContent = person;
                 itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                items.appendChild(itemElement);
+                items.prepend(itemElement);
             }
         };
         let onAddItem = () => {
-            addItem(addItemInput.value);
+            addItem(addItemInput.value, addItemPersonInput.value);
             addItemInput.value = "";
             addItemInput.focus();
         };
@@ -22054,23 +22078,47 @@
             let itemsElements = document.querySelectorAll(".gift-item");
             let items = [].map.call(itemsElements, (element) => {
                 let id = element.querySelector(".gift-item__id").textContent;
+                let person = element.querySelector(".gift-item__person").textContent;
                 let name = element.querySelector(".gift-item__name").textContent;
-                return id || name;
+                return JSON.stringify({ id: id || name, person });
             });
             let id = await saveGift({
-                id: giftNumber.textContent,
+                id: giftNumber.value,
                 fio: fioInput.value,
                 phone: phoneInput.value,
-                date: dateInput.valueAsDate,
+                date: new Date(dateInput.value),
                 items
             });
-            giftNumber.textContent = id;
+            giftNumber.value = id;
         };
         saveButton.addEventListener("click", save);
-        saveAndPrintButton.addEventListener("click", async () => {
-            await save();
-            window.print();
-        });
+        let load = async () => {
+            items.innerHTML = "";
+            let gift = await getGift(giftNumber.value);
+            fioInput.value = gift.fio;
+            phoneInput.value = gift.phone;
+            dateInput.value = getDateTimeInputValue(gift.date);
+            for (let item of gift.items) {
+                if (typeof (item) == "object") {
+                    addItem(item.id, item.person);
+                }
+                else {
+                    addItem(item.toString(), "");
+                }
+            }
+        };
+        loadGiftButton.addEventListener("click", load);
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlGiftNumber = urlParams.get('gift');
+        if (urlGiftNumber) {
+            giftNumber.value = urlGiftNumber;
+            load();
+        }
+    }
+    function getDateTimeInputValue(date) {
+        if (!date)
+            return "";
+        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 16);
     }
 
     const START_PARAM = "start";
@@ -22082,6 +22130,78 @@
     const SIZE_PARAM = "size";
     const STYLE_PARAM = "style";
     const QUALITY_PARAM = "quality";
+
+    function onVisitorOpen() {
+        let codeInput = document.getElementById("code");
+        let viewHistoryButton = document.getElementById("viewHistory");
+        viewHistoryButton.addEventListener("click", async () => {
+            let code = codeInput.value;
+            let visits = await getVisitorGifts(code);
+            visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());
+            let historyElement = document.getElementById("visitHistory");
+            historyElement.innerHTML = '';
+            for (let visit of visits) {
+                let visitElement = createVisitView(visit);
+                historyElement.append(visitElement);
+            }
+            let currentMonthElement = document.getElementById("currentMonth");
+            let currentMonth = {
+                date: "В этом месяце",
+                fio: "",
+                id: "",
+                phone: visits[0]?.phone,
+                items: visits.filter(x => x.date.getMonth() == new Date().getMonth())
+                    .reduce((arr, val) => arr.concat(val.items), [])
+            };
+            let visitElement = createVisitView(currentMonth);
+            currentMonthElement.innerHTML = '';
+            currentMonthElement.append(visitElement);
+        });
+    }
+    function createVisitView(visit) {
+        let visitTemplate = document.getElementById("visitTemplate");
+        let visitElement = document.importNode(visitTemplate.content, true);
+        if (visit.id) {
+            visitElement.querySelector(".visit__id").textContent = visit.id ? ("Номер посещения: " + visit.id) : "";
+            visitElement.querySelector(".visit__id").href = "gift.html?gift=" + visit.id;
+        }
+        visitElement.querySelector(".visit__date").textContent = typeof (visit.date) == "string" ? visit.date : (visit.date.toLocaleDateString() + " " + visit.date.toLocaleTimeString());
+        let visitItemsElement = visitElement.querySelector(".visit__items");
+        let personsItems = {};
+        for (let item of visit.items) {
+            if (typeof (item) != "object" || !item.person) {
+                let record = personsItems['incognito'] = personsItems['incognito'] || [];
+                record.push(item);
+            }
+            else {
+                let record = personsItems[item.person] = personsItems[item.person] || [];
+                record.push(item);
+            }
+        }
+        let visitPersonTemplate = visitItemsElement.querySelector("#visitPersonTemplate");
+        for (let person in personsItems) {
+            let visitPersonElement = document.importNode(visitPersonTemplate.content, true);
+            visitPersonElement.querySelector(".visit__person-name").textContent =
+                person == "incognito" ? "Получатель не указан" : person;
+            let visitPersonThingsElement = visitPersonElement.querySelector(".visit__person-things");
+            let visitPersonThingTemplate = visitPersonThingsElement.querySelector("#visitPersonThingTemplate");
+            let categories = {};
+            for (let item of personsItems[person]) {
+                let category = typeof (item) == "object" ? item.id : item;
+                categories[category] = (categories[category] ?? 0) + 1;
+            }
+            for (let category in categories) {
+                let categoryName = itemNames[category];
+                let count = categories[category];
+                let visitPersonThingElement = document.importNode(visitPersonThingTemplate.content, true);
+                visitPersonThingElement.querySelector(".visit__person-category").textContent = categoryName;
+                visitPersonThingElement.querySelector(".visit__person-category-count").textContent = count.toString();
+                visitPersonThingsElement.append(visitPersonThingElement);
+            }
+            visitItemsElement.append(visitPersonElement);
+        }
+        return visitElement;
+    }
 
     var C__Dev_tagGenerator_node_modules_jsbarcode_bin_barcodes = {};
 
@@ -25692,6 +25812,9 @@
         }
         else if (pageType == "report") {
             generateReport();
+        }
+        else if (pageType == "visitor") {
+            onVisitorOpen();
         }
     }
     onOpen();

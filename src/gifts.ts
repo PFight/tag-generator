@@ -1,4 +1,5 @@
-import { fillItemsFromGenerations, getItem, saveGift } from "firebase";
+import { fillItemsFromGenerations, getGift, getItem, saveGift } from "firebase";
+import { GiftItem } from "interfaces";
 import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./gifts.css";
@@ -6,31 +7,24 @@ import "./gifts.css";
 export function onGiftsOpen() {
     let addItemInput = document.getElementById("addItemName")! as HTMLInputElement;
     let addItemButton = document.getElementById("addItemButton")!;
+    let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement;
+    let nextPersonButton = document.getElementById("nextPersonButton")!;
     let items = document.getElementById("giftItems")!;
     let itemTemplate = document.getElementById("giftItemTemplate")! as HTMLTemplateElement;
     let fioInput = document.getElementById("fioInput")! as HTMLInputElement;
     let phoneInput = document.getElementById("phoneInput")! as HTMLInputElement;
-    let fioView = document.getElementById("fioView")!;
-    let phoneView = document.getElementById("phoneView")!;
     let dateInput = document.getElementById("dateInput")! as HTMLInputElement;
-    dateInput.valueAsDate = new Date();
-    let dateView = document.getElementById("dateView")!;
-    dateView.textContent = (new Date()).toLocaleDateString("ru-RU");
+    dateInput.value = getDateTimeInputValue(new Date());
     let saveButton = document.getElementById("save")!;
-    let saveAndPrintButton = document.getElementById("saveAndPrint")!;
-    let giftNumber = document.getElementById("giftNumber")!;
+    let giftNumber = document.getElementById("giftNumber")! as HTMLInputElement;
+    let loadGiftButton = document.getElementById("loadGift")! as HTMLButtonElement;
 
-    fioInput.addEventListener("change", (ev) => {
-        fioView.textContent = fioInput.value;
+    nextPersonButton.addEventListener("click", () => {
+        addItemPersonInput.value = "";
+        addItemPersonInput.focus();
     });
-    phoneInput.addEventListener("change", (ev) => {
-        phoneView.textContent = phoneInput.value;
-    });   
-    dateInput.addEventListener("change", (ev) => {
-        dateView.textContent = dateInput.valueAsDate!.toLocaleDateString("ru-RU");
-    });  
 
-    let addItem = async (id: string) => {
+    let addItem = async (id: string, person: string) => {
         let code: number | null = null;
         try {
             code = parseInt(id)
@@ -43,18 +37,20 @@ export function onGiftsOpen() {
             let name = itemNames[code];
             let itemElement = document.importNode(itemTemplate.content, true);
             itemElement.querySelector(".gift-item__name")!.textContent = name;
+            itemElement.querySelector(".gift-item__person")!.textContent = person;
             itemElement.querySelector(".gift-item__id")!.textContent = id;
             itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem)
-            items!.appendChild(itemElement);
+            items!.prepend(itemElement);
         } else {
             let itemElement = document.importNode(itemTemplate.content, true);
             itemElement.querySelector(".gift-item__id")!.textContent = id;
+            itemElement.querySelector(".gift-item__person")!.textContent = person;
             itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem)
-            items!.appendChild(itemElement);
+            items!.prepend(itemElement);
         }
     }
     let onAddItem = () => {
-        addItem(addItemInput.value);
+        addItem(addItemInput.value, addItemPersonInput.value);
         addItemInput.value = "";
         addItemInput.focus();
     }
@@ -70,22 +66,48 @@ export function onGiftsOpen() {
         let itemsElements = document.querySelectorAll(".gift-item");
         let items = [].map.call(itemsElements, (element: HTMLElement) => {
             let id = element.querySelector(".gift-item__id")!.textContent;
+            let person = element.querySelector(".gift-item__person")!.textContent;
             let name = element.querySelector(".gift-item__name")!.textContent;
-            return id || name;
+            return JSON.stringify({ id: id || name, person } as GiftItem);
         });       
 
         let id = await saveGift({
-            id: giftNumber.textContent,
+            id: giftNumber.value,
             fio: fioInput.value,
             phone: phoneInput.value,
-            date: dateInput.valueAsDate,
+            date: new Date(dateInput.value),
             items
         } as any);
-        giftNumber.textContent = id;
+        giftNumber.value = id;
     }
     saveButton.addEventListener("click", save);
-    saveAndPrintButton.addEventListener("click", async () => {
-        await save();
-        window.print();
-    });
+
+    let load = async () => {
+        items.innerHTML = "";
+        let gift = await getGift(giftNumber.value);         
+        fioInput.value = gift.fio;
+        phoneInput.value = gift.phone;
+        dateInput.value = getDateTimeInputValue(gift.date);
+        for (let item of gift.items) {
+            if (typeof(item) == "object") {
+                addItem(item.id, item.person);
+            } else {
+                addItem(item.toString(), "");
+            }
+        }
+    };
+    loadGiftButton.addEventListener("click", load);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlGiftNumber = urlParams.get('gift');
+    if (urlGiftNumber) {
+        giftNumber.value = urlGiftNumber;
+        load();
+    }
+}
+
+function getDateTimeInputValue(date: Date) {
+    if (!date) 
+        return "";
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0,16);
 }

@@ -20,7 +20,12 @@ export interface Gift {
     fio: string;
     phone: string;
     date: Date;
-    items: string[];
+    items: (number | string | GiftItem)[];
+}
+
+export interface GiftItem {
+    person: string;
+    id: string;
 }
 
 export const START_PARAM = "start";

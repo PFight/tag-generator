@@ -1,0 +1,43 @@
+<html>
+	<meta charset="UTF-8">
+	<head>
+		<link rel="stylesheet" href="app.css?v=9">
+	</head>
+    <body>
+        <div id="pageType" data-value="visitor"></div>
+		<div id="controls">
+			<label>
+				Номер (последние 4 цифры): <input id="code" />
+			</label>
+			<button id="viewHistory">Просмотр истории</button>
+		</div>
+        <div id="result" >
+			<div id="currentMonth">
+			</div>
+			<div id="visitHistory">
+			</div>
+			<template id="visitTemplate">
+				<div class="visit" >
+					<h3>
+						<span class="visit__date"></span>
+					</h3>
+					<h5><a class="visit__id"></a></h5>
+					<div class="visit__items">
+						<template id="visitPersonTemplate">
+							<span class="visit__person-name"></span>
+							<ul class="visit__person-things">
+								<template id="visitPersonThingTemplate">
+									<li>
+										<span class="visit__person-category-count"></span>
+										<span class="visit__person-category"></span>
+									</li>
+								</template>
+							</ul>
+						</template>
+					</div>
+				</div>
+			</template>
+		</div>
+        <script src="app.js?v=9"></script>
+	</body>
+</html>
