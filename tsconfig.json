@@ -19,7 +19,6 @@
     "importHelpers": true,
     "types": [],
     "noErrorTruncation": true,
-    "keyofStringsOnly": true,
     "allowSyntheticDefaultImports": true,
     "rootDir": "./src",
     "baseUrl": "./src",

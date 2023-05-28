@@ -1,7 +1,7 @@
 <html>
 	<meta charset="UTF-8">
 	<head>
-		<link rel="stylesheet" href="app.css?v=9">
+		<link rel="stylesheet" href="app.css?v=12">
 	</head>
     <body>
         <div id="pageType" data-value="gift"></div>
@@ -27,8 +27,18 @@
             <div class="gift-field gift-add-item">
                 <div class="gift-field__label">Имя: </div>
                 <div class="gift-field__input-container">
-                    <input id="addItemPerson" class="gift-add-item__input" />
-                    <button id="nextPersonButton" class="gift-add-item__button" >Следующий</button>
+                    <input id="addItemPerson" readonly class="gift-add-item__input" />
+                    <button id="clearPersonButton" class="gift-add-item__button" >Очистить</button>
+                    <dialog id="nameSelectDialog">
+                        <input class="name-select__input" id="nameSearch" tabindex="0" />
+                        <button id="closeButton" class="gift-add-item__button" >Закрыть</button>
+                        <div class="name-select__list" id="nameList">
+                            
+                        </div>
+                        <template id="nameListItem">
+                            <a class="name-select__list-item" tabindex="0"></a>
+                        </template>
+                    </dialog>
                 </div>
             </div>
             <div class="gift-field gift-add-item">
@@ -68,6 +78,6 @@
                 </td>
             </tr>
         </table>
-        <script src="app.js?v=9"></script>
+        <script src="app.js?v=12"></script>
 	</body>
 </html>

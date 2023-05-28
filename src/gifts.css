@@ -76,3 +76,24 @@
     width: 200px;
     height: 25px;
 }
+
+.name-select__list-item {
+    display: inline-block;
+    padding: 3px;
+    padding-right: 7px;
+}
+.name-select__list-item:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+.name-select__list-item:focus {
+    border: 1px solid blue;
+}
+#nameSelectDialog {
+    width: 80vw;
+    height: 100vh;
+}
+.name-select__input {
+    width: 50vw;
+    margin-bottom: 10px;
+}

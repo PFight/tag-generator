@@ -3,12 +3,13 @@ import { GiftItem } from "interfaces";
 import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./gifts.css";
+import { initPersonSelect } from "person-select";
 
 export function onGiftsOpen() {
     let addItemInput = document.getElementById("addItemName")! as HTMLInputElement;
     let addItemButton = document.getElementById("addItemButton")!;
     let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement;
-    let nextPersonButton = document.getElementById("nextPersonButton")!;
+    
     let items = document.getElementById("giftItems")!;
     let itemTemplate = document.getElementById("giftItemTemplate")! as HTMLTemplateElement;
     let fioInput = document.getElementById("fioInput")! as HTMLInputElement;
@@ -18,11 +19,6 @@ export function onGiftsOpen() {
     let saveButton = document.getElementById("save")!;
     let giftNumber = document.getElementById("giftNumber")! as HTMLInputElement;
     let loadGiftButton = document.getElementById("loadGift")! as HTMLButtonElement;
-
-    nextPersonButton.addEventListener("click", () => {
-        addItemPersonInput.value = "";
-        addItemPersonInput.focus();
-    });
 
     let addItem = async (id: string, person: string) => {
         let code: number | null = null;
@@ -104,6 +100,8 @@ export function onGiftsOpen() {
         giftNumber.value = urlGiftNumber;
         load();
     }
+
+    initPersonSelect();
 }
 
 function getDateTimeInputValue(date: Date) {
@@ -111,3 +109,4 @@ function getDateTimeInputValue(date: Date) {
         return "";
     return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0,16);
 }
+
