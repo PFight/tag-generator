@@ -1,15 +1,17 @@
 <html>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<head>
-		<link rel="stylesheet" href="app.css?v=9">
+		<link rel="stylesheet" href="app.css?v=10">
 	</head>
     <body>
         <div id="pageType" data-value="visitor"></div>
-		<div id="controls">
+		<div id="controls" class="visitor-controls">
 			<label>
-				Номер (последние 4 цифры): <input id="code" />
+				<div class="large-input-label">Номер (последние 4 цифры):</div> 
+				<input class="large-input" id="code" />
 			</label>
-			<button id="viewHistory">Просмотр истории</button>
+			<button class="large-button" id="viewHistory">Просмотр истории</button>
 		</div>
         <div id="result" >
 			<div id="currentMonth">
@@ -38,6 +40,6 @@
 				</div>
 			</template>
 		</div>
-        <script src="app.js?v=9"></script>
+        <script src="app.js?v=10"></script>
 	</body>
 </html>

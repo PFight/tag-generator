@@ -1,0 +1,17 @@
+.visitor-controls {
+    padding: 5px;
+    text-align: center;
+}
+
+.large-input-label {
+    padding: 5px;
+}
+
+.large-input, .large-button {
+    width: 350px;
+    max-width: calc(100vw - 10px);
+    height: 60px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 26px;
+}

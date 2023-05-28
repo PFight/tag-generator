@@ -2,6 +2,7 @@ import { fillItemsFromGenerations, getItem, getVisitorGifts, saveGift } from "fi
 import { Gift, GiftItem } from "interfaces";
 import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
+import "./visitor.css";
 
 export function onVisitorOpen() {
     let codeInput = document.getElementById("code")! as HTMLInputElement;
