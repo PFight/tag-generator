@@ -103,7 +103,8 @@ export async function saveGift(gift: Gift) {
         fio: gift.fio,
         phone: gift.phone,
         date: gift.date,
-        items: gift.items
+        items: gift.items,
+        special: gift.special
     });
     return gift.id;
 }
@@ -122,7 +123,8 @@ export async function getGifts(from?: Date | null, to?: Date | null) {
         result.push({
             phone: gen.get("phone"),
             items: gen.get("items"),
-            date: gen.get("date")?.toDate()
+            date: gen.get("date")?.toDate(),
+            special: gen.get("special")
         });
     }
     return result;
@@ -136,7 +138,8 @@ export async function getGift(id: string): Promise<Gift> {
         fio: "",
         phone: gift.get("phone"),
         items: getGiftItems(gift),
-        date: gift.get("date")?.toDate() as Date
+        date: gift.get("date")?.toDate() as Date,
+        special: gift.get("special")
     };
 }
 
@@ -151,7 +154,8 @@ export async function getVisitorGifts(code: string): Promise<Gift[]> {
             fio: '',
             phone: gift.get("phone") as string,
             items: getGiftItems(gift),
-            date: gift.get("date")?.toDate() as Date
+            date: gift.get("date")?.toDate() as Date,
+            special: gift.get("special")
         });
     }
     return result;

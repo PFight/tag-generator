@@ -21822,7 +21822,8 @@
             fio: gift.fio,
             phone: gift.phone,
             date: gift.date,
-            items: gift.items
+            items: gift.items,
+            special: gift.special
         });
         return gift.id;
     }
@@ -21840,7 +21841,8 @@
             result.push({
                 phone: gen.get("phone"),
                 items: gen.get("items"),
-                date: gen.get("date")?.toDate()
+                date: gen.get("date")?.toDate(),
+                special: gen.get("special")
             });
         }
         return result;
@@ -21852,7 +21854,8 @@
             fio: "",
             phone: gift.get("phone"),
             items: getGiftItems(gift),
-            date: gift.get("date")?.toDate()
+            date: gift.get("date")?.toDate(),
+            special: gift.get("special")
         };
     }
     async function getVisitorGifts(code) {
@@ -21866,7 +21869,8 @@
                 fio: '',
                 phone: gift.get("phone"),
                 items: getGiftItems(gift),
-                date: gift.get("date")?.toDate()
+                date: gift.get("date")?.toDate(),
+                special: gift.get("special")
             });
         }
         return result;
@@ -22100,6 +22104,7 @@
         let phoneInput = document.getElementById("phoneInput");
         let dateInput = document.getElementById("dateInput");
         dateInput.value = getDateTimeInputValue(new Date());
+        let specialInput = document.getElementById("specialInput");
         let saveButton = document.getElementById("save");
         let giftNumber = document.getElementById("giftNumber");
         let loadGiftButton = document.getElementById("loadGift");
@@ -22155,6 +22160,7 @@
                 fio: fioInput.value,
                 phone: phoneInput.value,
                 date: new Date(dateInput.value),
+                special: specialInput.checked,
                 items
             });
             giftNumber.value = id;
@@ -22166,6 +22172,7 @@
             fioInput.value = gift.fio;
             phoneInput.value = gift.phone;
             dateInput.value = getDateTimeInputValue(gift.date);
+            specialInput.checked = gift.special;
             for (let item of gift.items) {
                 if (typeof (item) == "object") {
                     addItem(item.id, item.person);
@@ -22225,6 +22232,11 @@
             let visitElement = createVisitView(currentMonth);
             currentMonthElement.innerHTML = '';
             currentMonthElement.append(visitElement);
+            if (currentMonth.items.length == 0) {
+                var noItemsTemplate = document.getElementById("noVisitTemplate");
+                var noItemsElement = document.importNode(noItemsTemplate.content, true);
+                currentMonthElement.append(noItemsElement);
+            }
         });
     }
     function createVisitView(visit) {

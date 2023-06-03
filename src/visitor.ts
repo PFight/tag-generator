@@ -32,6 +32,11 @@ export function onVisitorOpen() {
         let visitElement = createVisitView(currentMonth);
         currentMonthElement.innerHTML = '';
         currentMonthElement.append(visitElement);
+        if (currentMonth.items.length == 0) {
+            var noItemsTemplate = document.getElementById("noVisitTemplate") as HTMLTemplateElement;
+            var noItemsElement = document.importNode(noItemsTemplate.content, true);
+            currentMonthElement.append(noItemsElement);
+        }
     });    
 }
 
