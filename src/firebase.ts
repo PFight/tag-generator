@@ -109,7 +109,7 @@ export async function saveGift(gift: Gift) {
     return gift.id;
 }
 
-export async function getGifts(from?: Date | null, to?: Date | null) {
+export async function getGifts(from?: Date | null, to?: Date | null): Promise<Gift[]> {
     let giftsRequest = firebase.firestore().collection("gifts") as firebase.firestore.Query<any>;
     if (from) {
        giftsRequest = giftsRequest.where("date", ">=", from);
@@ -118,9 +118,11 @@ export async function getGifts(from?: Date | null, to?: Date | null) {
         giftsRequest = giftsRequest.where("date", "<=", to);
     }
     let gifts = await giftsRequest.get();
-    var result = [];
+    var result = [] as Gift[];
     for (var gen of gifts.docs) {
         result.push({
+            id: gen.id,
+            fio: "",
             phone: gen.get("phone"),
             items: gen.get("items"),
             date: gen.get("date")?.toDate(),

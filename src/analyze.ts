@@ -1,22 +1,26 @@
 import { getGifts } from "firebase";
+import { Gift, GiftItem } from "interfaces";
 import { itemNames } from "items";
 
 export async function generateReport() {
     let generateByVisitors = document.getElementById("generateByVisitors");
     let generateByDays = document.getElementById("generateByDays");
+    let generateByDaysNoSpecial = document.getElementById("generateByDaysNoSpecial")
     let generateByCategories = document.getElementById("generateByCategories");
+    let generateByDublicates = document.getElementById("generateByDublicates");
     let from = document.getElementById("from") as HTMLInputElement;
     let to = document.getElementById("to") as HTMLInputElement;
 
     generateByVisitors?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер, Вещи" + "\r\n";
+        let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
         for (let gift of data) {
             if (gift.date) {
                 csv += new Date(gift.date).toLocaleDateString() + ", " +
                     (gift.items?.length ?? 0) + ", " +
                     gift.phone + ", " + 
-                    (gift.items?.join(' ') ?? "") +
+                    gift.special + ", " + 
+                    (gift.items.map(i => JSON.stringify(i))?.join(' ') ?? "") +
                     "\r\n";
             }
         }
@@ -24,10 +28,13 @@ export async function generateReport() {
         download(fileName, csv);
     });    
 
-    generateByDays?.addEventListener("click", async () => {
+    const reportByDays = async (noSpecial: boolean) => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
         let daysData: { [key: string]: any[] } = {};
         for (let gift of data) {
+            if (gift.special && noSpecial) {
+                continue;
+            }
             if (gift.date) {
                 let key = gift.date.toLocaleDateString();
                 daysData[key] = daysData[key] || [];
@@ -41,9 +48,12 @@ export async function generateReport() {
                 daysData[day].reduce((a, b) => a + b.items?.length, 0) +
                 "\r\n";
         }
-        let fileName = getFileName("days", from, to);
+        let fileName = getFileName("days" + (noSpecial ? " no special" : ""), from, to);
         download(fileName, csv);
-    });
+    }
+    generateByDays?.addEventListener("click", () => reportByDays(false));
+    generateByDaysNoSpecial?.addEventListener("click", () => reportByDays(true));
+    
     
     generateByCategories?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
@@ -52,11 +62,15 @@ export async function generateReport() {
             if (gift.items) {
                 let visitorUniqueItems: string[] = [];
                 for (let item of gift.items) {
-                    categoriesData[item] = categoriesData[item] || { count: 0, visitors: 0 };
-                    categoriesData[item].count += 1;
-                    if (!visitorUniqueItems.includes(item)) {
-                        categoriesData[item].visitors += 1;
-                        visitorUniqueItems.push(item);
+                    let category = item as string;
+                    if (typeof(item) === "object") {
+                        category = (item as GiftItem).id;
+                    }
+                    categoriesData[category] = categoriesData[category] || { count: 0, visitors: 0 };
+                    categoriesData[category].count += 1;
+                    if (!visitorUniqueItems.includes(category)) {
+                        categoriesData[category].visitors += 1;
+                        visitorUniqueItems.push(category);
                     }
                 }
             }
@@ -71,6 +85,36 @@ export async function generateReport() {
         let fileName = getFileName("categories", from, to);
         download(fileName, csv);
     });
+
+    generateByDublicates?.addEventListener("click", async () => {
+        let data = await getGifts(from.valueAsDate, to.valueAsDate);
+        let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
+        let dublicates = [] as Gift[];
+        for (let gift1 of data) {
+            for (let gift2 of data) {
+                if (gift1 !== gift2 &&
+                    gift1.date && gift2.date &&
+                    gift1.date.getTime() == gift2.date.getTime() &&
+                    gift1.phone == gift2.phone &&
+                    JSON.stringify(gift1.items) == JSON.stringify(gift2.items)) {
+                    dublicates.push(gift1);
+                }
+            }
+        }
+        for (let gift of dublicates) {
+            if (gift.date) {
+                csv += new Date(gift.date).toLocaleDateString() + ", " +
+                    (gift.items?.length ?? 0) + ", " +
+                    gift.phone + ", " + 
+                    gift.special + ", " + 
+                    JSON.stringify(gift.items)?.replace(',', ';') +
+                    "\r\n";
+            }
+        }
+        let fileName = getFileName("dublicates", from, to);
+        download(fileName, csv);
+    });    
+    
     
 }
 
