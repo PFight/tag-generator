@@ -1,12 +1,16 @@
+import { addNames, getNames } from "firebase";
 
 export function initPersonSelect() {
     let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement;
     let closeButton = document.getElementById("closeButton")!;
+    let addNameButton = document.getElementById("addNameButton")!;
     let clearPersonButton = document.getElementById("clearPersonButton")!;
     let nameSelectDialog = document.getElementById("nameSelectDialog")! as HTMLDialogElement;
     let nameSearchInput = document.getElementById("nameSearch")! as HTMLInputElement;
     
-    let showDialog = () => {
+    let showDialog = async () => {
+        allNames = await getNames();
+
         nameSelectDialog.showModal();
         nameSearchInput.value = '';
         renderNameList('', onNameClick);
@@ -23,6 +27,13 @@ export function initPersonSelect() {
     closeButton.addEventListener("click", () => nameSelectDialog.close(''));
     nameSelectDialog.addEventListener('close', (event) => {
         addItemPersonInput.value = nameSelectDialog.returnValue;
+    });
+    addNameButton.addEventListener('click', async () => {
+        let names = nameSearchInput.value.split(',').map(x => x.trim()).filter(x => x);
+        names = names.filter(name => !allNames.includes(name));
+        await addNames(names);
+        allNames = allNames.concat(names);
+        renderNameList(nameSearchInput.value, onNameClick);
     });
 
     let onNameClick = (name: string) => {
@@ -73,7 +84,7 @@ function renderNameList(search: string, onItemClick: (name: string) => void) {
     return names;
 }
 
-const allNames = [
+let allNames = [
     'Августа', 'Авдотья', 'Аврора', 'Агата', 'Аглая', 'Агнесса', 'Агния', 'Ада', 'Адель', 'Аза', 'Азалия', 'Аида', 
     'Аксинья', 'Акулина', 'Алевтина', 'Александра', 'Алексия', 'Алёна', 'Алина', 'Алиса', 'Алла', 'Альберта', 
     'Амалия', 'Анастасия', 'Ангелина', 'Андриана', 'Анеля', 'Анжела', 'Анжелика', 'Анисья', 'Анита', 'Анна', 

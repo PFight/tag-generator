@@ -59,24 +59,34 @@ export function onGiftsOpen() {
     });
     addItemButton.addEventListener("click", onAddItem);
 
+    let saving = false;
     let save = async () => {
-        let itemsElements = document.querySelectorAll(".gift-item");
-        let items = [].map.call(itemsElements, (element: HTMLElement) => {
-            let id = element.querySelector(".gift-item__id")!.textContent;
-            let person = element.querySelector(".gift-item__person")!.textContent;
-            let name = element.querySelector(".gift-item__name")!.textContent;
-            return JSON.stringify({ id: id || name, person } as GiftItem);
-        });       
+        if (saving) {
+            console.info("Already saving...");
+            return;
+        }
+        saving = true;
+        try {
+            let itemsElements = document.querySelectorAll(".gift-item");
+            let items = [].map.call(itemsElements, (element: HTMLElement) => {
+                let id = element.querySelector(".gift-item__id")!.textContent;
+                let person = element.querySelector(".gift-item__person")!.textContent;
+                let name = element.querySelector(".gift-item__name")!.textContent;
+                return JSON.stringify({ id: id || name, person } as GiftItem);
+            });       
 
-        let id = await saveGift({
-            id: giftNumber.value,
-            fio: fioInput.value,
-            phone: phoneInput.value,
-            date: new Date(dateInput.value),
-            special: specialInput.checked,
-            items
-        } as any);
-        giftNumber.value = id;
+            let id = await saveGift({
+                id: giftNumber.value,
+                fio: fioInput.value,
+                phone: phoneInput.value,
+                date: new Date(dateInput.value),
+                special: specialInput.checked,
+                items
+            } as any);
+            giftNumber.value = id;
+        } finally {
+            saving = false;
+        }
     }
     saveButton.addEventListener("click", save);
 

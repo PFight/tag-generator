@@ -166,3 +166,20 @@ export async function getVisitorGifts(code: string): Promise<Gift[]> {
 function getGiftItems(gen: firebase.firestore.QueryDocumentSnapshot<any>) {
     return (gen.get("items") as string[]).map(x => JSON.parse(x)) as (GiftItem | number | string)[];
 }
+
+export async function getNames(): Promise<string[]> {
+    let namesRequest = firebase.firestore().collection("names") as firebase.firestore.Query<any>;
+    let names = await namesRequest.get();
+    var result = [];
+    for (var name of names.docs) {
+        result.push(name.get("name"));
+    }
+    return result;
+}
+
+export async function addNames(names: string[]): Promise<void> {
+    let namesCollection = firebase.firestore().collection("names");
+    for (let name of names) {
+        await namesCollection.doc().set({ name: name });
+    }
+}

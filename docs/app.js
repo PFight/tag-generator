@@ -21880,6 +21880,21 @@
     function getGiftItems(gen) {
         return gen.get("items").map(x => JSON.parse(x));
     }
+    async function getNames() {
+        let namesRequest = firebase.firestore().collection("names");
+        let names = await namesRequest.get();
+        var result = [];
+        for (var name of names.docs) {
+            result.push(name.get("name"));
+        }
+        return result;
+    }
+    async function addNames(names) {
+        let namesCollection = firebase.firestore().collection("names");
+        for (let name of names) {
+            await namesCollection.doc().set({ name: name });
+        }
+    }
 
     const itemNames = {
         1: "Жилет/костюм женский",
@@ -22066,10 +22081,12 @@
     function initPersonSelect() {
         let addItemPersonInput = document.getElementById("addItemPerson");
         let closeButton = document.getElementById("closeButton");
+        let addNameButton = document.getElementById("addNameButton");
         let clearPersonButton = document.getElementById("clearPersonButton");
         let nameSelectDialog = document.getElementById("nameSelectDialog");
         let nameSearchInput = document.getElementById("nameSearch");
-        let showDialog = () => {
+        let showDialog = async () => {
+            allNames = await getNames();
             nameSelectDialog.showModal();
             nameSearchInput.value = '';
             renderNameList('', onNameClick);
@@ -22085,6 +22102,13 @@
         closeButton.addEventListener("click", () => nameSelectDialog.close(''));
         nameSelectDialog.addEventListener('close', (event) => {
             addItemPersonInput.value = nameSelectDialog.returnValue;
+        });
+        addNameButton.addEventListener('click', async () => {
+            let names = nameSearchInput.value.split(',').map(x => x.trim()).filter(x => x);
+            names = names.filter(name => !allNames.includes(name));
+            await addNames(names);
+            allNames = allNames.concat(names);
+            renderNameList(nameSearchInput.value, onNameClick);
         });
         let onNameClick = (name) => {
             setTimeout(() => nameSelectDialog.close(name));
@@ -22132,7 +22156,7 @@
         }
         return names;
     }
-    const allNames = [
+    let allNames = [
         'Августа', 'Авдотья', 'Аврора', 'Агата', 'Аглая', 'Агнесса', 'Агния', 'Ада', 'Адель', 'Аза', 'Азалия', 'Аида',
         'Аксинья', 'Акулина', 'Алевтина', 'Александра', 'Алексия', 'Алёна', 'Алина', 'Алиса', 'Алла', 'Альберта',
         'Амалия', 'Анастасия', 'Ангелина', 'Андриана', 'Анеля', 'Анжела', 'Анжелика', 'Анисья', 'Анита', 'Анна',
@@ -22239,23 +22263,34 @@
             }
         });
         addItemButton.addEventListener("click", onAddItem);
+        let saving = false;
         let save = async () => {
-            let itemsElements = document.querySelectorAll(".gift-item");
-            let items = [].map.call(itemsElements, (element) => {
-                let id = element.querySelector(".gift-item__id").textContent;
-                let person = element.querySelector(".gift-item__person").textContent;
-                let name = element.querySelector(".gift-item__name").textContent;
-                return JSON.stringify({ id: id || name, person });
-            });
-            let id = await saveGift({
-                id: giftNumber.value,
-                fio: fioInput.value,
-                phone: phoneInput.value,
-                date: new Date(dateInput.value),
-                special: specialInput.checked,
-                items
-            });
-            giftNumber.value = id;
+            if (saving) {
+                console.info("Already saving...");
+                return;
+            }
+            saving = true;
+            try {
+                let itemsElements = document.querySelectorAll(".gift-item");
+                let items = [].map.call(itemsElements, (element) => {
+                    let id = element.querySelector(".gift-item__id").textContent;
+                    let person = element.querySelector(".gift-item__person").textContent;
+                    let name = element.querySelector(".gift-item__name").textContent;
+                    return JSON.stringify({ id: id || name, person });
+                });
+                let id = await saveGift({
+                    id: giftNumber.value,
+                    fio: fioInput.value,
+                    phone: phoneInput.value,
+                    date: new Date(dateInput.value),
+                    special: specialInput.checked,
+                    items
+                });
+                giftNumber.value = id;
+            }
+            finally {
+                saving = false;
+            }
         };
         saveButton.addEventListener("click", save);
         let load = async () => {
