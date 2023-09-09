@@ -2,7 +2,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<head>
-		<link rel="stylesheet" href="app.css?v=11">
+		<link rel="stylesheet" href="app.css?v=12">
 	</head>
     <body>
         <div id="pageType" data-value="visitor"></div>
@@ -14,10 +14,11 @@
 			<button class="large-button" id="viewHistory">Просмотр истории</button>
 		</div>
         <div id="result" >
+			<div id="offender" class="hide">Нарушитель! Допуска в детский отдел и к дополнительной помощи нет!</div>
 			<div id="currentMonth">
 			</div>
 			<template id="noVisitTemplate">
-				<div class="visit__no-items">В этом месяце посещений центра не найдено</div>
+				<div class="visit__no-items">В этом сезоне посещений центра не найдено</div>
 			</template>
 			<div id="visitHistory">
 			</div>
@@ -27,6 +28,7 @@
 						<span class="visit__date"></span>
 					</h3>
 					<h5><a class="visit__id"></a></h5>
+					<div class="visit__offender hide">Нарушение!!!</div>
 					<div class="visit__items">
 						<template id="visitPersonTemplate">
 							<span class="visit__person-name"></span>
@@ -43,6 +45,6 @@
 				</div>
 			</template>
 		</div>
-        <script src="app.js?v=13"></script>
+        <script src="app.js?v=14"></script>
 	</body>
 </html>

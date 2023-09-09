@@ -114,6 +114,27 @@
     box-sizing: border-box;
     font-size: 26px;
 }
+
+.hide {
+    display: none;
+}
+
+#offender {
+    font-size: larger;
+    color: red;
+    font-weight: bold;
+}
+
+.visit__offender {
+    color: red;
+    font-weight: bold;
+}
+
+.visit {
+    border: 1px solid gray;
+    padding: 5px;
+    margin: 5px;
+}
 #print {
     width: 100vw;
     height: 100vh;

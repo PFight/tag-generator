@@ -13,13 +13,13 @@ export async function generateReport() {
 
     generateByVisitors?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
+        let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
         for (let gift of data) {
             if (gift.date) {
                 csv += new Date(gift.date).toLocaleDateString() + ", " +
                     (gift.items?.length ?? 0) + ", " +
                     gift.phone + ", " + 
-                    gift.special + ", " + 
+                    gift.offender + ", " + 
                     (gift.items.map(i => JSON.stringify(i))?.join(' ') ?? "") +
                     "\r\n";
             }
@@ -32,7 +32,7 @@ export async function generateReport() {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
         let daysData: { [key: string]: any[] } = {};
         for (let gift of data) {
-            if (gift.special && noSpecial) {
+            if (gift.offender && noSpecial) {
                 continue;
             }
             if (gift.date) {
@@ -88,7 +88,7 @@ export async function generateReport() {
 
     generateByDublicates?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
+        let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
         let dublicates = [] as Gift[];
         for (let gift1 of data) {
             for (let gift2 of data) {
@@ -106,7 +106,7 @@ export async function generateReport() {
                 csv += new Date(gift.date).toLocaleDateString() + ", " +
                     (gift.items?.length ?? 0) + ", " +
                     gift.phone + ", " + 
-                    gift.special + ", " + 
+                    gift.offender + ", " + 
                     JSON.stringify(gift.items)?.replace(',', ';') +
                     "\r\n";
             }

@@ -16,7 +16,7 @@ export function onGiftsOpen() {
     let phoneInput = document.getElementById("phoneInput")! as HTMLInputElement;
     let dateInput = document.getElementById("dateInput")! as HTMLInputElement;
     dateInput.value = getDateTimeInputValue(new Date());
-    let specialInput = document.getElementById("specialInput")! as HTMLInputElement;
+    let offenderInput = document.getElementById("offenderInput")! as HTMLInputElement;
     let saveButton = document.getElementById("save")!;
     let giftNumber = document.getElementById("giftNumber")! as HTMLInputElement;
     let loadGiftButton = document.getElementById("loadGift")! as HTMLButtonElement;
@@ -80,7 +80,7 @@ export function onGiftsOpen() {
                 fio: fioInput.value,
                 phone: phoneInput.value,
                 date: new Date(dateInput.value),
-                special: specialInput.checked,
+                offender: offenderInput.checked,
                 items
             } as any);
             giftNumber.value = id;
@@ -96,7 +96,7 @@ export function onGiftsOpen() {
         fioInput.value = gift.fio;
         phoneInput.value = gift.phone;
         dateInput.value = getDateTimeInputValue(gift.date);
-        specialInput.checked = gift.special;
+        offenderInput.checked = gift.offender;
         for (let item of gift.items) {
             if (typeof(item) == "object") {
                 addItem(item.id, item.person);

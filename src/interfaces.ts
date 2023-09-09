@@ -20,7 +20,7 @@ export interface Gift {
     fio: string;
     phone: string;
     date: Date;
-    special: boolean;
+    offender: boolean;
     items: (number | string | GiftItem)[];
 }
 

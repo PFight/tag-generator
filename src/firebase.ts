@@ -104,7 +104,7 @@ export async function saveGift(gift: Gift) {
         phone: gift.phone,
         date: gift.date,
         items: gift.items,
-        special: gift.special
+        offender: gift.offender
     });
     return gift.id;
 }
@@ -126,7 +126,7 @@ export async function getGifts(from?: Date | null, to?: Date | null): Promise<Gi
             phone: gen.get("phone"),
             items: gen.get("items"),
             date: gen.get("date")?.toDate(),
-            special: gen.get("special")
+            offender: gen.get("offender")
         });
     }
     return result;
@@ -141,7 +141,7 @@ export async function getGift(id: string): Promise<Gift> {
         phone: gift.get("phone"),
         items: getGiftItems(gift),
         date: gift.get("date")?.toDate() as Date,
-        special: gift.get("special")
+        offender: gift.get("offender")
     };
 }
 
@@ -157,7 +157,7 @@ export async function getVisitorGifts(code: string): Promise<Gift[]> {
             phone: gift.get("phone") as string,
             items: getGiftItems(gift),
             date: gift.get("date")?.toDate() as Date,
-            special: gift.get("special")
+            offender: gift.get("offender")
         });
     }
     return result;
@@ -167,19 +167,33 @@ function getGiftItems(gen: firebase.firestore.QueryDocumentSnapshot<any>) {
     return (gen.get("items") as string[]).map(x => JSON.parse(x)) as (GiftItem | number | string)[];
 }
 
+const namesKey = "VisitorNames";
+
 export async function getNames(): Promise<string[]> {
-    let namesRequest = firebase.firestore().collection("names") as firebase.firestore.Query<any>;
-    let names = await namesRequest.get();
-    var result = [];
-    for (var name of names.docs) {
-        result.push(name.get("name"));
+    var namesLocalStorage = localStorage.getItem(namesKey);
+    if (namesLocalStorage) {
+        return JSON.parse(namesLocalStorage);
+    } else {
+        let namesRequest = firebase.firestore().collection("names") as firebase.firestore.Query<any>;
+        let names = await namesRequest.get();
+        var result = [];
+        for (var name of names.docs) {
+            result.push(name.get("name"));
+        }
+        localStorage.setItem(namesKey, JSON.stringify(result));
+        return result;
     }
-    return result;
 }
 
 export async function addNames(names: string[]): Promise<void> {
     let namesCollection = firebase.firestore().collection("names");
     for (let name of names) {
         await namesCollection.doc().set({ name: name });
+    }
+    var namesLocalStorage = localStorage.getItem(namesKey);
+    if (namesLocalStorage) {
+        let allNames = JSON.parse(namesLocalStorage);
+        names.forEach(x => allNames.push(x));
+        localStorage.setItem(namesKey, JSON.stringify(allNames));
     }
 }

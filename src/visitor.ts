@@ -4,6 +4,8 @@ import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./visitor.css";
 
+const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
+
 export function onVisitorOpen() {
     let codeInput = document.getElementById("code")! as HTMLInputElement;
     let viewHistoryButton = document.getElementById("viewHistory")!;
@@ -11,6 +13,13 @@ export function onVisitorOpen() {
     viewHistoryButton.addEventListener("click", async () => {
         let code = codeInput.value;
         let visits = await getVisitorGifts(code);
+
+        let offenderBlock = document.getElementById("offender")!;
+        if (visits.some(x => x.offender)) {
+            offenderBlock.className = "";
+        } else {
+            offenderBlock.className = "hide";
+        }
         
         visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());
         let historyElement = document.getElementById("visitHistory") as HTMLElement;
@@ -21,12 +30,15 @@ export function onVisitorOpen() {
         }
 
         let currentMonthElement = document.getElementById("currentMonth")! as HTMLElement;
+        let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()))!;
+
         let currentMonth: Gift = {
-            date: "В этом месяце" as any,
+            date: "В этом сезоне" as any,
             fio: "",
             id: "",
+            offender: false,
             phone: visits[0]?.phone,
-            items: visits.filter(x => x.date.getMonth() == new Date().getMonth())
+            items: visits.filter(x => currentSeason.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
         let visitElement = createVisitView(currentMonth);
@@ -35,7 +47,7 @@ export function onVisitorOpen() {
         if (currentMonth.items.length == 0) {
             var noItemsTemplate = document.getElementById("noVisitTemplate") as HTMLTemplateElement;
             var noItemsElement = document.importNode(noItemsTemplate.content, true);
-            currentMonthElement.append(noItemsElement);
+            currentMonthElement.firstElementChild!.appendChild(noItemsElement);
         }
     });    
 }
@@ -46,6 +58,9 @@ function createVisitView(visit: Gift) {
     if (visit.id) {
         visitElement.querySelector(".visit__id")!.textContent = visit.id ? ("Номер посещения: " + visit.id) : "";
         (visitElement.querySelector(".visit__id")! as HTMLLinkElement).href = "gift.html?gift=" + visit.id;
+    }
+    if (visit.offender) {
+        visitElement.querySelector(".visit__offender")!.classList.remove("hide");
     }
     visitElement.querySelector(".visit__date")!.textContent = typeof(visit.date) == "string" ? visit.date : (
         visit.date.toLocaleDateString() + " " + visit.date.toLocaleTimeString()

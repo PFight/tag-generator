@@ -21823,7 +21823,7 @@
             phone: gift.phone,
             date: gift.date,
             items: gift.items,
-            special: gift.special
+            offender: gift.offender
         });
         return gift.id;
     }
@@ -21844,7 +21844,7 @@
                 phone: gen.get("phone"),
                 items: gen.get("items"),
                 date: gen.get("date")?.toDate(),
-                special: gen.get("special")
+                offender: gen.get("offender")
             });
         }
         return result;
@@ -21857,7 +21857,7 @@
             phone: gift.get("phone"),
             items: getGiftItems(gift),
             date: gift.get("date")?.toDate(),
-            special: gift.get("special")
+            offender: gift.get("offender")
         };
     }
     async function getVisitorGifts(code) {
@@ -21872,7 +21872,7 @@
                 phone: gift.get("phone"),
                 items: getGiftItems(gift),
                 date: gift.get("date")?.toDate(),
-                special: gift.get("special")
+                offender: gift.get("offender")
             });
         }
         return result;
@@ -21880,19 +21880,33 @@
     function getGiftItems(gen) {
         return gen.get("items").map(x => JSON.parse(x));
     }
+    const namesKey = "VisitorNames";
     async function getNames() {
-        let namesRequest = firebase.firestore().collection("names");
-        let names = await namesRequest.get();
-        var result = [];
-        for (var name of names.docs) {
-            result.push(name.get("name"));
+        var namesLocalStorage = localStorage.getItem(namesKey);
+        if (namesLocalStorage) {
+            return JSON.parse(namesLocalStorage);
         }
-        return result;
+        else {
+            let namesRequest = firebase.firestore().collection("names");
+            let names = await namesRequest.get();
+            var result = [];
+            for (var name of names.docs) {
+                result.push(name.get("name"));
+            }
+            localStorage.setItem(namesKey, JSON.stringify(result));
+            return result;
+        }
     }
     async function addNames(names) {
         let namesCollection = firebase.firestore().collection("names");
         for (let name of names) {
             await namesCollection.doc().set({ name: name });
+        }
+        var namesLocalStorage = localStorage.getItem(namesKey);
+        if (namesLocalStorage) {
+            let allNames = JSON.parse(namesLocalStorage);
+            names.forEach(x => allNames.push(x));
+            localStorage.setItem(namesKey, JSON.stringify(allNames));
         }
     }
 
@@ -21959,13 +21973,13 @@
         let to = document.getElementById("to");
         generateByVisitors?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
-            let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
+            let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
             for (let gift of data) {
                 if (gift.date) {
                     csv += new Date(gift.date).toLocaleDateString() + ", " +
                         (gift.items?.length ?? 0) + ", " +
                         gift.phone + ", " +
-                        gift.special + ", " +
+                        gift.offender + ", " +
                         (gift.items.map(i => JSON.stringify(i))?.join(' ') ?? "") +
                         "\r\n";
                 }
@@ -21977,7 +21991,7 @@
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
             let daysData = {};
             for (let gift of data) {
-                if (gift.special && noSpecial) {
+                if (gift.offender && noSpecial) {
                     continue;
                 }
                 if (gift.date) {
@@ -22030,7 +22044,7 @@
         });
         generateByDublicates?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
-            let csv = "Дата, Количество вещей, Номер, Особенность, Вещи" + "\r\n";
+            let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
             let dublicates = [];
             for (let gift1 of data) {
                 for (let gift2 of data) {
@@ -22048,7 +22062,7 @@
                     csv += new Date(gift.date).toLocaleDateString() + ", " +
                         (gift.items?.length ?? 0) + ", " +
                         gift.phone + ", " +
-                        gift.special + ", " +
+                        gift.offender + ", " +
                         JSON.stringify(gift.items)?.replace(',', ';') +
                         "\r\n";
                 }
@@ -22220,7 +22234,7 @@
         let phoneInput = document.getElementById("phoneInput");
         let dateInput = document.getElementById("dateInput");
         dateInput.value = getDateTimeInputValue(new Date());
-        let specialInput = document.getElementById("specialInput");
+        let offenderInput = document.getElementById("offenderInput");
         let saveButton = document.getElementById("save");
         let giftNumber = document.getElementById("giftNumber");
         let loadGiftButton = document.getElementById("loadGift");
@@ -22283,7 +22297,7 @@
                     fio: fioInput.value,
                     phone: phoneInput.value,
                     date: new Date(dateInput.value),
-                    special: specialInput.checked,
+                    offender: offenderInput.checked,
                     items
                 });
                 giftNumber.value = id;
@@ -22299,7 +22313,7 @@
             fioInput.value = gift.fio;
             phoneInput.value = gift.phone;
             dateInput.value = getDateTimeInputValue(gift.date);
-            specialInput.checked = gift.special;
+            offenderInput.checked = gift.offender;
             for (let item of gift.items) {
                 if (typeof (item) == "object") {
                     addItem(item.id, item.person);
@@ -22334,12 +22348,20 @@
     const STYLE_PARAM = "style";
     const QUALITY_PARAM = "quality";
 
+    const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
     function onVisitorOpen() {
         let codeInput = document.getElementById("code");
         let viewHistoryButton = document.getElementById("viewHistory");
         viewHistoryButton.addEventListener("click", async () => {
             let code = codeInput.value;
             let visits = await getVisitorGifts(code);
+            let offenderBlock = document.getElementById("offender");
+            if (visits.some(x => x.offender)) {
+                offenderBlock.className = "";
+            }
+            else {
+                offenderBlock.className = "hide";
+            }
             visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());
             let historyElement = document.getElementById("visitHistory");
             historyElement.innerHTML = '';
@@ -22348,12 +22370,14 @@
                 historyElement.append(visitElement);
             }
             let currentMonthElement = document.getElementById("currentMonth");
+            let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()));
             let currentMonth = {
-                date: "В этом месяце",
+                date: "В этом сезоне",
                 fio: "",
                 id: "",
+                offender: false,
                 phone: visits[0]?.phone,
-                items: visits.filter(x => x.date.getMonth() == new Date().getMonth())
+                items: visits.filter(x => currentSeason.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
             let visitElement = createVisitView(currentMonth);
@@ -22362,7 +22386,7 @@
             if (currentMonth.items.length == 0) {
                 var noItemsTemplate = document.getElementById("noVisitTemplate");
                 var noItemsElement = document.importNode(noItemsTemplate.content, true);
-                currentMonthElement.append(noItemsElement);
+                currentMonthElement.firstElementChild.appendChild(noItemsElement);
             }
         });
     }
@@ -22372,6 +22396,9 @@
         if (visit.id) {
             visitElement.querySelector(".visit__id").textContent = visit.id ? ("Номер посещения: " + visit.id) : "";
             visitElement.querySelector(".visit__id").href = "gift.html?gift=" + visit.id;
+        }
+        if (visit.offender) {
+            visitElement.querySelector(".visit__offender").classList.remove("hide");
         }
         visitElement.querySelector(".visit__date").textContent = typeof (visit.date) == "string" ? visit.date : (visit.date.toLocaleDateString() + " " + visit.date.toLocaleTimeString());
         let visitItemsElement = visitElement.querySelector(".visit__items");
