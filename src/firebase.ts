@@ -164,7 +164,9 @@ export async function getVisitorGifts(code: string): Promise<Gift[]> {
 }
 
 function getGiftItems(gen: firebase.firestore.QueryDocumentSnapshot<any>) {
-    return (gen.get("items") as string[]).map(x => JSON.parse(x)) as (GiftItem | number | string)[];
+    return (gen.get("items") as string[]).map(x => {
+        try { return JSON.parse(x) } catch { return x } 
+    }) as (GiftItem | number | string)[];
 }
 
 const namesKey = "VisitorNames";

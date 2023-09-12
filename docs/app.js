@@ -21878,7 +21878,14 @@
         return result;
     }
     function getGiftItems(gen) {
-        return gen.get("items").map(x => JSON.parse(x));
+        return gen.get("items").map(x => {
+            try {
+                return JSON.parse(x);
+            }
+            catch {
+                return x;
+            }
+        });
     }
     const namesKey = "VisitorNames";
     async function getNames() {
