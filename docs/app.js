@@ -22234,6 +22234,10 @@
     function onGiftsOpen() {
         let addItemInput = document.getElementById("addItemName");
         let addItemButton = document.getElementById("addItemButton");
+        let addItemButton2 = document.getElementById("addItemButton2");
+        let addItemButton3 = document.getElementById("addItemButton3");
+        let clearItemButton = document.getElementById("clearItemButton");
+        let autoClearInput = document.getElementById("autoClearInput");
         let addItemPersonInput = document.getElementById("addItemPerson");
         let items = document.getElementById("giftItems");
         let itemTemplate = document.getElementById("giftItemTemplate");
@@ -22245,7 +22249,7 @@
         let saveButton = document.getElementById("save");
         let giftNumber = document.getElementById("giftNumber");
         let loadGiftButton = document.getElementById("loadGift");
-        let addItem = async (id, person) => {
+        let addItem = async (id, person, count = 1) => {
             let code = null;
             try {
                 code = parseInt(id);
@@ -22255,27 +22259,31 @@
             let deleteItem = (ev) => {
                 ev.target.parentElement.remove();
             };
-            if (code) {
-                let name = itemNames[code];
-                let itemElement = document.importNode(itemTemplate.content, true);
-                itemElement.querySelector(".gift-item__name").textContent = name;
-                itemElement.querySelector(".gift-item__person").textContent = person;
-                itemElement.querySelector(".gift-item__id").textContent = id;
-                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                items.prepend(itemElement);
-            }
-            else {
-                let itemElement = document.importNode(itemTemplate.content, true);
-                itemElement.querySelector(".gift-item__id").textContent = id;
-                itemElement.querySelector(".gift-item__person").textContent = person;
-                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                items.prepend(itemElement);
+            for (let i = 0; i < count; i++) {
+                if (code) {
+                    let name = itemNames[code];
+                    let itemElement = document.importNode(itemTemplate.content, true);
+                    itemElement.querySelector(".gift-item__name").textContent = name;
+                    itemElement.querySelector(".gift-item__person").textContent = person;
+                    itemElement.querySelector(".gift-item__id").textContent = id;
+                    itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
+                    items.prepend(itemElement);
+                }
+                else {
+                    let itemElement = document.importNode(itemTemplate.content, true);
+                    itemElement.querySelector(".gift-item__id").textContent = id;
+                    itemElement.querySelector(".gift-item__person").textContent = person;
+                    itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
+                    items.prepend(itemElement);
+                }
             }
         };
-        let onAddItem = () => {
-            addItem(addItemInput.value, addItemPersonInput.value);
-            addItemInput.value = "";
-            addItemInput.focus();
+        let onAddItem = (count = 1) => {
+            addItem(addItemInput.value, addItemPersonInput.value, count);
+            if (autoClearInput.checked) {
+                addItemInput.value = "";
+                addItemInput.focus();
+            }
         };
         addItemInput.addEventListener("keypress", (ev) => {
             if (ev.key === "Enter") {
@@ -22283,7 +22291,23 @@
                 onAddItem();
             }
         });
-        addItemButton.addEventListener("click", onAddItem);
+        addItemButton.addEventListener("click", () => onAddItem(1));
+        addItemButton2.addEventListener("click", () => onAddItem(2));
+        addItemButton3.addEventListener("click", () => onAddItem(3));
+        clearItemButton.addEventListener("click", () => {
+            addItemInput.value = "";
+            addItemInput.focus();
+        });
+        const disableAutoClearInputKey = "disableAutoClearInput";
+        autoClearInput.addEventListener("change", () => {
+            if (!autoClearInput.checked) {
+                localStorage[disableAutoClearInputKey] = "true";
+            }
+            else {
+                delete localStorage[disableAutoClearInputKey];
+            }
+        });
+        autoClearInput.checked = !localStorage[disableAutoClearInputKey];
         let saving = false;
         let save = async () => {
             if (saving) {
