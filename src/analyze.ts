@@ -5,9 +5,7 @@ import { itemNames } from "items";
 export async function generateReport() {
     let generateByVisitors = document.getElementById("generateByVisitors");
     let generateByDays = document.getElementById("generateByDays");
-    let generateByDaysNoSpecial = document.getElementById("generateByDaysNoSpecial")
     let generateByCategories = document.getElementById("generateByCategories");
-    let generateByDublicates = document.getElementById("generateByDublicates");
     let from = document.getElementById("from") as HTMLInputElement;
     let to = document.getElementById("to") as HTMLInputElement;
 
@@ -52,7 +50,6 @@ export async function generateReport() {
         download(fileName, csv);
     }
     generateByDays?.addEventListener("click", () => reportByDays(false));
-    generateByDaysNoSpecial?.addEventListener("click", () => reportByDays(true));
     
     
     generateByCategories?.addEventListener("click", async () => {
@@ -84,37 +81,7 @@ export async function generateReport() {
         }
         let fileName = getFileName("categories", from, to);
         download(fileName, csv);
-    });
-
-    generateByDublicates?.addEventListener("click", async () => {
-        let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
-        let dublicates = [] as Gift[];
-        for (let gift1 of data) {
-            for (let gift2 of data) {
-                if (gift1 !== gift2 &&
-                    gift1.date && gift2.date &&
-                    gift1.date.getTime() == gift2.date.getTime() &&
-                    gift1.phone == gift2.phone &&
-                    JSON.stringify(gift1.items) == JSON.stringify(gift2.items)) {
-                    dublicates.push(gift1);
-                }
-            }
-        }
-        for (let gift of dublicates) {
-            if (gift.date) {
-                csv += new Date(gift.date).toLocaleDateString() + ", " +
-                    (gift.items?.length ?? 0) + ", " +
-                    gift.phone + ", " + 
-                    gift.offender + ", " + 
-                    JSON.stringify(gift.items)?.replace(',', ';') +
-                    "\r\n";
-            }
-        }
-        let fileName = getFileName("dublicates", from, to);
-        download(fileName, csv);
-    });    
-    
+    });   
     
 }
 

@@ -124,7 +124,7 @@ export async function getGifts(from?: Date | null, to?: Date | null): Promise<Gi
             id: gen.id,
             fio: "",
             phone: gen.get("phone"),
-            items: gen.get("items"),
+            items: getGiftItems(gen),
             date: gen.get("date")?.toDate(),
             offender: gen.get("offender")
         });
