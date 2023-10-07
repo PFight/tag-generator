@@ -22351,11 +22351,19 @@
     const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
     function onVisitorOpen() {
         let codeInput = document.getElementById("code");
+        let currentMonthElement = document.getElementById("currentMonth");
+        let historyElement = document.getElementById("visitHistory");
         let viewHistoryButton = document.getElementById("viewHistory");
-        viewHistoryButton.addEventListener("click", async () => {
+        let offenderBlock = document.getElementById("offender");
+        let clean = () => {
+            historyElement.innerHTML = '';
+            currentMonthElement.innerHTML = '';
+            offenderBlock.className = "hide";
+        };
+        let show = async () => {
+            clean();
             let code = codeInput.value;
             let visits = await getVisitorGifts(code);
-            let offenderBlock = document.getElementById("offender");
             if (visits.some(x => x.offender)) {
                 offenderBlock.className = "";
             }
@@ -22363,13 +22371,10 @@
                 offenderBlock.className = "hide";
             }
             visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());
-            let historyElement = document.getElementById("visitHistory");
-            historyElement.innerHTML = '';
             for (let visit of visits) {
                 let visitElement = createVisitView(visit);
                 historyElement.append(visitElement);
             }
-            let currentMonthElement = document.getElementById("currentMonth");
             let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()));
             let currentMonth = {
                 date: "В этом сезоне",
@@ -22381,12 +22386,23 @@
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
             let visitElement = createVisitView(currentMonth);
-            currentMonthElement.innerHTML = '';
             currentMonthElement.append(visitElement);
             if (currentMonth.items.length == 0) {
                 var noItemsTemplate = document.getElementById("noVisitTemplate");
                 var noItemsElement = document.importNode(noItemsTemplate.content, true);
                 currentMonthElement.firstElementChild.appendChild(noItemsElement);
+            }
+        };
+        viewHistoryButton.addEventListener("click", show);
+        codeInput.addEventListener("keyup", (ev) => {
+            if (!codeInput.value) {
+                clean();
+            }
+            else {
+                if (ev.key == 'Enter') {
+                    show();
+                    codeInput.value = '';
+                }
             }
         });
     }
