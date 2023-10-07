@@ -57,13 +57,14 @@ export function onVisitorOpen() {
     };
 
     viewHistoryButton.addEventListener("click", show);
-    codeInput.addEventListener("keyup", (ev) => {
+    codeInput.addEventListener("keyup", async (ev) => {
         if (!codeInput.value) {
             clean();
         } else {
             if (ev.key == 'Enter') {
-                show();
+                await show();
                 codeInput.value = '';
+                window.print();
             }
         }
     })
