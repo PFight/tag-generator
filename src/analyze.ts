@@ -11,15 +11,37 @@ export async function generateReport() {
 
     generateByVisitors?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер, Нарушение, Вещи" + "\r\n";
+        let csv = "Дата, Количество вещей, Номер телефона/паспорта, Номер анкеты, Нарушение, Колличество имен";
+        for (let code in itemNames) {
+            csv += ', ' + itemNames[code];
+        }
+        csv += "\r\n";
         for (let gift of data) {
             if (gift.date) {
                 csv += new Date(gift.date).toLocaleDateString() + ", " +
                     (gift.items?.length ?? 0) + ", " +
                     gift.phone + ", " + 
-                    gift.offender + ", " + 
-                    (gift.items.map(i => JSON.stringify(i))?.join(' ') ?? "") +
-                    "\r\n";
+                    gift.id + ", " +
+                    gift.offender + ", ";
+                let itemsMap = {} as any;
+                let personsMap = {} as any;
+                for (let item of gift.items) {
+                    let itemCode;
+                    if (typeof(item) == "object") {
+                        itemCode = item.id;
+                        personsMap[item.person] = personsMap[item.person] ?? 0;
+                        personsMap[item.person]++;
+                    } else {
+                        itemCode = item;
+                    }
+                    itemsMap[itemCode] = itemsMap[itemCode] ?? 0;
+                    itemsMap[itemCode]++;
+                }
+                csv += Object.keys(personsMap).length + ', ';
+                for (let code in itemNames) {
+                    csv += (itemsMap[code] ?? 0) + ', ';
+                }
+                csv += "\r\n";
             }
         }
         let fileName = getFileName("visitors", from, to);
