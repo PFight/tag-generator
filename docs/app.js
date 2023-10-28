@@ -21970,13 +21970,16 @@
         50: "Ремни / пояса",
     };
 
+    const NOT_SPECIFIED = "Не указано";
     async function generateReport() {
         let generateByVisitors = document.getElementById("generateByVisitors");
+        let generateByVisits = document.getElementById("generateByVisits");
+        let generateByNames = document.getElementById("generateByNames");
         let generateByDays = document.getElementById("generateByDays");
         let generateByCategories = document.getElementById("generateByCategories");
         let from = document.getElementById("from");
         let to = document.getElementById("to");
-        generateByVisitors?.addEventListener("click", async () => {
+        generateByVisits?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
             let csv = "Дата, Количество вещей, Номер телефона/паспорта, Номер анкеты, Нарушение, Колличество имен";
             for (let code in itemNames) {
@@ -21987,7 +21990,7 @@
                 if (gift.date) {
                     csv += new Date(gift.date).toLocaleDateString() + ", " +
                         (gift.items?.length ?? 0) + ", " +
-                        gift.phone + ", " +
+                        (gift.phone || "Не указано") + ", " +
                         gift.id + ", " +
                         gift.offender + ", ";
                     let itemsMap = {};
@@ -22012,7 +22015,111 @@
                     csv += "\r\n";
                 }
             }
+            let fileName = getFileName("visits", from, to);
+            download(fileName, csv);
+        });
+        generateByVisitors?.addEventListener("click", async () => {
+            let data = await getGifts(from.valueAsDate, to.valueAsDate);
+            let csv = "Номер телефона/паспорта, Количество посещений, Даты, Количество вещей, Номера анкет, Нарушение, Колличество имен, Имена";
+            for (let code in itemNames) {
+                csv += ', ' + itemNames[code];
+            }
+            csv += "\r\n";
+            let visitorsMap = {};
+            for (let gift of data) {
+                let phone = (gift.phone || "Не указано");
+                visitorsMap[phone] = visitorsMap[phone] || [];
+                visitorsMap[phone].push(gift);
+            }
+            for (let phone in visitorsMap) {
+                let gifts = visitorsMap[phone];
+                let items = gifts.reduce((a, b) => a.concat(b.items ?? []), []);
+                let dates = gifts.reduce((a, b) => a + (a ? "; " : "") + new Date(b.date).toLocaleDateString(), "");
+                let ids = gifts.reduce((a, b) => a + (a ? "; " : "") + b.id, "");
+                csv += phone + ", " +
+                    gifts.length + ", " +
+                    dates + ", " +
+                    (items.length ?? 0) + ", " +
+                    ids + ", " +
+                    (gifts.some(x => x.offender) ? "да" : "нет") + ", ";
+                let itemsMap = {};
+                let personsMap = {};
+                for (let gift of gifts) {
+                    if (gift.date) {
+                        for (let item of gift.items) {
+                            let itemCode;
+                            if (typeof (item) == "object") {
+                                itemCode = item.id;
+                                personsMap[item.person] = personsMap[item.person] ?? 0;
+                                personsMap[item.person]++;
+                            }
+                            else {
+                                itemCode = item;
+                            }
+                            itemsMap[itemCode] = itemsMap[itemCode] ?? 0;
+                            itemsMap[itemCode]++;
+                        }
+                    }
+                }
+                csv += Object.keys(personsMap).length + ', ';
+                let names = Object.keys(personsMap).reduce((a, b) => a + (a ? "; " : "") + b, "");
+                csv += names + ", ";
+                for (let code in itemNames) {
+                    csv += (itemsMap[code] ?? 0) + ', ';
+                }
+                csv += "\r\n";
+            }
             let fileName = getFileName("visitors", from, to);
+            download(fileName, csv);
+        });
+        generateByNames?.addEventListener("click", async () => {
+            let data = await getGifts(from.valueAsDate, to.valueAsDate);
+            let csv = "Дата, Номер телефона/паспорта, Имя, Количество вещей,  Номер анкеты, Нарушение";
+            for (let code in itemNames) {
+                csv += ', ' + itemNames[code];
+            }
+            csv += "\r\n";
+            for (let gift of data) {
+                if (gift.date) {
+                    let personsMap = {};
+                    for (let item of gift.items) {
+                        let itemCode;
+                        let person = NOT_SPECIFIED;
+                        if (typeof (item) == "object") {
+                            itemCode = item.id;
+                            if (item.person) {
+                                person = item.person;
+                            }
+                        }
+                        else {
+                            itemCode = item;
+                        }
+                        personsMap[person] = personsMap[person] || {};
+                        let itemsMap = personsMap[person];
+                        itemsMap[itemCode] = itemsMap[itemCode] ?? 0;
+                        itemsMap[itemCode]++;
+                    }
+                    function getPersonRow(personName) {
+                        let itemsMap = personsMap[personName];
+                        let itemsCount = Object.values(itemsMap).reduce((a, b) => a + b, 0);
+                        csv += new Date(gift.date).toLocaleDateString() + ", " +
+                            (gift.phone || "Не указано") + ", " +
+                            personName + ", " +
+                            itemsCount + ", " +
+                            gift.id + ", " +
+                            gift.offender + ", ";
+                        for (let code in itemNames) {
+                            csv += (itemsMap[code] ?? 0) + ', ';
+                        }
+                        csv += "\r\n";
+                    }
+                    getPersonRow(NOT_SPECIFIED);
+                    for (let personName of Object.keys(personsMap)) {
+                        getPersonRow(personName);
+                    }
+                }
+            }
+            let fileName = getFileName("names", from, to);
             download(fileName, csv);
         });
         const reportByDays = async (noSpecial) => {
