@@ -19,7 +19,6 @@ export function onGiftsOpen() {
     let itemTemplate = document.getElementById("giftItemTemplate")! as HTMLTemplateElement;
     let fioInput = document.getElementById("fioInput")! as HTMLInputElement;
     let phoneInput = document.getElementById("phoneInput")! as HTMLInputElement;
-    let passportInput = document.getElementById("passportInput")! as HTMLInputElement;
     let dateInput = document.getElementById("dateInput")! as HTMLInputElement;
     dateInput.value = getDateTimeInputValue(new Date());
     let offenderInput = document.getElementById("offenderInput")! as HTMLInputElement;
@@ -100,18 +99,12 @@ export function onGiftsOpen() {
                 let person = element.querySelector(".gift-item__person")!.textContent;
                 let name = element.querySelector(".gift-item__name")!.textContent;
                 return JSON.stringify({ id: id || name, person } as GiftItem);
-            });
-
-            if (!phoneInput.value && !passportInput.value && !fioInput.value) {
-                alert("Укажите либо номер телефона, либо номер паспорта, либо фамилию и инициалы");
-                return;
-            }
+            });       
 
             let id = await saveGift({
                 id: giftNumber.value,
-                fio: fioInput.value?.toLowerCase(),
+                fio: fioInput.value,
                 phone: phoneInput.value,
-                passport: passportInput.value,
                 date: new Date(dateInput.value),
                 offender: offenderInput.checked,
                 items
@@ -128,7 +121,6 @@ export function onGiftsOpen() {
         let gift = await getGift(giftNumber.value);         
         fioInput.value = gift.fio;
         phoneInput.value = gift.phone;
-        passportInput.value = gift.passport;
         dateInput.value = getDateTimeInputValue(gift.date);
         offenderInput.checked = gift.offender;
         for (let item of gift.items) {

@@ -21821,7 +21821,6 @@
         await doc.set({
             fio: gift.fio,
             phone: gift.phone,
-            passport: gift.passport,
             date: gift.date,
             items: gift.items,
             offender: gift.offender
@@ -21843,7 +21842,6 @@
                 id: gen.id,
                 fio: "",
                 phone: gen.get("phone"),
-                passport: gen.get("passport"),
                 items: getGiftItems(gen),
                 date: gen.get("date")?.toDate(),
                 offender: gen.get("offender")
@@ -21857,7 +21855,6 @@
             id: gift.id,
             fio: "",
             phone: gift.get("phone"),
-            passport: gift.get("passport"),
             items: getGiftItems(gift),
             date: gift.get("date")?.toDate(),
             offender: gift.get("offender")
@@ -21866,16 +21863,13 @@
     async function getVisitorGifts(code) {
         let giftsRequest = firebase.firestore().collection("gifts")
             .where("phone", "==", code);
-        let giftsRequest2 = firebase.firestore().collection("gifts")
-            .where("passport", "==", code);
-        let gifts = [...(await giftsRequest.get()).docs, ...(await giftsRequest2.get()).docs];
+        let gifts = await giftsRequest.get();
         var result = [];
-        for (var gift of gifts) {
+        for (var gift of gifts.docs) {
             result.push({
                 id: gift.id,
                 fio: '',
                 phone: gift.get("phone"),
-                passport: gift.get("passport"),
                 items: getGiftItems(gift),
                 date: gift.get("date")?.toDate(),
                 offender: gift.get("offender")
@@ -21987,7 +21981,7 @@
         let to = document.getElementById("to");
         generateByVisits?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
-            let csv = "Дата, Количество вещей, Номер телефона, Номер паспорта, Фио, Номер анкеты, Нарушение, Колличество имен";
+            let csv = "Дата, Количество вещей, Номер телефона/паспорта, Номер анкеты, Нарушение, Колличество имен";
             for (let code in itemNames) {
                 csv += ', ' + itemNames[code];
             }
@@ -21996,9 +21990,7 @@
                 if (gift.date) {
                     csv += new Date(gift.date).toLocaleDateString() + ", " +
                         (gift.items?.length ?? 0) + ", " +
-                        (gift.phone || "") + ", " +
-                        (gift.passport || "") + ", " +
-                        (gift.fio || "") + ", " +
+                        (gift.phone || "Не указано") + ", " +
                         gift.id + ", " +
                         gift.offender + ", ";
                     let itemsMap = {};
@@ -22028,23 +22020,23 @@
         });
         generateByVisitors?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
-            let csv = "Номер телефона/паспорта/фио, Количество посещений, Даты, Количество вещей, Номера анкет, Нарушение, Колличество имен, Имена";
+            let csv = "Номер телефона/паспорта, Количество посещений, Даты, Количество вещей, Номера анкет, Нарушение, Колличество имен, Имена";
             for (let code in itemNames) {
                 csv += ', ' + itemNames[code];
             }
             csv += "\r\n";
             let visitorsMap = {};
             for (let gift of data) {
-                let identity = (gift.phone || gift.passport || gift.fio || "Не указано");
-                visitorsMap[identity] = visitorsMap[identity] || [];
-                visitorsMap[identity].push(gift);
+                let phone = (gift.phone || "Не указано");
+                visitorsMap[phone] = visitorsMap[phone] || [];
+                visitorsMap[phone].push(gift);
             }
-            for (let identity in visitorsMap) {
-                let gifts = visitorsMap[identity];
+            for (let phone in visitorsMap) {
+                let gifts = visitorsMap[phone];
                 let items = gifts.reduce((a, b) => a.concat(b.items ?? []), []);
                 let dates = gifts.reduce((a, b) => a + (a ? "; " : "") + new Date(b.date).toLocaleDateString(), "");
                 let ids = gifts.reduce((a, b) => a + (a ? "; " : "") + b.id, "");
-                csv += identity + ", " +
+                csv += phone + ", " +
                     gifts.length + ", " +
                     dates + ", " +
                     (items.length ?? 0) + ", " +
@@ -22082,7 +22074,7 @@
         });
         generateByNames?.addEventListener("click", async () => {
             let data = await getGifts(from.valueAsDate, to.valueAsDate);
-            let csv = "Дата, Номер телефона, Номер паспорта, Фио, Имя, Количество вещей,  Номер анкеты, Нарушение";
+            let csv = "Дата, Номер телефона/паспорта, Имя, Количество вещей,  Номер анкеты, Нарушение";
             for (let code in itemNames) {
                 csv += ', ' + itemNames[code];
             }
@@ -22111,9 +22103,7 @@
                         let itemsMap = personsMap[personName];
                         let itemsCount = Object.values(itemsMap).reduce((a, b) => a + b, 0);
                         csv += new Date(gift.date).toLocaleDateString() + ", " +
-                            (gift.phone || "") + ", " +
-                            (gift.passport || "") + ", " +
-                            (gift.fio || "") + ", " +
+                            (gift.phone || "Не указано") + ", " +
                             personName + ", " +
                             itemsCount + ", " +
                             gift.id + ", " +
@@ -22352,7 +22342,6 @@
         let itemTemplate = document.getElementById("giftItemTemplate");
         let fioInput = document.getElementById("fioInput");
         let phoneInput = document.getElementById("phoneInput");
-        let passportInput = document.getElementById("passportInput");
         let dateInput = document.getElementById("dateInput");
         dateInput.value = getDateTimeInputValue(new Date());
         let offenderInput = document.getElementById("offenderInput");
@@ -22433,15 +22422,10 @@
                     let name = element.querySelector(".gift-item__name").textContent;
                     return JSON.stringify({ id: id || name, person });
                 });
-                if (!phoneInput.value && !passportInput.value && !fioInput.value) {
-                    alert("Укажите либо номер телефона, либо номер паспорта, либо фамилию и инициалы");
-                    return;
-                }
                 let id = await saveGift({
                     id: giftNumber.value,
-                    fio: fioInput.value?.toLowerCase(),
+                    fio: fioInput.value,
                     phone: phoneInput.value,
-                    passport: passportInput.value,
                     date: new Date(dateInput.value),
                     offender: offenderInput.checked,
                     items
@@ -22458,7 +22442,6 @@
             let gift = await getGift(giftNumber.value);
             fioInput.value = gift.fio;
             phoneInput.value = gift.phone;
-            passportInput.value = gift.passport;
             dateInput.value = getDateTimeInputValue(gift.date);
             offenderInput.checked = gift.offender;
             for (let item of gift.items) {
@@ -22496,13 +22479,9 @@
     const QUALITY_PARAM = "quality";
 
     const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
-    let LIMITS_PASPORT = "<b>Лимит по паспорту:</b> 5 детских / 3 младенческих вещи одной категории на человека в сезон";
-    let LIMITS_PHONE = "<b>Лимит по телефону:</b> 10 детских вещей в сезон, не более 3 одной категории";
     function onVisitorOpen() {
         let codeInput = document.getElementById("code");
         let currentMonthElement = document.getElementById("currentMonth");
-        let limitsElement = document.getElementById("limits");
-        let identityElement = document.getElementById("identity");
         let historyElement = document.getElementById("visitHistory");
         let viewHistoryButton = document.getElementById("viewHistory");
         let offenderBlock = document.getElementById("offender");
@@ -22515,24 +22494,11 @@
             clean();
             let code = codeInput.value;
             let visits = await getVisitorGifts(code);
-            identityElement.innerText = code;
-            if (visits.length == 0) {
-                identityElement.innerText += " (новый)";
-            }
             if (visits.some(x => x.offender)) {
                 offenderBlock.className = "";
             }
             else {
                 offenderBlock.className = "hide";
-            }
-            if (visits.some(x => x.passport == code)) {
-                limitsElement.innerHTML = LIMITS_PASPORT;
-            }
-            else if (visits.some(x => x.phone == code)) {
-                limitsElement.innerHTML = LIMITS_PHONE;
-            }
-            else {
-                limitsElement.innerHTML = LIMITS_PHONE + "<br/>" + LIMITS_PASPORT;
             }
             visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());
             for (let visit of visits) {
@@ -22542,11 +22508,10 @@
             let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()));
             let currentMonth = {
                 date: "В этом сезоне",
-                fio: visits.find(x => x.fio)?.fio || "",
+                fio: "",
                 id: "",
                 offender: false,
-                phone: visits.find(x => x.phone)?.phone || "",
-                passport: visits.find(x => x.passport)?.passport || "",
+                phone: visits[0]?.phone,
                 items: visits.filter(x => currentSeason.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };

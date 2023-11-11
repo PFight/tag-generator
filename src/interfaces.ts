@@ -19,7 +19,6 @@ export interface Gift {
     id: string;
     fio: string;
     phone: string;
-    passport: string;
     date: Date;
     offender: boolean;
     items: (number | string | GiftItem)[];

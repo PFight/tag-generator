@@ -14,7 +14,7 @@ export async function generateReport() {
 
     generateByVisits?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Количество вещей, Номер телефона, Номер паспорта, Фио, Номер анкеты, Нарушение, Колличество имен";
+        let csv = "Дата, Количество вещей, Номер телефона/паспорта, Номер анкеты, Нарушение, Колличество имен";
         for (let code in itemNames) {
             csv += ', ' + itemNames[code];
         }
@@ -23,9 +23,7 @@ export async function generateReport() {
             if (gift.date) {
                 csv += new Date(gift.date).toLocaleDateString() + ", " +
                     (gift.items?.length ?? 0) + ", " +
-                    (gift.phone || "")+ ", " + 
-                    (gift.passport || "")+ ", " + 
-                    (gift.fio || "")+ ", " + 
+                    (gift.phone || "Не указано")+ ", " + 
                     gift.id + ", " +
                     gift.offender + ", ";
                 let itemsMap = {} as any;
@@ -55,23 +53,23 @@ export async function generateReport() {
 
     generateByVisitors?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Номер телефона/паспорта/фио, Количество посещений, Даты, Количество вещей, Номера анкет, Нарушение, Колличество имен, Имена";
+        let csv = "Номер телефона/паспорта, Количество посещений, Даты, Количество вещей, Номера анкет, Нарушение, Колличество имен, Имена";
         for (let code in itemNames) {
             csv += ', ' + itemNames[code];
         }
         csv += "\r\n";
         let visitorsMap = {} as { [key: string]: Gift[] };
         for (let gift of data) {
-            let identity = (gift.phone || gift.passport || gift.fio || "Не указано");
-            visitorsMap[identity] = visitorsMap[identity] || [];
-            visitorsMap[identity].push(gift);
+            let phone = (gift.phone || "Не указано");
+            visitorsMap[phone] = visitorsMap[phone] || [];
+            visitorsMap[phone].push(gift);
         }
-        for (let identity in visitorsMap) {
-            let gifts = visitorsMap[identity];
+        for (let phone in visitorsMap) {
+            let gifts = visitorsMap[phone];
             let items: (number | string | GiftItem)[] = gifts.reduce((a, b) => a.concat(b.items ?? []), [] as any[]);
             let dates = gifts.reduce((a, b) => a + (a ? "; " : "") + new Date(b.date).toLocaleDateString(), "");
             let ids = gifts.reduce((a, b) => a + (a ? "; " : "") + b.id, "");
-            csv += identity + ", " + 
+            csv += phone + ", " + 
                 gifts.length + ", " +
                 dates + ", " +
                 (items.length ?? 0) + ", " +
@@ -109,7 +107,7 @@ export async function generateReport() {
 
     generateByNames?.addEventListener("click", async () => {
         let data = await getGifts(from.valueAsDate, to.valueAsDate);
-        let csv = "Дата, Номер телефона, Номер паспорта, Фио, Имя, Количество вещей,  Номер анкеты, Нарушение";
+        let csv = "Дата, Номер телефона/паспорта, Имя, Количество вещей,  Номер анкеты, Нарушение";
         for (let code in itemNames) {
             csv += ', ' + itemNames[code];
         }
@@ -138,9 +136,7 @@ export async function generateReport() {
                     let itemsMap = personsMap[personName];
                     let itemsCount = (Object.values(itemsMap) as number[]).reduce((a, b) => a + b, 0);
                     csv += new Date(gift.date).toLocaleDateString() + ", " +
-                        (gift.phone || "") + ", " +
-                        (gift.passport || "") + ", " +
-                        (gift.fio || "") + ", " +
+                        (gift.phone || "Не указано") + ", " +
                         personName + ", " +
                         itemsCount + ", " +
                         gift.id + ", " +

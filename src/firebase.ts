@@ -102,7 +102,6 @@ export async function saveGift(gift: Gift) {
     await doc.set({
         fio: gift.fio,
         phone: gift.phone,
-        passport: gift.passport,
         date: gift.date,
         items: gift.items,
         offender: gift.offender
@@ -125,7 +124,6 @@ export async function getGifts(from?: Date | null, to?: Date | null): Promise<Gi
             id: gen.id,
             fio: "",
             phone: gen.get("phone"),
-            passport: gen.get("passport"),
             items: getGiftItems(gen),
             date: gen.get("date")?.toDate(),
             offender: gen.get("offender")
@@ -141,7 +139,6 @@ export async function getGift(id: string): Promise<Gift> {
         id: gift.id,
         fio: "",
         phone: gift.get("phone"),
-        passport: gift.get("passport"),
         items: getGiftItems(gift),
         date: gift.get("date")?.toDate() as Date,
         offender: gift.get("offender")
@@ -151,16 +148,13 @@ export async function getGift(id: string): Promise<Gift> {
 export async function getVisitorGifts(code: string): Promise<Gift[]> {
     let giftsRequest = firebase.firestore().collection("gifts")
         .where("phone", "==", code) as firebase.firestore.Query<any>;
-    let giftsRequest2 = firebase.firestore().collection("gifts")
-        .where("passport", "==", code) as firebase.firestore.Query<any>;
-    let gifts = [...(await giftsRequest.get()).docs, ...(await giftsRequest2.get()).docs];
+    let gifts = await giftsRequest.get();
     var result = [];
-    for (var gift of gifts) {
+    for (var gift of gifts.docs) {
         result.push({
             id: gift.id,
             fio: '',
             phone: gift.get("phone") as string,
-            passport: gift.get("passport") as string,
             items: getGiftItems(gift),
             date: gift.get("date")?.toDate() as Date,
             offender: gift.get("offender")
