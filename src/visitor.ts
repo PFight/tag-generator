@@ -6,9 +6,14 @@ import "./visitor.css";
 
 const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
 
+let LIMITS_PASPORT = "<b>Лимит по паспорту:</b> 5 детских / 3 младенческих вещи одной категории на человека в сезон";
+let LIMITS_PHONE = "<b>Лимит по телефону:</b> 10 детских вещей в сезон, не более 3 одной категории";
+
 export function onVisitorOpen() {
     let codeInput = document.getElementById("code")! as HTMLInputElement;
     let currentMonthElement = document.getElementById("currentMonth")! as HTMLElement;
+    let limitsElement = document.getElementById("limits")! as HTMLElement;
+    let identityElement = document.getElementById("identity")! as HTMLElement;
     let historyElement = document.getElementById("visitHistory") as HTMLElement;
     let viewHistoryButton = document.getElementById("viewHistory")!;
     let offenderBlock = document.getElementById("offender")!;
@@ -23,11 +28,24 @@ export function onVisitorOpen() {
         clean();
         let code = codeInput.value;
         let visits = await getVisitorGifts(code);
-        
+        identityElement.innerText = code;
+        if (visits.length == 0) {
+            identityElement.innerText += " (новый)";
+        }
         if (visits.some(x => x.offender)) {
             offenderBlock.className = "";
         } else {
             offenderBlock.className = "hide";
+        }
+
+        let isPasport = false;
+        if (visits.some(x => x.passport == code)) {
+            limitsElement.innerHTML = LIMITS_PASPORT;
+            isPasport = true;
+        } else if (visits.some(x => x.phone == code)) {
+            limitsElement.innerHTML = LIMITS_PHONE;
+        } else {
+            limitsElement.innerHTML = LIMITS_PHONE + "<br/>" + LIMITS_PASPORT;
         }
 
         visits.sort((a, b) => b.date?.getTime() - a.date?.getTime());       
@@ -40,10 +58,11 @@ export function onVisitorOpen() {
 
         let currentMonth: Gift = {
             date: "В этом сезоне" as any,
-            fio: "",
+            fio: visits.find(x => x.fio)?.fio || "",
             id: "",
             offender: false,
-            phone: visits[0]?.phone,
+            phone: visits.find(x => x.phone)?.phone || "",
+            passport: visits.find(x => x.passport)?.passport || "",
             items: visits.filter(x => currentSeason.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
