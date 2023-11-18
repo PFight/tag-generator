@@ -22547,9 +22547,11 @@
                 offender: false,
                 phone: visits.find(x => x.phone)?.phone || "",
                 passport: visits.find(x => x.passport)?.passport || "",
-                items: visits.filter(x => currentSeason.includes(x.date.getMonth()))
+                items: visits.filter(x => x.date.getFullYear() == (new Date()).getFullYear() &&
+                    currentSeason.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
+            currentMonth.date += " (" + currentMonth.items.length + ")";
             let visitElement = createVisitView(currentMonth);
             currentMonthElement.append(visitElement);
             if (currentMonth.items.length == 0) {
