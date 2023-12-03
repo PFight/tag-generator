@@ -22,6 +22,8 @@ export function onVisitorOpen() {
     let historyElement = document.getElementById("visitHistory") as HTMLElement;
     let viewHistoryButton = document.getElementById("viewHistory")!;
     let offenderBlock = document.getElementById("offender")!;
+    let printButton = document.getElementById("printButton");
+    printButton?.addEventListener("click", () => window.print());
 
     let clean = () => {
         historyElement.innerHTML = '';
