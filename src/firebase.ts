@@ -148,12 +148,18 @@ export async function getGift(id: string): Promise<Gift> {
     };
 }
 
-export async function getVisitorGifts(code: string): Promise<Gift[]> {
+export async function getVisitorGifts(phone: string, passport: string): Promise<Gift[]> {
     let giftsRequest = firebase.firestore().collection("gifts")
-        .where("phone", "==", code) as firebase.firestore.Query<any>;
+        .where("phone", "==", phone) as firebase.firestore.Query<any>;
     let giftsRequest2 = firebase.firestore().collection("gifts")
-        .where("passport", "==", code) as firebase.firestore.Query<any>;
-    let gifts = [...(await giftsRequest.get()).docs, ...(await giftsRequest2.get()).docs];
+        .where("passport", "==", passport) as firebase.firestore.Query<any>;
+    let gifts = [] as any[];
+    if (phone) {
+        gifts = [...gifts, ...(await giftsRequest.get()).docs];
+    }
+    if (passport) {
+        gifts = [...gifts, ...(await giftsRequest2.get()).docs];
+    }
     var result = [];
     for (var gift of gifts) {
         result.push({

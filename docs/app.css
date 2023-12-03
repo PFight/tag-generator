@@ -62,7 +62,7 @@
 }
 
 .gift-add-item__input {
-    width: 600px;
+    width: 300px;
 }
 
 .gift-header {
@@ -100,6 +100,9 @@
 .visitor-controls {
     padding: 5px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: end;
 }
 
 .large-input-label {
@@ -107,7 +110,7 @@
 }
 
 .large-input, .large-button {
-    width: 350px;
+    width: 250px;
     max-width: calc(100vw - 10px - 16px);
     height: 60px;
     margin-bottom: 10px;
@@ -136,6 +139,11 @@
     margin: 5px;
 }
 
+.limit-message {
+    color: red;
+    font-weight: bold;
+}
+
 @media print {
     .visitor-controls {
         display: none;
@@ -154,6 +162,17 @@
     body {
         font-size: 14px;
     }
+    #gift {
+        display: none;
+    }
+}
+
+#visitorPanel {
+    display: flex;
+}
+
+#visitorPanel .visitor-panel-side {
+    flex: 1 1 0%;
 }
 #print {
     width: 100vw;

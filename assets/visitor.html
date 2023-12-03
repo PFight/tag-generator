@@ -2,53 +2,154 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<head>
-		<link rel="stylesheet" href="app.css?v=14">
+		<link rel="stylesheet" href="app.css?v=15">
 	</head>
     <body>
         <div id="pageType" data-value="visitor"></div>
 		<div id="controls" class="visitor-controls">
 			<label>
-				<div class="large-input-label">Номер (последние 4 цифры):</div> 
-				<input class="large-input" id="code" />
+				<div class="large-input-label">Номер телефона (последние 5 цифр):</div> 
+				<input class="large-input" id="phoneCode" />
+			</label>
+			<label>
+				<div class="large-input-label">Номер паспорта (последние 5 цифр):</div> 
+				<input class="large-input" id="passportCode" />
 			</label>
 			<button class="large-button" id="viewHistory">Просмотр истории</button>
 		</div>
-        <div id="result" >
-			<div id="identity">
+		<div id="visitorPanel">
+			<div id="result" class="visitor-panel-side">
+				<div id="identity">
+				</div>
+				<div id="limits">
+				</div>
+				<div id="offender" class="hide">Нарушитель! Допуска в детский отдел и к дополнительной помощи нет!</div>
+				<div id="currentMonth">
+				</div>
+				<template id="noVisitTemplate">
+					<div class="visit__no-items">В этом сезоне посещений центра не найдено</div>
+				</template>
+				<div id="visitHistory">
+				</div>
+				<template id="visitTemplate">
+					<div class="visit" >
+						<h3>
+							<span class="visit__date"></span>
+						</h3>
+						<h5><a class="visit__id"></a></h5>
+						<div class="visit__offender hide">Нарушение!!!</div>
+						<div class="visit__items">
+							<template id="visitPersonTemplate">
+								<span class="visit__person-name"></span>
+								<ul class="visit__person-things">
+									<template id="visitPersonThingTemplate">
+										<li>
+											<span class="visit__person-category-count"></span>
+											<span class="visit__person-category"></span>
+										</li>
+									</template>
+								</ul>
+							</template>
+						</div>
+					</div>
+				</template>
 			</div>
-			<div id="limits">
-			</div>
-			<div id="offender" class="hide">Нарушитель! Допуска в детский отдел и к дополнительной помощи нет!</div>
-			<div id="currentMonth">
-			</div>
-			<template id="noVisitTemplate">
-				<div class="visit__no-items">В этом сезоне посещений центра не найдено</div>
-			</template>
-			<div id="visitHistory">
-			</div>
-			<template id="visitTemplate">
-				<div class="visit" >
-					<h3>
-						<span class="visit__date"></span>
-					</h3>
-					<h5><a class="visit__id"></a></h5>
-					<div class="visit__offender hide">Нарушение!!!</div>
-					<div class="visit__items">
-						<template id="visitPersonTemplate">
-							<span class="visit__person-name"></span>
-							<ul class="visit__person-things">
-								<template id="visitPersonThingTemplate">
-									<li>
-										<span class="visit__person-category-count"></span>
-										<span class="visit__person-category"></span>
+			<div id="gift" class="visitor-panel-side hide">
+				<div class="gift-fields">
+					<label class="gift-field">
+						<div class="gift-field__label">Последние 5 цифры номера телефона: </div>
+						<div class="gift-field__input-container">
+							<input id="phoneInput" class="gift-field__input" />
+						</div>
+					</label>
+					<label class="gift-field">
+						<div class="gift-field__label">Последние 5 цифры номера паспорта: </div>
+						<div class="gift-field__input-container">
+							<input id="passportInput" class="gift-field__input" />
+						</div>
+					</label>
+					<label class="gift-field">
+						<div class="gift-field__label">Фамилия И.О. (если нет номера): </div>
+						<div class="gift-field__input-container">
+							<input id="fioInput" class="gift-field__input" />
+						</div>
+					</label>
+					<label class="gift-field">
+						<div class="gift-field__label">Дата: </div>
+						<div class="gift-field__input-container">
+							<input id="dateInput" type="datetime-local" class="gift-field__input" />
+						</div>
+					</label>
+					<label class="gift-field">
+						<div class="gift-field__label">Нарушитель: </div>
+						<div class="gift-field__input-container">
+							<input id="offenderInput" type="checkbox" class="gift-field__input" />
+						</div>
+					</label>
+					<div class="gift-field gift-add-item">
+						<div class="gift-field__label">Имя: </div>
+						<div class="gift-field__input-container">
+							<input id="addItemPerson" readonly class="gift-add-item__input" />
+							<button id="clearPersonButton" class="gift-add-item__button" >Очистить</button>
+							<dialog id="nameSelectDialog">
+								<input class="name-select__input" id="nameSearch" tabindex="0" />
+								<button id="addNameButton" class="gift-add-item__button" >Добавить имя</button>
+								<button id="closeButton" class="gift-add-item__button" >Закрыть</button>
+								<div class="name-select__list" id="nameList">
+									
+								</div>
+								<template id="nameListItem">
+									<a class="name-select__list-item" tabindex="0"></a>
+								</template>
+							</dialog>
+						</div>
+					</div>
+					<div class="gift-field gift-add-item">
+						<div class="gift-field__label">Вещь (название или код): </div>
+						<div class="gift-field__input-container">
+							<input id="addItemName" class="gift-add-item__input" />
+							<button id="addItemButton" class="gift-add-item__button" >Добавить</button>
+							<button id="addItemButton2" class="gift-add-item__button" >+2</button>
+							<button id="addItemButton3" class="gift-add-item__button" >+3</button>
+							<button id="clearItemButton" class="gift-add-item__button" >Очистить</button>
+							<label for="">
+								<input id="autoClearInput" type="checkbox" checked />
+								Очищать автоматически
+							</label>
+						</div>
+					</div>            
+					<div class="gift-field">
+						<div class="gift-field-label"></div>
+						<div class="gift-field__input-container">
+							<button id="save" class="gift-save">Сохранить</button>
+						</div>
+					</div>
+					<div class="gift-field gift-number">
+						<div class="gift-field__label">Номер посещения: </div>
+						<div class="gift-field__input-container">
+							<input id="giftNumber" class="gift-add-item__input"></span>
+							<button id="loadGift" class="gift-add-item__button" >Загрузить</button>
+						</div>
+					</div>
+				</div>
+				<table class="gift-table">
+					<tr class="gift-items-row">
+						<td colspan="4">
+							<ul id="giftItems" class="gift-items">
+								<template id="giftItemTemplate">
+									<li class="gift-item" >
+										<span class="gift-item__id"></span>
+										<span class="gift-item__person"></span>
+										<span class="gift-item__name"></span>                
+										<button class="gift-item__delete">x</button>
 									</li>
 								</template>
 							</ul>
-						</template>
-					</div>
-				</div>
-			</template>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
-        <script src="app.js?v=19"></script>
+        <script src="app.js?v=20"></script>
 	</body>
 </html>
