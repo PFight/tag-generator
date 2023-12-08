@@ -45,6 +45,8 @@ export const itemNames: any = {
     39: "МлГ Головной убор младенца",
     40: "МлВ Верхняя одежда",
     42: "МлС Свитер младенца",
+    53: "МлН Носочки/царапки младенца",
+    54: "МлБк Колготки/ползунки младенца",
     43: "Игрушка детская",
     44: "Сумка / рюкзак",
     45: "Посуда",
@@ -101,6 +103,8 @@ export const itemRestrictions: any = {
     40: 5,
     42: 5,
     43: 5,
+    53: 5,
+    54: 5,
     44: undefined,
     45: undefined,
     46: undefined,
@@ -137,7 +141,9 @@ export const chlidrenItems = [
     39,
     40,
     42,
-    43
+    43,
+    53,
+    54
 ];
 
 export function isChildItem(item: GiftItem) {
