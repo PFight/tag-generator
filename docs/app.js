@@ -22860,7 +22860,7 @@
                 offender: false,
                 phone: visits.find(x => x.phone)?.phone || "",
                 passport: visits.find(x => x.passport)?.passport || "",
-                items: visits.filter(x => x.date.getFullYear() == (new Date()).getFullYear() &&
+                items: visits.filter(x => monthDiff(x.date, new Date()) <= 6 &&
                     currentSeason.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
@@ -22937,6 +22937,13 @@
             visitItemsElement.append(visitPersonElement);
         }
         return visitElement;
+    }
+    function monthDiff(d1, d2) {
+        var months;
+        months = (d2.getFullYear() - d1.getFullYear()) * 12;
+        months -= d1.getMonth();
+        months += d2.getMonth();
+        return months <= 0 ? 0 : months;
     }
 
     var C__Dev_tagGenerator_node_modules_jsbarcode_bin_barcodes = {};

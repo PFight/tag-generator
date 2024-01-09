@@ -108,7 +108,7 @@ export function onVisitorOpen() {
             offender: false,
             phone: visits.find(x => x.phone)?.phone || "",
             passport: visits.find(x => x.passport)?.passport || "",
-            items: visits.filter(x => x.date.getFullYear() == (new Date()).getFullYear() &&
+            items: visits.filter(x => monthDiff(x.date, new Date()) <= 6 &&
                 currentSeason.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
@@ -189,3 +189,10 @@ function createVisitView(visit: Gift) {
     return visitElement;
 }
 
+function monthDiff(d1: Date, d2: Date) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
+}
