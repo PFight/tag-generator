@@ -90,8 +90,8 @@
 					<div class="gift-field gift-add-item">
 						<div class="gift-field__label">Имя: </div>
 						<div class="gift-field__input-container">
-							<input id="addItemPerson" readonly class="gift-add-item__input" />
-							<button id="clearPersonButton" class="gift-add-item__button" >Очистить</button>
+							<button id="addItemPerson" readonly class="gift-add-item__button" >Добавить имя</button>
+							<button id="clearPersonButton" class="gift-add-item__button" >Удалить лишние</button>
 							<dialog id="nameSelectDialog">
 								<input class="name-select__input" id="nameSearch" tabindex="0" />
 								<button id="addNameButton" class="gift-add-item__button" >Добавить имя</button>
@@ -103,6 +103,11 @@
 									<a class="name-select__list-item" tabindex="0"></a>
 								</template>
 							</dialog>
+							<div id="personList" class="gift-add-item__person-list">
+							</div>
+							<template id="personListItem">
+								<a class="gift-add-item__person-list-item" tabindex="0"></a>
+							</template>
 						</div>
 					</div>
 					<div class="gift-field gift-add-item">
@@ -112,6 +117,8 @@
 							<button id="addItemButton" class="gift-add-item__button" >Добавить</button>
 							<button id="addItemButton2" class="gift-add-item__button" >+2</button>
 							<button id="addItemButton3" class="gift-add-item__button" >+3</button>
+							<button id="addItemButton4" class="gift-add-item__button" >+4</button>
+							<button id="addItemButton5" class="gift-add-item__button" >+5</button>
 							<button id="clearItemButton" class="gift-add-item__button" >Очистить</button>
 							<label for="">
 								<input id="autoClearInput" type="checkbox" checked />

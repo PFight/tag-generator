@@ -1,7 +1,9 @@
 import { addNames, getNames } from "firebase";
 
 export function initPersonSelect() {
-    let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement;
+    let addItemPerson = document.getElementById("addItemPerson")! as HTMLButtonElement;
+    let personList = document.getElementById("personList")! as HTMLElement;
+    let personListItemTemplate = document.getElementById("personListItem")! as HTMLTemplateElement;
     let closeButton = document.getElementById("closeButton")!;
     let addNameButton = document.getElementById("addNameButton")!;
     let clearPersonButton = document.getElementById("clearPersonButton")!;
@@ -16,17 +18,17 @@ export function initPersonSelect() {
         renderNameList('', onNameClick);
     }
 
-    clearPersonButton.addEventListener("click", () => addItemPersonInput.value = '');
-    addItemPersonInput.addEventListener('click', () => showDialog());
-    addItemPersonInput.addEventListener('keyup', (event) => {
-        if (event.key != "Tab" && event.key != "Escape" && event.target == addItemPersonInput) {
+
+    addItemPerson.addEventListener('click', () => showDialog());
+    addItemPerson.addEventListener('keyup', (event) => {
+        if (event.key != "Tab" && event.key != "Escape" && event.target == addItemPerson) {
             event.stopImmediatePropagation();
             setTimeout(() => showDialog());
         }
     });
     closeButton.addEventListener("click", () => nameSelectDialog.close(''));
     nameSelectDialog.addEventListener('close', (event) => {
-        addItemPersonInput.value = nameSelectDialog.returnValue;
+        addPerson(nameSelectDialog.returnValue);
     });
     addNameButton.addEventListener('click', async () => {
         let names = nameSearchInput.value.split(',').map(x => x.trim()).filter(x => x);
@@ -51,6 +53,34 @@ export function initPersonSelect() {
             (document.querySelector(".name-select__list-item") as HTMLLinkElement)?.focus();
         }
     });
+}
+
+const SELECTED_PERSON_CLASS = "selected";
+export function addPerson(name: string) {
+    let personList = document.getElementById("personList")! as HTMLElement;
+    let personListItemTemplate = document.getElementById("personListItem")! as HTMLTemplateElement;
+    let personListItemFragment = document.importNode(personListItemTemplate.content, true);
+    let personListItem = personListItemFragment.querySelector(".gift-add-item__person-list-item")!;
+    personListItem.textContent = name || "<не указано>";
+    personListItem.setAttribute("data-name", name);
+    personListItem.addEventListener("click", (event) => {
+        selectPerson((event.target as HTMLElement).getAttribute("data-name"));
+
+    });
+    personList.appendChild(personListItem);
+    selectPerson(name);
+}
+
+export function selectPerson(name: string | null) {
+    let personList = document.getElementById("personList")! as HTMLElement;
+    let items = personList.querySelectorAll(".gift-add-item__person-list-item");
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].getAttribute("data-name") == name) {
+            items[i].classList.add(SELECTED_PERSON_CLASS);
+        } else {
+            items[i].classList.remove(SELECTED_PERSON_CLASS);
+        }
+    }
 }
 
 function renderNameList(search: string, onItemClick: (name: string) => void) {

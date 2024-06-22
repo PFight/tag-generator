@@ -22318,10 +22318,12 @@
     }
 
     function initPersonSelect() {
-        let addItemPersonInput = document.getElementById("addItemPerson");
+        let addItemPerson = document.getElementById("addItemPerson");
+        document.getElementById("personList");
+        document.getElementById("personListItem");
         let closeButton = document.getElementById("closeButton");
         let addNameButton = document.getElementById("addNameButton");
-        let clearPersonButton = document.getElementById("clearPersonButton");
+        document.getElementById("clearPersonButton");
         let nameSelectDialog = document.getElementById("nameSelectDialog");
         let nameSearchInput = document.getElementById("nameSearch");
         let showDialog = async () => {
@@ -22330,17 +22332,16 @@
             nameSearchInput.value = '';
             renderNameList('', onNameClick);
         };
-        clearPersonButton.addEventListener("click", () => addItemPersonInput.value = '');
-        addItemPersonInput.addEventListener('click', () => showDialog());
-        addItemPersonInput.addEventListener('keyup', (event) => {
-            if (event.key != "Tab" && event.key != "Escape" && event.target == addItemPersonInput) {
+        addItemPerson.addEventListener('click', () => showDialog());
+        addItemPerson.addEventListener('keyup', (event) => {
+            if (event.key != "Tab" && event.key != "Escape" && event.target == addItemPerson) {
                 event.stopImmediatePropagation();
                 setTimeout(() => showDialog());
             }
         });
         closeButton.addEventListener("click", () => nameSelectDialog.close(''));
         nameSelectDialog.addEventListener('close', (event) => {
-            addItemPersonInput.value = nameSelectDialog.returnValue;
+            addPerson(nameSelectDialog.returnValue);
         });
         addNameButton.addEventListener('click', async () => {
             let names = nameSearchInput.value.split(',').map(x => x.trim()).filter(x => x);
@@ -22363,6 +22364,32 @@
                 document.querySelector(".name-select__list-item")?.focus();
             }
         });
+    }
+    const SELECTED_PERSON_CLASS = "selected";
+    function addPerson(name) {
+        let personList = document.getElementById("personList");
+        let personListItemTemplate = document.getElementById("personListItem");
+        let personListItemFragment = document.importNode(personListItemTemplate.content, true);
+        let personListItem = personListItemFragment.querySelector(".gift-add-item__person-list-item");
+        personListItem.textContent = name || "<не указано>";
+        personListItem.setAttribute("data-name", name);
+        personListItem.addEventListener("click", (event) => {
+            selectPerson(event.target.getAttribute("data-name"));
+        });
+        personList.appendChild(personListItem);
+        selectPerson(name);
+    }
+    function selectPerson(name) {
+        let personList = document.getElementById("personList");
+        let items = personList.querySelectorAll(".gift-add-item__person-list-item");
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].getAttribute("data-name") == name) {
+                items[i].classList.add(SELECTED_PERSON_CLASS);
+            }
+            else {
+                items[i].classList.remove(SELECTED_PERSON_CLASS);
+            }
+        }
     }
     function renderNameList(search, onItemClick) {
         let nameList = document.getElementById("nameList");
@@ -22613,9 +22640,11 @@
         let addItemButton = document.getElementById("addItemButton");
         let addItemButton2 = document.getElementById("addItemButton2");
         let addItemButton3 = document.getElementById("addItemButton3");
+        let addItemButton4 = document.getElementById("addItemButton4");
+        let addItemButton5 = document.getElementById("addItemButton5");
         let clearItemButton = document.getElementById("clearItemButton");
         let autoClearInput = document.getElementById("autoClearInput");
-        let addItemPersonInput = document.getElementById("addItemPerson");
+        let personList = document.getElementById("personList");
         let items = document.getElementById("giftItems");
         let itemTemplate = document.getElementById("giftItemTemplate");
         let fioInput = document.getElementById("fioInput");
@@ -22627,6 +22656,9 @@
         let saveButton = document.getElementById("save");
         let giftNumber = document.getElementById("giftNumber");
         let loadGiftButton = document.getElementById("loadGift");
+        let getSelectedPerson = () => {
+            return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
+        };
         let addItem = async (id, person, count = 1) => {
             let code = null;
             try {
@@ -22656,9 +22688,9 @@
                 }
             }
         };
-        let onAddItem = (count = 1) => {
-            addItem(addItemInput.value, addItemPersonInput.value, count);
-            if (autoClearInput.checked) {
+        let onAddItem = (count = 1, clearInput = null) => {
+            addItem(addItemInput.value, getSelectedPerson() || "", count);
+            if (clearInput || (clearInput === null && autoClearInput.checked)) {
                 addItemInput.value = "";
                 addItemInput.focus();
             }
@@ -22669,13 +22701,23 @@
         };
         addItemInput.addEventListener("keypress", (ev) => {
             if (ev.key === "Enter") {
-                ev?.preventDefault();
                 onAddItem();
+            }
+        });
+        addItemInput.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter" && ev.ctrlKey) {
+                ev?.preventDefault();
+                onAddItem(1, false);
+            }
+            if (ev.key === "Backspace") {
+                addItemInput.value = "";
             }
         });
         addItemButton.addEventListener("click", () => onAddItem(1));
         addItemButton2.addEventListener("click", () => onAddItem(2));
         addItemButton3.addEventListener("click", () => onAddItem(3));
+        addItemButton4.addEventListener("click", () => onAddItem(4));
+        addItemButton5.addEventListener("click", () => onAddItem(5));
         clearItemButton.addEventListener("click", () => {
             addItemInput.value = "";
             addItemInput.focus();
@@ -22756,8 +22798,23 @@
         }
         initPersonSelect();
     }
+    function loadPersons(visits) {
+        let persons = [];
+        for (let visit of visits) {
+            if (visit.items) {
+                for (let item of visit.items) {
+                    if (typeof (item) == "object") {
+                        if (!persons.includes(item.person)) {
+                            persons.push(item.person);
+                            addPerson(item.person);
+                        }
+                    }
+                }
+            }
+        }
+    }
     function cleanGift() {
-        let addItemPersonInput = document.getElementById("addItemPerson");
+        let personList = document.getElementById("personList");
         let items = document.getElementById("giftItems");
         let fioInput = document.getElementById("fioInput");
         let phoneInput = document.getElementById("phoneInput");
@@ -22773,7 +22830,7 @@
         dateInput.value = getDateTimeInputValue(new Date());
         offenderInput.checked = false;
         giftNumber.value = "";
-        addItemPersonInput.value = "";
+        personList.innerHTML = "";
     }
     function getDateTimeInputValue(date) {
         if (!date)
@@ -22837,6 +22894,7 @@
             let passportInput = document.getElementById("passportInput");
             passportInput.value = passportCode;
             phoneInput.value = phoneCode;
+            loadPersons(visits);
             showVisits(visits);
             setOnVisitorGiftAddedCallback(gift => {
                 gift["current"] = true;

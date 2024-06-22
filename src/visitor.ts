@@ -3,7 +3,7 @@ import { Gift, GiftItem } from "interfaces";
 import { chlidrenItems, isChildItem, itemNames, itemRestrictions } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./visitor.css";
-import { cleanGift, onVisitorGiftOpen, setOnVisitorGiftAddedCallback } from "visitor-gift";
+import { cleanGift, loadPersons, onVisitorGiftOpen, setOnVisitorGiftAddedCallback } from "visitor-gift";
 
 const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
 
@@ -70,6 +70,7 @@ export function onVisitorOpen() {
         let passportInput = document.getElementById("passportInput") as HTMLInputElement;
         passportInput.value = passportCode;
         phoneInput.value = phoneCode;
+        loadPersons(visits);
 
         showVisits(visits);
 

@@ -3,7 +3,7 @@ import { Gift, GiftItem } from "interfaces";
 import { itemNames } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./gifts.css";
-import { initPersonSelect } from "person-select";
+import { addPerson, initPersonSelect } from "person-select";
 
 export let onVisitorGiftAddedCallback: (gift: Gift) => void;
 
@@ -16,11 +16,13 @@ export function onVisitorGiftOpen() {
     let addItemButton = document.getElementById("addItemButton")!;
     let addItemButton2 = document.getElementById("addItemButton2")!;
     let addItemButton3 = document.getElementById("addItemButton3")!;
+    let addItemButton4 = document.getElementById("addItemButton4")!;
+    let addItemButton5 = document.getElementById("addItemButton5")!;
     let clearItemButton = document.getElementById("clearItemButton")!;
     let autoClearInput = document.getElementById("autoClearInput")! as HTMLInputElement;
     
-    let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement;
-    
+    let personList = document.getElementById("personList")! as HTMLElement;
+ 
     let items = document.getElementById("giftItems")!;
     let itemTemplate = document.getElementById("giftItemTemplate")! as HTMLTemplateElement;
     let fioInput = document.getElementById("fioInput")! as HTMLInputElement;
@@ -32,6 +34,10 @@ export function onVisitorGiftOpen() {
     let saveButton = document.getElementById("save")!;
     let giftNumber = document.getElementById("giftNumber")! as HTMLInputElement;
     let loadGiftButton = document.getElementById("loadGift")! as HTMLButtonElement;
+
+    let getSelectedPerson = () => {
+        return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
+    }
 
     let addItem = async (id: string, person: string, count: number = 1) => {
         let code: number | null = null;
@@ -60,9 +66,9 @@ export function onVisitorGiftOpen() {
             }
         }
     }
-    let onAddItem = (count: number = 1) => {
-        addItem(addItemInput.value, addItemPersonInput.value, count);
-        if (autoClearInput.checked) {
+    let onAddItem = (count: number = 1, clearInput: boolean | null = null) => {
+        addItem(addItemInput.value, getSelectedPerson() || "", count);
+        if (clearInput || (clearInput === null && autoClearInput.checked)) {
             addItemInput.value = "";
             addItemInput.focus();
         }
@@ -73,13 +79,23 @@ export function onVisitorGiftOpen() {
     }
     addItemInput.addEventListener("keypress", (ev) => {
         if (ev.key === "Enter") {
-            ev?.preventDefault();
             onAddItem();
+        }
+    });
+    addItemInput.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" && ev.ctrlKey) {
+            ev?.preventDefault();
+            onAddItem(1, false);
+        }
+        if (ev.key === "Backspace") {
+            addItemInput.value = "";
         }
     });
     addItemButton.addEventListener("click", () => onAddItem(1));
     addItemButton2.addEventListener("click", () => onAddItem(2));
     addItemButton3.addEventListener("click", () => onAddItem(3));
+    addItemButton4.addEventListener("click", () => onAddItem(4));
+    addItemButton5.addEventListener("click", () => onAddItem(5));
 
     clearItemButton.addEventListener("click", () => {
         addItemInput.value = "";
@@ -168,8 +184,24 @@ export function onVisitorGiftOpen() {
     initPersonSelect();
 }
 
+export function loadPersons(visits: Gift[]) {
+    let persons: string[] = [];
+    for (let visit of visits) {
+        if (visit.items) {
+            for (let item of visit.items) {
+                if (typeof(item) == "object") {
+                    if (!persons.includes(item.person)) {
+                        persons.push(item.person);
+                        addPerson(item.person);
+                    }
+                }
+            }
+        }
+    }
+}
+
 export function cleanGift() {
-    let addItemPersonInput = document.getElementById("addItemPerson")! as HTMLInputElement; 
+    let personList = document.getElementById("personList")! as HTMLElement; 
     let items = document.getElementById("giftItems")!;
     let fioInput = document.getElementById("fioInput")! as HTMLInputElement;
     let phoneInput = document.getElementById("phoneInput")! as HTMLInputElement;
@@ -186,7 +218,7 @@ export function cleanGift() {
     dateInput.value = getDateTimeInputValue(new Date());
     offenderInput.checked = false;
     giftNumber.value = "";
-    addItemPersonInput.value = "";
+    personList.innerHTML = "";
 }
 
 function getDateTimeInputValue(date: Date) {
