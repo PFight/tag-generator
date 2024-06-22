@@ -185,6 +185,7 @@
     padding: 7px;
     border-radius: 5px;
     border: 2px solid transparent;
+    display: inline-block;
 }
 
 .gift-add-item__person-list-item.selected {
