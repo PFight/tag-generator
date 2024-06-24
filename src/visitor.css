@@ -1,3 +1,10 @@
+.visitor-body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 .visitor-controls {
     padding: 5px;
     text-align: center;
@@ -17,6 +24,10 @@
     margin-bottom: 10px;
     box-sizing: border-box;
     font-size: 26px;
+}
+
+.gift-fields td {
+    border-bottom: 0;
 }
 
 .hide {
@@ -70,10 +81,18 @@
 
 #visitorPanel {
     display: flex;
+    flex: 1 1 0%;
+    overflow: hidden;
 }
 
 #visitorPanel .visitor-panel-side {
     flex: 1 1 0%;
+    height: 100%;
+    overflow: auto;
+}
+
+#gift.visitor-panel-side {
+    flex: 1.5 1 0%;
 }
 
 .gift-add-item__person-list-item:hover {
@@ -96,4 +115,56 @@
 
 .gift-add-item__person-list {
     padding: 10px;
+}
+
+.gift-add-item__card {
+    display: inline-flex;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 3px;
+}
+
+.gift-add-item__card:hover {
+    background-color: rgba(217, 255, 0, 0.24);
+}
+
+.gift-add-item__card.gift-add-item__card_restricted {
+    background-color: rgb(255 0 0 / 46%);
+    cursor: no-drop;
+}
+
+.gift-add-item__card-icon {
+    height: 50px;
+}
+.gift-add-item__card-name {
+    width: 50px;
+}
+
+.gift-add-item__group {
+    position: relative;
+    padding-left: 70px;
+}
+
+.gift-add-item__group-icon {
+    position: absolute;
+    max-height: 86px;
+    max-width: 50px;
+    top: 0;
+    left: 0;
+}
+
+.add-item-toast__person {
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.add-item-toast__image {
+    height: 1.5em;
+    padding-right: 5px;
+}
+
+.add-item-toast__cancel {
+
 }

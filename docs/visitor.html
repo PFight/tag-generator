@@ -2,9 +2,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<head>
-		<link rel="stylesheet" href="app.css?v=16">
+		<link rel="stylesheet" href="app.css?v=17">
 	</head>
-    <body>
+    <body class="visitor-body">
         <div id="pageType" data-value="visitor"></div>
 		<div id="controls" class="visitor-controls">
 			<label>
@@ -55,41 +55,41 @@
 					</div>
 				</template>
 			</div>
-			<div id="gift" class="visitor-panel-side hide">
-				<div class="gift-fields">
-					<label class="gift-field">
-						<div class="gift-field__label">Последние 5 цифры номера телефона: </div>
-						<div class="gift-field__input-container">
+			<div id="gift" class="visitor-panel-side">
+				<table class="gift-fields">
+					<tr class="gift-field">
+						<td class="gift-field__label">Последние 5 цифры номера телефона: </td>
+						<td class="gift-field__input-container">
 							<input id="phoneInput" class="gift-field__input" />
-						</div>
-					</label>
-					<label class="gift-field">
-						<div class="gift-field__label">Последние 5 цифры номера паспорта: </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field">
+						<td class="gift-field__label">Последние 5 цифры номера паспорта: </td>
+						<td class="gift-field__input-container">
 							<input id="passportInput" class="gift-field__input" />
-						</div>
-					</label>
-					<label class="gift-field">
-						<div class="gift-field__label">Фамилия И.О. (если нет номера): </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field">
+						<td class="gift-field__label">Фамилия И.О. (если нет номера): </td>
+						<td class="gift-field__input-container">
 							<input id="fioInput" class="gift-field__input" />
-						</div>
-					</label>
-					<label class="gift-field">
-						<div class="gift-field__label">Дата: </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field">
+						<td class="gift-field__label">Дата: </td>
+						<td class="gift-field__input-container">
 							<input id="dateInput" type="datetime-local" class="gift-field__input" />
-						</div>
-					</label>
-					<label class="gift-field">
-						<div class="gift-field__label">Нарушитель: </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field">
+						<td class="gift-field__label">Нарушитель: </td>
+						<td class="gift-field__input-container">
 							<input id="offenderInput" type="checkbox" class="gift-field__input" />
-						</div>
-					</label>
-					<div class="gift-field gift-add-item">
-						<div class="gift-field__label">Имя: </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field gift-add-item">
+						<td class="gift-field__label">Имя: </td>
+						<td class="gift-field__input-container">
 							<button id="addItemPerson" readonly class="gift-add-item__button" >Добавить имя</button>
 							<button id="clearPersonButton" class="gift-add-item__button" >Удалить лишние</button>
 							<dialog id="nameSelectDialog">
@@ -109,10 +109,10 @@
 								<a class="gift-add-item__person-list-item" tabindex="0"></a>
 							</template>
 						</div>
-					</div>
-					<div class="gift-field gift-add-item">
-						<div class="gift-field__label">Вещь (название или код): </div>
-						<div class="gift-field__input-container">
+					</td>
+					<tr class="gift-field gift-add-item">
+						<td class="gift-field__label">Вещь (название или код): </td>
+						<td class="gift-field__input-container">
 							<input id="addItemName" class="gift-add-item__input" />
 							<button id="addItemButton" class="gift-add-item__button" >Добавить</button>
 							<button id="addItemButton2" class="gift-add-item__button" >+2</button>
@@ -124,21 +124,271 @@
 								<input id="autoClearInput" type="checkbox" checked />
 								Очищать автоматически
 							</label>
-						</div>
-					</div>            
-					<div class="gift-field">
-						<div class="gift-field-label"></div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-add-item__table">
+						<td colspan="2">
+							<div class="gift-add-item__group" id="female">
+								<img src="woman.png" class="gift-add-item__group-icon" title="Женское" />
+								<div class="gift-add-item__card" data-code="9">
+									<img src="9.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Блузка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="6">
+									<img src="6.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Свитер</span>
+								</div>
+								<div class="gift-add-item__card" data-code="1">
+									<img src="1.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Жилет/костюм</span>
+								</div>
+								<div class="gift-add-item__card" data-code="10">
+									<img src="10.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Юбка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="3">
+									<img src="3.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Платье</span>
+								</div>
+								<div class="gift-add-item__card" data-code="2">
+									<img src="2.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Брюки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="7">
+									<img src="7.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Шапка/шарф</span>
+								</div>
+								<div class="gift-add-item__card" data-code="8">
+									<img src="8.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Верхнее</span>
+								</div>
+								<div class="gift-add-item__card" data-code="4">
+									<img src="4.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Домашняя</span>
+								</div>
+								<div class="gift-add-item__card" data-code="5">
+									<img src="5.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Обувь</span>
+								</div>
+							</div>
+							<div class="gift-add-item__group" id="male">
+								<img src="man.png" class="gift-add-item__group-icon" title="Мужское" />
+								<div class="gift-add-item__card" data-code="18">
+									<img src="18.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Футболка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="17">
+									<img src="17.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Рубашка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="13">
+									<img src="13.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Свитер</span>
+								</div>
+								<div class="gift-add-item__card" data-code="16">
+									<img src="16.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Пиджак/костюм</span>
+								</div>
+								<div class="gift-add-item__card" data-code="14">
+									<img src="14.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Брюки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="50">
+									<img src="50.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Ремни, пояса</span>
+								</div>
+								<div class="gift-add-item__card" data-code="12">
+									<img src="12.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Верхнее</span>
+								</div>
+								<div class="gift-add-item__card" data-code="15">
+									<img src="15.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Обувь</span>
+								</div>
+							</div>
+							<div class="gift-add-item__group" id="girl" title="Одежда девочки">
+								<img src="girl.png" class="gift-add-item__group-icon" />
+								<div class="gift-add-item__card" data-code="23">
+									<img src="23.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Блузка/ футболка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="19">
+									<img src="19.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Свитер/ кофта</span>
+								</div>
+								<div class="gift-add-item__card" data-code="26">
+									<img src="26.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Юбка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="20">
+									<img src="20.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Платье</span>
+								</div>
+								<div class="gift-add-item__card" data-code="41">
+									<img src="41.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Брюки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="24">
+									<img src="24.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Шапка шарф</span>
+								</div>
+								<div class="gift-add-item__card" data-code="57">
+									<img src="57.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Колготки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="25">
+									<img src="25.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Верхнее</span>
+								</div>
+								<div class="gift-add-item__card" data-code="21">
+									<img src="21.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Домашняя (трусы, носки)</span>
+								</div>
+								<div class="gift-add-item__card" data-code="22">
+									<img src="22.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Обувь</span>
+								</div>
+								<div class="gift-add-item__card" data-code="43">
+									<img src="43.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Игрушка</span>
+								</div>
+							</div>
+							<div class="gift-add-item__group" id="boy">
+								<img src="boy.png" class="gift-add-item__group-icon" title="Одежда мальчика"/>
+								<div class="gift-add-item__card" data-code="28">
+									<img src="28.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Майка </span>
+								</div>
+								<div class="gift-add-item__card" data-code="51">
+									<img src="51.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Рубашка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="27">
+									<img src="27.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Свитер</span>
+								</div>
+								<div class="gift-add-item__card" data-code="52">
+									<img src="52.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Костюм жилет</span>
+								</div>
+								<div class="gift-add-item__card" data-code="55">
+									<img src="55.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Трусы, носки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="56">
+									<img src="56.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Колготки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="29">
+									<img src="29.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Брюки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="31">
+									<img src="31.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Шапка шарф</span>
+								</div>
+								<div class="gift-add-item__card" data-code="32">
+									<img src="32.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Верхнее</span>
+								</div>
+								<div class="gift-add-item__card" data-code="30">
+									<img src="30.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Обувь</span>
+								</div>
+								<div class="gift-add-item__card" data-code="43">
+									<img src="43.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Игрушка</span>
+								</div>
+							</div>
+							<div class="gift-add-item__group" id="baby">
+								<img src="baby.png" class="gift-add-item__group-icon" title="Одежда младенца" />
+								<div class="gift-add-item__card" data-code="33">
+									<img src="33.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Боди</span>
+								</div>
+								<div class="gift-add-item__card" data-code="34">
+									<img src="34.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Футболка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="53">
+									<img src="53.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Носочки/царапки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="54">
+									<img src="54.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Колготки/ползунки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="42">
+									<img src="42.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Свитер</span>
+								</div>
+								<div class="gift-add-item__card" data-code="38">
+									<img src="38.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Юбка</span>
+								</div>
+								<div class="gift-add-item__card" data-code="35">
+									<img src="35.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Брючки</span>
+								</div>
+								<div class="gift-add-item__card" data-code="37">
+									<img src="37.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Платье</span>
+								</div>
+								<div class="gift-add-item__card" data-code="39">
+									<img src="39.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Шапка шарф</span>
+								</div>
+								<div class="gift-add-item__card" data-code="40">
+									<img src="40.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Верхнее</span>
+								</div>
+								<div class="gift-add-item__card" data-code="36">
+									<img src="36.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Обувь</span>
+								</div>
+								<div class="gift-add-item__card" data-code="43">
+									<img src="43.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Игрушка</span>
+								</div>
+							</div>
+							<div class="gift-add-item__group" id="things">
+								<img src="things.png" class="gift-add-item__group-icon" title="Вещи" />
+								<div class="gift-add-item__card" data-code="45">
+									<img src="45.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Посуда</span>
+								</div>
+								<div class="gift-add-item__card" data-code="48">
+									<img src="48.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Быт. принадл.</span>
+								</div>
+								<div class="gift-add-item__card" data-code="44">
+									<img src="44.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Сумка/рюкзак</span>
+								</div>
+								<div class="gift-add-item__card" data-code="47">
+									<img src="47.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Аксессуары</span>
+								</div>
+								<div class="gift-add-item__card" data-code="49">
+									<img src="49.png" class="gift-add-item__card-icon" />
+									<span class="gift-add-item__card-name">Другое</span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr class="gift-field">
+						<td class="gift-field-label"></td>
+						<td class="gift-field__input-container">
 							<button id="save" class="gift-save">Сохранить</button>
-						</div>
-					</div>
-					<div class="gift-field gift-number">
-						<div class="gift-field__label">Номер посещения: </div>
-						<div class="gift-field__input-container">
+						</td>
+					</tr>
+					<tr class="gift-field gift-number">
+						<td class="gift-field__label">Номер посещения: </td>
+						<td class="gift-field__input-container">
 							<input id="giftNumber" class="gift-add-item__input"></span>
 							<button id="loadGift" class="gift-add-item__button" >Загрузить</button>
-						</div>
-					</div>
+						</td>
+					</tr>
 				</div>
 				<table class="gift-table">
 					<tr class="gift-items-row">
@@ -158,6 +408,14 @@
 				</table>
 			</div>
 		</div>
-        <script src="app.js?v=27"></script>
+		<template id="addItemToast">
+			<div class="add-item-toast">
+				<div class="add-item-toast__person"></div>
+				<img class="add-item-toast__image"></img>
+				<span class="add-item-toast__text"></span>
+				<a class="add-item-toast__cancel" >Отмена</a>
+			</div>
+		</template>
+        <script src="app.js?v=28"></script>
 	</body>
 </html>

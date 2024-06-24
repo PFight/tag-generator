@@ -97,6 +97,101 @@
     width: 50vw;
     margin-bottom: 10px;
 }
+/*!
+ * Toastify js 1.12.0
+ * https://github.com/apvarun/toastify-js
+ * @license MIT licensed
+ *
+ * Copyright (C) 2018 Varun A P
+ */
+
+.toastify {
+    padding: 12px 20px;
+    color: #ffffff;
+    display: inline-block;
+    box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(77, 96, 232, 0.3);
+    background: linear-gradient(135deg, #73a5ff, #5477f5);
+    position: fixed;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    max-width: calc(50% - 20px);
+    z-index: 2147483647;
+}
+
+.toastify.on {
+    opacity: 1;
+}
+
+.toast-close {
+    background: transparent;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    opacity: 0.4;
+    padding: 0 5px;
+}
+
+.toastify-right {
+    right: 15px;
+}
+
+.toastify-left {
+    left: 15px;
+}
+
+.toastify-top {
+    top: -150px;
+}
+
+.toastify-bottom {
+    bottom: -150px;
+}
+
+.toastify-rounded {
+    border-radius: 25px;
+}
+
+.toastify-avatar {
+    width: 1.5em;
+    height: 1.5em;
+    margin: -7px 5px;
+    border-radius: 2px;
+}
+
+.toastify-center {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    max-width: -webkit-fit-content;
+    max-width: fit-content;
+    max-width: -moz-fit-content;
+}
+
+@media only screen and (max-width: 360px) {
+    .toastify-right, .toastify-left {
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        max-width: -webkit-fit-content;
+        max-width: -moz-fit-content;
+        max-width: fit-content;
+    }
+}
+
+.visitor-body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 .visitor-controls {
     padding: 5px;
     text-align: center;
@@ -116,6 +211,10 @@
     margin-bottom: 10px;
     box-sizing: border-box;
     font-size: 26px;
+}
+
+.gift-fields td {
+    border-bottom: 0;
 }
 
 .hide {
@@ -169,10 +268,18 @@
 
 #visitorPanel {
     display: flex;
+    flex: 1 1 0%;
+    overflow: hidden;
 }
 
 #visitorPanel .visitor-panel-side {
     flex: 1 1 0%;
+    height: 100%;
+    overflow: auto;
+}
+
+#gift.visitor-panel-side {
+    flex: 1.5 1 0%;
 }
 
 .gift-add-item__person-list-item:hover {
@@ -195,6 +302,58 @@
 
 .gift-add-item__person-list {
     padding: 10px;
+}
+
+.gift-add-item__card {
+    display: inline-flex;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 3px;
+}
+
+.gift-add-item__card:hover {
+    background-color: rgba(217, 255, 0, 0.24);
+}
+
+.gift-add-item__card.gift-add-item__card_restricted {
+    background-color: rgb(255 0 0 / 46%);
+    cursor: no-drop;
+}
+
+.gift-add-item__card-icon {
+    height: 50px;
+}
+.gift-add-item__card-name {
+    width: 50px;
+}
+
+.gift-add-item__group {
+    position: relative;
+    padding-left: 70px;
+}
+
+.gift-add-item__group-icon {
+    position: absolute;
+    max-height: 86px;
+    max-width: 50px;
+    top: 0;
+    left: 0;
+}
+
+.add-item-toast__person {
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.add-item-toast__image {
+    height: 1.5em;
+    padding-right: 5px;
+}
+
+.add-item-toast__cancel {
+
 }
 #print {
     width: 100vw;

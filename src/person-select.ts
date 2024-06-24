@@ -1,4 +1,5 @@
 import { addNames, getNames } from "firebase";
+import { loadCardRestrictions } from "visitor-gift";
 
 export function initPersonSelect() {
     let addItemPerson = document.getElementById("addItemPerson")! as HTMLButtonElement;
@@ -81,6 +82,7 @@ export function selectPerson(name: string | null) {
             items[i].classList.remove(SELECTED_PERSON_CLASS);
         }
     }
+    loadCardRestrictions()
 }
 
 function renderNameList(search: string, onItemClick: (name: string) => void) {

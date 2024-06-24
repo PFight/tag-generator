@@ -1,14 +1,28 @@
 import { fillItemsFromGenerations, getGift, getItem, saveGift } from "firebase";
 import { Gift, GiftItem } from "interfaces";
-import { itemNames } from "items";
+import { itemNames, itemRestrictions } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./gifts.css";
 import { addPerson, initPersonSelect } from "person-select";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css"
 
 export let onVisitorGiftAddedCallback: (gift: Gift) => void;
 
 export function setOnVisitorGiftAddedCallback(callback: typeof onVisitorGiftAddedCallback) {
     onVisitorGiftAddedCallback = callback;
+}
+
+let currentSeason: Gift | undefined = undefined;
+
+export function processCurrentSeasonVisits(visits: Gift) {
+    currentSeason = visits;
+}
+
+let getSelectedPerson = () => {
+    let personList = document.getElementById("personList")! as HTMLElement;
+
+    return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
 }
 
 export function onVisitorGiftOpen() {
@@ -20,8 +34,9 @@ export function onVisitorGiftOpen() {
     let addItemButton5 = document.getElementById("addItemButton5")!;
     let clearItemButton = document.getElementById("clearItemButton")!;
     let autoClearInput = document.getElementById("autoClearInput")! as HTMLInputElement;
+    let addItemCards = document.querySelectorAll<HTMLElement>(".gift-add-item__card");
     
-    let personList = document.getElementById("personList")! as HTMLElement;
+    
  
     let items = document.getElementById("giftItems")!;
     let itemTemplate = document.getElementById("giftItemTemplate")! as HTMLTemplateElement;
@@ -35,9 +50,7 @@ export function onVisitorGiftOpen() {
     let giftNumber = document.getElementById("giftNumber")! as HTMLInputElement;
     let loadGiftButton = document.getElementById("loadGift")! as HTMLButtonElement;
 
-    let getSelectedPerson = () => {
-        return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
-    }
+
 
     let addItem = async (id: string, person: string, count: number = 1) => {
         let code: number | null = null;
@@ -45,9 +58,20 @@ export function onVisitorGiftOpen() {
             code = parseInt(id)
         } catch {
         }
-        let deleteItem = (ev: Event) => {
-            (ev.target as HTMLElement).parentElement!.remove();
+        let deleteItem = (itemElement: HTMLElement) => {
+            itemElement.remove();
+            let gift = getCurrentGift();
+            onVisitorGiftAddedCallback(gift);
+            loadCardRestrictions();
         }
+
+        let deleteItemClick = (ev: Event) => {
+            deleteItem((ev.target as HTMLElement).parentElement as HTMLElement);
+            let gift = getCurrentGift();
+            onVisitorGiftAddedCallback(gift);
+            loadCardRestrictions();
+        }
+        let item: HTMLElement;
         for (let i = 0; i < count; i++) {
             if (code) {
                 let name = itemNames[code];
@@ -55,26 +79,33 @@ export function onVisitorGiftOpen() {
                 itemElement.querySelector(".gift-item__name")!.textContent = name;
                 itemElement.querySelector(".gift-item__person")!.textContent = person;
                 itemElement.querySelector(".gift-item__id")!.textContent = id;
-                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem)
+                itemElement.querySelector(".gift-item__delete")!.addEventListener("click", deleteItemClick)
+                item = itemElement.querySelector<HTMLElement>(".gift-item")!;
                 items!.prepend(itemElement);
             } else {
                 let itemElement = document.importNode(itemTemplate.content, true);
                 itemElement.querySelector(".gift-item__id")!.textContent = id;
                 itemElement.querySelector(".gift-item__person")!.textContent = person;
-                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem)
+                itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItemClick)
+                item = itemElement.querySelector<HTMLElement>(".gift-item")!;
                 items!.prepend(itemElement);
             }
         }
+
+        if (onVisitorGiftAddedCallback) {
+            let gift = getCurrentGift();
+            onVisitorGiftAddedCallback(gift);
+        }
+
+        loadCardRestrictions();
+
+        showAddItemToast(person, code!, () => deleteItem(item));
     }
     let onAddItem = (count: number = 1, clearInput: boolean | null = null) => {
         addItem(addItemInput.value, getSelectedPerson() || "", count);
         if (clearInput || (clearInput === null && autoClearInput.checked)) {
             addItemInput.value = "";
             addItemInput.focus();
-        }
-        if (onVisitorGiftAddedCallback) {
-            let gift = getCurrentGift();
-            onVisitorGiftAddedCallback(gift);
         }
     }
     addItemInput.addEventListener("keypress", (ev) => {
@@ -96,6 +127,15 @@ export function onVisitorGiftOpen() {
     addItemButton3.addEventListener("click", () => onAddItem(3));
     addItemButton4.addEventListener("click", () => onAddItem(4));
     addItemButton5.addEventListener("click", () => onAddItem(5));
+
+    for (let i = 0;  i < addItemCards.length; i++) {
+        let card = addItemCards[i];
+        card.addEventListener("click", () => {
+            let cardValue = card.getAttribute("data-code") as string;
+            addItem(cardValue, getSelectedPerson() || "", 1);
+        });
+    }
+
 
     clearItemButton.addEventListener("click", () => {
         addItemInput.value = "";
@@ -184,6 +224,26 @@ export function onVisitorGiftOpen() {
     initPersonSelect();
 }
 
+export function loadCardRestrictions() {
+    let addItemCards = document.querySelectorAll<HTMLElement>(".gift-add-item__card");
+
+    let selectedPerson = getSelectedPerson();
+    if (currentSeason) {
+        let currentPersonSeasonItems = currentSeason.items.filter(x => (x as GiftItem).person === selectedPerson);
+        for (let i = 0; i < addItemCards.length; i++) {
+            let card = addItemCards[i];
+            let cardValue = card.getAttribute("data-code")!;
+            let currentSeasonCount = currentPersonSeasonItems.filter(x => (x as GiftItem).id === cardValue).length;
+            let restriction = itemRestrictions[cardValue];
+            if (restriction && currentSeasonCount >= restriction) {
+                card.classList.add("gift-add-item__card_restricted")
+            } else {
+                card.classList.remove("gift-add-item__card_restricted")
+            }
+        }
+    }
+}
+
 export function loadPersons(visits: Gift[]) {
     let persons: string[] = [];
     for (let visit of visits) {
@@ -225,5 +285,29 @@ function getDateTimeInputValue(date: Date) {
     if (!date) 
         return "";
     return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0,16);
+}
+
+function showAddItemToast(person: string, code: number, deleteItem: () => void) {
+    let addItemToastTemplate = document.getElementById("addItemToast") as HTMLTemplateElement;
+    let addItemToast = document.importNode(addItemToastTemplate.content, true);
+    addItemToast.querySelector(".add-item-toast__person")!.textContent = person;
+    addItemToast.querySelector<HTMLImageElement>(".add-item-toast__image")!.src = code + ".png";
+    addItemToast.querySelector(".add-item-toast__text")!.textContent = `${itemNames[code]}`;
+    addItemToast.querySelector(".add-item-toast__cancel")!.addEventListener("click", () => {
+        toast.hideToast();
+        deleteItem();
+        Toastify({
+            text: `Отменено ${itemNames[code]} у ${person}!`
+        }).showToast();
+    });
+    var toast = Toastify({
+        node: addItemToast.querySelector<HTMLElement>(".add-item-toast")!,
+        duration: 2000,
+        close: false,
+        gravity: "top",
+        position: "right",
+        newWindow: true,
+    });
+    toast.showToast();
 }
 

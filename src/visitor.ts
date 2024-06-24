@@ -3,7 +3,7 @@ import { Gift, GiftItem } from "interfaces";
 import { chlidrenItems, isChildItem, itemNames, itemRestrictions } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./visitor.css";
-import { cleanGift, loadPersons, onVisitorGiftOpen, setOnVisitorGiftAddedCallback } from "visitor-gift";
+import { cleanGift, loadPersons, onVisitorGiftOpen, processCurrentSeasonVisits, setOnVisitorGiftAddedCallback } from "visitor-gift";
 
 const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
 
@@ -100,9 +100,9 @@ export function onVisitorOpen() {
             historyElement.append(visitElement);
         }
 
-        let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()))!;
+        let currentSeasonMonths = Seasons.find(months => months.includes(new Date().getMonth()))!;
 
-        let currentMonth: Gift = {
+        let currentSeason: Gift = {
             date: "В этом сезоне" as any,
             fio: visits.find(x => x.fio)?.fio || "",
             id: "",
@@ -110,17 +110,18 @@ export function onVisitorOpen() {
             phone: visits.find(x => x.phone)?.phone || "",
             passport: visits.find(x => x.passport)?.passport || "",
             items: visits.filter(x => monthDiff(x.date, new Date()) <= 6 &&
-                currentSeason.includes(x.date.getMonth()))
+                currentSeasonMonths.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
-        currentMonth.date += " (" + currentMonth.items.filter(x => isChildItem(x as GiftItem)).length + " детского)" as any;
-        let visitElement = createVisitView(currentMonth);
+        currentSeason.date += " (" + currentSeason.items.filter(x => isChildItem(x as GiftItem)).length + " детского)" as any;
+        let visitElement = createVisitView(currentSeason);
         currentMonthElement.append(visitElement);
-        if (currentMonth.items.length == 0) {
+        if (currentSeason.items.length == 0) {
             var noItemsTemplate = document.getElementById("noVisitTemplate") as HTMLTemplateElement;
             var noItemsElement = document.importNode(noItemsTemplate.content, true);
             currentMonthElement.firstElementChild!.appendChild(noItemsElement);
         }
+        processCurrentSeasonVisits(currentSeason);
     }
 
     function onCodeInput(): any {
@@ -132,7 +133,7 @@ export function onVisitorOpen() {
                     await show();
                     phoneCodeInput.value = '';
                     passportCodeInput.value = '';
-                    window.print();
+                    // window.print();
                 }
             }
         };

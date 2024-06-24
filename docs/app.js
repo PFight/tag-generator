@@ -2464,9 +2464,9 @@
         throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
     }
 
-    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+    var commonjsGlobal$1 = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-    var k$1, goog = goog || {}, l = commonjsGlobal || self;
+    var k$1, goog = goog || {}, l = commonjsGlobal$1 || self;
     function aa$1() { }
     function ba$1(a) { var b = typeof a; b = "object" != b ? b : a ? Array.isArray(a) ? "array" : b : "null"; return "array" == b || "object" == b && "number" == typeof a.length; }
     function p(a) { var b = typeof a; return "object" == b && null != a || "function" == b; }
@@ -22317,6 +22317,736 @@
         document.body.removeChild(element);
     }
 
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    var toastify = {exports: {}};
+
+    /*!
+     * Toastify js 1.12.0
+     * https://github.com/apvarun/toastify-js
+     * @license MIT licensed
+     *
+     * Copyright (C) 2018 Varun A P
+     */
+
+    (function (module) {
+    (function(root, factory) {
+      if (module.exports) {
+        module.exports = factory();
+      } else {
+        root.Toastify = factory();
+      }
+    })(commonjsGlobal, function(global) {
+      // Object initialization
+      var Toastify = function(options) {
+          // Returning a new init object
+          return new Toastify.lib.init(options);
+        },
+        // Library version
+        version = "1.12.0";
+
+      // Set the default global options
+      Toastify.defaults = {
+        oldestFirst: true,
+        text: "Toastify is awesome!",
+        node: undefined,
+        duration: 3000,
+        selector: undefined,
+        callback: function () {
+        },
+        destination: undefined,
+        newWindow: false,
+        close: false,
+        gravity: "toastify-top",
+        positionLeft: false,
+        position: '',
+        backgroundColor: '',
+        avatar: "",
+        className: "",
+        stopOnFocus: true,
+        onClick: function () {
+        },
+        offset: {x: 0, y: 0},
+        escapeMarkup: true,
+        ariaLive: 'polite',
+        style: {background: ''}
+      };
+
+      // Defining the prototype of the object
+      Toastify.lib = Toastify.prototype = {
+        toastify: version,
+
+        constructor: Toastify,
+
+        // Initializing the object with required parameters
+        init: function(options) {
+          // Verifying and validating the input object
+          if (!options) {
+            options = {};
+          }
+
+          // Creating the options object
+          this.options = {};
+
+          this.toastElement = null;
+
+          // Validating the options
+          this.options.text = options.text || Toastify.defaults.text; // Display message
+          this.options.node = options.node || Toastify.defaults.node;  // Display content as node
+          this.options.duration = options.duration === 0 ? 0 : options.duration || Toastify.defaults.duration; // Display duration
+          this.options.selector = options.selector || Toastify.defaults.selector; // Parent selector
+          this.options.callback = options.callback || Toastify.defaults.callback; // Callback after display
+          this.options.destination = options.destination || Toastify.defaults.destination; // On-click destination
+          this.options.newWindow = options.newWindow || Toastify.defaults.newWindow; // Open destination in new window
+          this.options.close = options.close || Toastify.defaults.close; // Show toast close icon
+          this.options.gravity = options.gravity === "bottom" ? "toastify-bottom" : Toastify.defaults.gravity; // toast position - top or bottom
+          this.options.positionLeft = options.positionLeft || Toastify.defaults.positionLeft; // toast position - left or right
+          this.options.position = options.position || Toastify.defaults.position; // toast position - left or right
+          this.options.backgroundColor = options.backgroundColor || Toastify.defaults.backgroundColor; // toast background color
+          this.options.avatar = options.avatar || Toastify.defaults.avatar; // img element src - url or a path
+          this.options.className = options.className || Toastify.defaults.className; // additional class names for the toast
+          this.options.stopOnFocus = options.stopOnFocus === undefined ? Toastify.defaults.stopOnFocus : options.stopOnFocus; // stop timeout on focus
+          this.options.onClick = options.onClick || Toastify.defaults.onClick; // Callback after click
+          this.options.offset = options.offset || Toastify.defaults.offset; // toast offset
+          this.options.escapeMarkup = options.escapeMarkup !== undefined ? options.escapeMarkup : Toastify.defaults.escapeMarkup;
+          this.options.ariaLive = options.ariaLive || Toastify.defaults.ariaLive;
+          this.options.style = options.style || Toastify.defaults.style;
+          if(options.backgroundColor) {
+            this.options.style.background = options.backgroundColor;
+          }
+
+          // Returning the current object for chaining functions
+          return this;
+        },
+
+        // Building the DOM element
+        buildToast: function() {
+          // Validating if the options are defined
+          if (!this.options) {
+            throw "Toastify is not initialized";
+          }
+
+          // Creating the DOM object
+          var divElement = document.createElement("div");
+          divElement.className = "toastify on " + this.options.className;
+
+          // Positioning toast to left or right or center
+          if (!!this.options.position) {
+            divElement.className += " toastify-" + this.options.position;
+          } else {
+            // To be depreciated in further versions
+            if (this.options.positionLeft === true) {
+              divElement.className += " toastify-left";
+              console.warn('Property `positionLeft` will be depreciated in further versions. Please use `position` instead.');
+            } else {
+              // Default position
+              divElement.className += " toastify-right";
+            }
+          }
+
+          // Assigning gravity of element
+          divElement.className += " " + this.options.gravity;
+
+          if (this.options.backgroundColor) {
+            // This is being deprecated in favor of using the style HTML DOM property
+            console.warn('DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.');
+          }
+
+          // Loop through our style object and apply styles to divElement
+          for (var property in this.options.style) {
+            divElement.style[property] = this.options.style[property];
+          }
+
+          // Announce the toast to screen readers
+          if (this.options.ariaLive) {
+            divElement.setAttribute('aria-live', this.options.ariaLive);
+          }
+
+          // Adding the toast message/node
+          if (this.options.node && this.options.node.nodeType === Node.ELEMENT_NODE) {
+            // If we have a valid node, we insert it
+            divElement.appendChild(this.options.node);
+          } else {
+            if (this.options.escapeMarkup) {
+              divElement.innerText = this.options.text;
+            } else {
+              divElement.innerHTML = this.options.text;
+            }
+
+            if (this.options.avatar !== "") {
+              var avatarElement = document.createElement("img");
+              avatarElement.src = this.options.avatar;
+
+              avatarElement.className = "toastify-avatar";
+
+              if (this.options.position == "left" || this.options.positionLeft === true) {
+                // Adding close icon on the left of content
+                divElement.appendChild(avatarElement);
+              } else {
+                // Adding close icon on the right of content
+                divElement.insertAdjacentElement("afterbegin", avatarElement);
+              }
+            }
+          }
+
+          // Adding a close icon to the toast
+          if (this.options.close === true) {
+            // Create a span for close element
+            var closeElement = document.createElement("button");
+            closeElement.type = "button";
+            closeElement.setAttribute("aria-label", "Close");
+            closeElement.className = "toast-close";
+            closeElement.innerHTML = "&#10006;";
+
+            // Triggering the removal of toast from DOM on close click
+            closeElement.addEventListener(
+              "click",
+              function(event) {
+                event.stopPropagation();
+                this.removeElement(this.toastElement);
+                window.clearTimeout(this.toastElement.timeOutValue);
+              }.bind(this)
+            );
+
+            //Calculating screen width
+            var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+
+            // Adding the close icon to the toast element
+            // Display on the right if screen width is less than or equal to 360px
+            if ((this.options.position == "left" || this.options.positionLeft === true) && width > 360) {
+              // Adding close icon on the left of content
+              divElement.insertAdjacentElement("afterbegin", closeElement);
+            } else {
+              // Adding close icon on the right of content
+              divElement.appendChild(closeElement);
+            }
+          }
+
+          // Clear timeout while toast is focused
+          if (this.options.stopOnFocus && this.options.duration > 0) {
+            var self = this;
+            // stop countdown
+            divElement.addEventListener(
+              "mouseover",
+              function(event) {
+                window.clearTimeout(divElement.timeOutValue);
+              }
+            );
+            // add back the timeout
+            divElement.addEventListener(
+              "mouseleave",
+              function() {
+                divElement.timeOutValue = window.setTimeout(
+                  function() {
+                    // Remove the toast from DOM
+                    self.removeElement(divElement);
+                  },
+                  self.options.duration
+                );
+              }
+            );
+          }
+
+          // Adding an on-click destination path
+          if (typeof this.options.destination !== "undefined") {
+            divElement.addEventListener(
+              "click",
+              function(event) {
+                event.stopPropagation();
+                if (this.options.newWindow === true) {
+                  window.open(this.options.destination, "_blank");
+                } else {
+                  window.location = this.options.destination;
+                }
+              }.bind(this)
+            );
+          }
+
+          if (typeof this.options.onClick === "function" && typeof this.options.destination === "undefined") {
+            divElement.addEventListener(
+              "click",
+              function(event) {
+                event.stopPropagation();
+                this.options.onClick();
+              }.bind(this)
+            );
+          }
+
+          // Adding offset
+          if(typeof this.options.offset === "object") {
+
+            var x = getAxisOffsetAValue("x", this.options);
+            var y = getAxisOffsetAValue("y", this.options);
+
+            var xOffset = this.options.position == "left" ? x : "-" + x;
+            var yOffset = this.options.gravity == "toastify-top" ? y : "-" + y;
+
+            divElement.style.transform = "translate(" + xOffset + "," + yOffset + ")";
+
+          }
+
+          // Returning the generated element
+          return divElement;
+        },
+
+        // Displaying the toast
+        showToast: function() {
+          // Creating the DOM object for the toast
+          this.toastElement = this.buildToast();
+
+          // Getting the root element to with the toast needs to be added
+          var rootElement;
+          if (typeof this.options.selector === "string") {
+            rootElement = document.getElementById(this.options.selector);
+          } else if (this.options.selector instanceof HTMLElement || (typeof ShadowRoot !== 'undefined' && this.options.selector instanceof ShadowRoot)) {
+            rootElement = this.options.selector;
+          } else {
+            rootElement = document.body;
+          }
+
+          // Validating if root element is present in DOM
+          if (!rootElement) {
+            throw "Root element is not defined";
+          }
+
+          // Adding the DOM element
+          var elementToInsert = Toastify.defaults.oldestFirst ? rootElement.firstChild : rootElement.lastChild;
+          rootElement.insertBefore(this.toastElement, elementToInsert);
+
+          // Repositioning the toasts in case multiple toasts are present
+          Toastify.reposition();
+
+          if (this.options.duration > 0) {
+            this.toastElement.timeOutValue = window.setTimeout(
+              function() {
+                // Remove the toast from DOM
+                this.removeElement(this.toastElement);
+              }.bind(this),
+              this.options.duration
+            ); // Binding `this` for function invocation
+          }
+
+          // Supporting function chaining
+          return this;
+        },
+
+        hideToast: function() {
+          if (this.toastElement.timeOutValue) {
+            clearTimeout(this.toastElement.timeOutValue);
+          }
+          this.removeElement(this.toastElement);
+        },
+
+        // Removing the element from the DOM
+        removeElement: function(toastElement) {
+          // Hiding the element
+          // toastElement.classList.remove("on");
+          toastElement.className = toastElement.className.replace(" on", "");
+
+          // Removing the element from DOM after transition end
+          window.setTimeout(
+            function() {
+              // remove options node if any
+              if (this.options.node && this.options.node.parentNode) {
+                this.options.node.parentNode.removeChild(this.options.node);
+              }
+
+              // Remove the element from the DOM, only when the parent node was not removed before.
+              if (toastElement.parentNode) {
+                toastElement.parentNode.removeChild(toastElement);
+              }
+
+              // Calling the callback function
+              this.options.callback.call(toastElement);
+
+              // Repositioning the toasts again
+              Toastify.reposition();
+            }.bind(this),
+            400
+          ); // Binding `this` for function invocation
+        },
+      };
+
+      // Positioning the toasts on the DOM
+      Toastify.reposition = function() {
+
+        // Top margins with gravity
+        var topLeftOffsetSize = {
+          top: 15,
+          bottom: 15,
+        };
+        var topRightOffsetSize = {
+          top: 15,
+          bottom: 15,
+        };
+        var offsetSize = {
+          top: 15,
+          bottom: 15,
+        };
+
+        // Get all toast messages on the DOM
+        var allToasts = document.getElementsByClassName("toastify");
+
+        var classUsed;
+
+        // Modifying the position of each toast element
+        for (var i = 0; i < allToasts.length; i++) {
+          // Getting the applied gravity
+          if (containsClass(allToasts[i], "toastify-top") === true) {
+            classUsed = "toastify-top";
+          } else {
+            classUsed = "toastify-bottom";
+          }
+
+          var height = allToasts[i].offsetHeight;
+          classUsed = classUsed.substr(9, classUsed.length-1);
+          // Spacing between toasts
+          var offset = 15;
+
+          var width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+
+          // Show toast in center if screen with less than or equal to 360px
+          if (width <= 360) {
+            // Setting the position
+            allToasts[i].style[classUsed] = offsetSize[classUsed] + "px";
+
+            offsetSize[classUsed] += height + offset;
+          } else {
+            if (containsClass(allToasts[i], "toastify-left") === true) {
+              // Setting the position
+              allToasts[i].style[classUsed] = topLeftOffsetSize[classUsed] + "px";
+
+              topLeftOffsetSize[classUsed] += height + offset;
+            } else {
+              // Setting the position
+              allToasts[i].style[classUsed] = topRightOffsetSize[classUsed] + "px";
+
+              topRightOffsetSize[classUsed] += height + offset;
+            }
+          }
+        }
+
+        // Supporting function chaining
+        return this;
+      };
+
+      // Helper function to get offset.
+      function getAxisOffsetAValue(axis, options) {
+
+        if(options.offset[axis]) {
+          if(isNaN(options.offset[axis])) {
+            return options.offset[axis];
+          }
+          else {
+            return options.offset[axis] + 'px';
+          }
+        }
+
+        return '0px';
+
+      }
+
+      function containsClass(elem, yourClass) {
+        if (!elem || typeof yourClass !== "string") {
+          return false;
+        } else if (
+          elem.className &&
+          elem.className
+            .trim()
+            .split(/\s+/gi)
+            .indexOf(yourClass) > -1
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      // Setting up the prototype for the init object
+      Toastify.lib.init.prototype = Toastify.lib;
+
+      // Returning the Toastify function to be assigned to the window object/module
+      return Toastify;
+    });
+    }(toastify));
+
+    var Toastify = toastify.exports;
+
+    let onVisitorGiftAddedCallback;
+    function setOnVisitorGiftAddedCallback(callback) {
+        onVisitorGiftAddedCallback = callback;
+    }
+    let currentSeason = undefined;
+    function processCurrentSeasonVisits(visits) {
+        currentSeason = visits;
+    }
+    let getSelectedPerson = () => {
+        let personList = document.getElementById("personList");
+        return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
+    };
+    function onVisitorGiftOpen() {
+        let addItemInput = document.getElementById("addItemName");
+        let addItemButton = document.getElementById("addItemButton");
+        let addItemButton2 = document.getElementById("addItemButton2");
+        let addItemButton3 = document.getElementById("addItemButton3");
+        let addItemButton4 = document.getElementById("addItemButton4");
+        let addItemButton5 = document.getElementById("addItemButton5");
+        let clearItemButton = document.getElementById("clearItemButton");
+        let autoClearInput = document.getElementById("autoClearInput");
+        let addItemCards = document.querySelectorAll(".gift-add-item__card");
+        let items = document.getElementById("giftItems");
+        let itemTemplate = document.getElementById("giftItemTemplate");
+        let fioInput = document.getElementById("fioInput");
+        let phoneInput = document.getElementById("phoneInput");
+        let passportInput = document.getElementById("passportInput");
+        let dateInput = document.getElementById("dateInput");
+        dateInput.value = getDateTimeInputValue$1(new Date());
+        let offenderInput = document.getElementById("offenderInput");
+        let saveButton = document.getElementById("save");
+        let giftNumber = document.getElementById("giftNumber");
+        let loadGiftButton = document.getElementById("loadGift");
+        let addItem = async (id, person, count = 1) => {
+            let code = null;
+            try {
+                code = parseInt(id);
+            }
+            catch {
+            }
+            let deleteItem = (itemElement) => {
+                itemElement.remove();
+                let gift = getCurrentGift();
+                onVisitorGiftAddedCallback(gift);
+                loadCardRestrictions();
+            };
+            let deleteItemClick = (ev) => {
+                deleteItem(ev.target.parentElement);
+                let gift = getCurrentGift();
+                onVisitorGiftAddedCallback(gift);
+                loadCardRestrictions();
+            };
+            let item;
+            for (let i = 0; i < count; i++) {
+                if (code) {
+                    let name = itemNames[code];
+                    let itemElement = document.importNode(itemTemplate.content, true);
+                    itemElement.querySelector(".gift-item__name").textContent = name;
+                    itemElement.querySelector(".gift-item__person").textContent = person;
+                    itemElement.querySelector(".gift-item__id").textContent = id;
+                    itemElement.querySelector(".gift-item__delete").addEventListener("click", deleteItemClick);
+                    item = itemElement.querySelector(".gift-item");
+                    items.prepend(itemElement);
+                }
+                else {
+                    let itemElement = document.importNode(itemTemplate.content, true);
+                    itemElement.querySelector(".gift-item__id").textContent = id;
+                    itemElement.querySelector(".gift-item__person").textContent = person;
+                    itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItemClick);
+                    item = itemElement.querySelector(".gift-item");
+                    items.prepend(itemElement);
+                }
+            }
+            if (onVisitorGiftAddedCallback) {
+                let gift = getCurrentGift();
+                onVisitorGiftAddedCallback(gift);
+            }
+            loadCardRestrictions();
+            showAddItemToast(person, code, () => deleteItem(item));
+        };
+        let onAddItem = (count = 1, clearInput = null) => {
+            addItem(addItemInput.value, getSelectedPerson() || "", count);
+            if (clearInput || (clearInput === null && autoClearInput.checked)) {
+                addItemInput.value = "";
+                addItemInput.focus();
+            }
+        };
+        addItemInput.addEventListener("keypress", (ev) => {
+            if (ev.key === "Enter") {
+                onAddItem();
+            }
+        });
+        addItemInput.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter" && ev.ctrlKey) {
+                ev?.preventDefault();
+                onAddItem(1, false);
+            }
+            if (ev.key === "Backspace") {
+                addItemInput.value = "";
+            }
+        });
+        addItemButton.addEventListener("click", () => onAddItem(1));
+        addItemButton2.addEventListener("click", () => onAddItem(2));
+        addItemButton3.addEventListener("click", () => onAddItem(3));
+        addItemButton4.addEventListener("click", () => onAddItem(4));
+        addItemButton5.addEventListener("click", () => onAddItem(5));
+        for (let i = 0; i < addItemCards.length; i++) {
+            let card = addItemCards[i];
+            card.addEventListener("click", () => {
+                let cardValue = card.getAttribute("data-code");
+                addItem(cardValue, getSelectedPerson() || "", 1);
+            });
+        }
+        clearItemButton.addEventListener("click", () => {
+            addItemInput.value = "";
+            addItemInput.focus();
+        });
+        const disableAutoClearInputKey = "disableAutoClearInput";
+        autoClearInput.addEventListener("change", () => {
+            if (!autoClearInput.checked) {
+                localStorage[disableAutoClearInputKey] = "true";
+            }
+            else {
+                delete localStorage[disableAutoClearInputKey];
+            }
+        });
+        autoClearInput.checked = !localStorage[disableAutoClearInputKey];
+        let saving = false;
+        let save = async () => {
+            if (!phoneInput.value && !passportInput.value && !fioInput.value) {
+                alert("Укажите либо номер телефона, либо номер паспорта, либо фамилию и инициалы");
+                return;
+            }
+            if (saving) {
+                console.info("Already saving...");
+                return;
+            }
+            saving = true;
+            try {
+                let gift = getCurrentGift();
+                gift.items = gift.items.map(x => JSON.stringify(x));
+                let id = await saveGift(gift);
+                giftNumber.value = id;
+            }
+            finally {
+                saving = false;
+            }
+        };
+        let getCurrentGift = () => {
+            let itemsElements = document.querySelectorAll(".gift-item");
+            let items = [].map.call(itemsElements, (element) => {
+                let id = element.querySelector(".gift-item__id").textContent;
+                let person = element.querySelector(".gift-item__person").textContent;
+                let name = element.querySelector(".gift-item__name").textContent;
+                return { id: id || name, person };
+            });
+            return {
+                id: giftNumber.value,
+                fio: fioInput.value?.toLowerCase(),
+                phone: phoneInput.value,
+                passport: passportInput.value,
+                date: new Date(dateInput.value),
+                offender: offenderInput.checked,
+                items
+            };
+        };
+        saveButton.addEventListener("click", save);
+        let load = async () => {
+            items.innerHTML = "";
+            let gift = await getGift(giftNumber.value);
+            fioInput.value = gift.fio;
+            phoneInput.value = gift.phone;
+            passportInput.value = gift.passport;
+            dateInput.value = getDateTimeInputValue$1(gift.date);
+            offenderInput.checked = gift.offender;
+            for (let item of gift.items) {
+                if (typeof (item) == "object") {
+                    addItem(item.id, item.person);
+                }
+                else {
+                    addItem(item.toString(), "");
+                }
+            }
+        };
+        loadGiftButton.addEventListener("click", load);
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlGiftNumber = urlParams.get('gift');
+        if (urlGiftNumber) {
+            giftNumber.value = urlGiftNumber;
+            load();
+        }
+        initPersonSelect();
+    }
+    function loadCardRestrictions() {
+        let addItemCards = document.querySelectorAll(".gift-add-item__card");
+        let selectedPerson = getSelectedPerson();
+        if (currentSeason) {
+            let currentPersonSeasonItems = currentSeason.items.filter(x => x.person === selectedPerson);
+            for (let i = 0; i < addItemCards.length; i++) {
+                let card = addItemCards[i];
+                let cardValue = card.getAttribute("data-code");
+                let currentSeasonCount = currentPersonSeasonItems.filter(x => x.id === cardValue).length;
+                let restriction = itemRestrictions[cardValue];
+                if (restriction && currentSeasonCount >= restriction) {
+                    card.classList.add("gift-add-item__card_restricted");
+                }
+                else {
+                    card.classList.remove("gift-add-item__card_restricted");
+                }
+            }
+        }
+    }
+    function loadPersons(visits) {
+        let persons = [];
+        for (let visit of visits) {
+            if (visit.items) {
+                for (let item of visit.items) {
+                    if (typeof (item) == "object") {
+                        if (!persons.includes(item.person)) {
+                            persons.push(item.person);
+                            addPerson(item.person);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    function cleanGift() {
+        let personList = document.getElementById("personList");
+        let items = document.getElementById("giftItems");
+        let fioInput = document.getElementById("fioInput");
+        let phoneInput = document.getElementById("phoneInput");
+        let passportInput = document.getElementById("passportInput");
+        let dateInput = document.getElementById("dateInput");
+        dateInput.value = getDateTimeInputValue$1(new Date());
+        let offenderInput = document.getElementById("offenderInput");
+        let giftNumber = document.getElementById("giftNumber");
+        items.innerHTML = "";
+        fioInput.value = "";
+        phoneInput.value = "";
+        passportInput.value = "";
+        dateInput.value = getDateTimeInputValue$1(new Date());
+        offenderInput.checked = false;
+        giftNumber.value = "";
+        personList.innerHTML = "";
+    }
+    function getDateTimeInputValue$1(date) {
+        if (!date)
+            return "";
+        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 16);
+    }
+    function showAddItemToast(person, code, deleteItem) {
+        let addItemToastTemplate = document.getElementById("addItemToast");
+        let addItemToast = document.importNode(addItemToastTemplate.content, true);
+        addItemToast.querySelector(".add-item-toast__person").textContent = person;
+        addItemToast.querySelector(".add-item-toast__image").src = code + ".png";
+        addItemToast.querySelector(".add-item-toast__text").textContent = `${itemNames[code]}`;
+        addItemToast.querySelector(".add-item-toast__cancel").addEventListener("click", () => {
+            toast.hideToast();
+            deleteItem();
+            Toastify({
+                text: `Отменено ${itemNames[code]} у ${person}!`
+            }).showToast();
+        });
+        var toast = Toastify({
+            node: addItemToast.querySelector(".add-item-toast"),
+            duration: 2000,
+            close: false,
+            gravity: "top",
+            position: "right",
+            newWindow: true,
+        });
+        toast.showToast();
+    }
+
     function initPersonSelect() {
         let addItemPerson = document.getElementById("addItemPerson");
         document.getElementById("personList");
@@ -22390,6 +23120,7 @@
                 items[i].classList.remove(SELECTED_PERSON_CLASS);
             }
         }
+        loadCardRestrictions();
     }
     function renderNameList(search, onItemClick) {
         let nameList = document.getElementById("nameList");
@@ -22490,7 +23221,7 @@
         let phoneInput = document.getElementById("phoneInput");
         let passportInput = document.getElementById("passportInput");
         let dateInput = document.getElementById("dateInput");
-        dateInput.value = getDateTimeInputValue$1(new Date());
+        dateInput.value = getDateTimeInputValue(new Date());
         let offenderInput = document.getElementById("offenderInput");
         let saveButton = document.getElementById("save");
         let giftNumber = document.getElementById("giftNumber");
@@ -22595,189 +23326,6 @@
             fioInput.value = gift.fio;
             phoneInput.value = gift.phone;
             passportInput.value = gift.passport;
-            dateInput.value = getDateTimeInputValue$1(gift.date);
-            offenderInput.checked = gift.offender;
-            for (let item of gift.items) {
-                if (typeof (item) == "object") {
-                    addItem(item.id, item.person);
-                }
-                else {
-                    addItem(item.toString(), "");
-                }
-            }
-        };
-        loadGiftButton.addEventListener("click", load);
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlGiftNumber = urlParams.get('gift');
-        if (urlGiftNumber) {
-            giftNumber.value = urlGiftNumber;
-            load();
-        }
-        initPersonSelect();
-    }
-    function getDateTimeInputValue$1(date) {
-        if (!date)
-            return "";
-        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 16);
-    }
-
-    const START_PARAM = "start";
-    const COUNT_PARAM = "count";
-    const TEMPLATE_PARAM = "template";
-    const AGE_PARAM = "age";
-    const GENDER_PARAM = "gender";
-    const CATEGORY_PARAM = "category";
-    const SIZE_PARAM = "size";
-    const STYLE_PARAM = "style";
-    const QUALITY_PARAM = "quality";
-
-    let onVisitorGiftAddedCallback;
-    function setOnVisitorGiftAddedCallback(callback) {
-        onVisitorGiftAddedCallback = callback;
-    }
-    function onVisitorGiftOpen() {
-        let addItemInput = document.getElementById("addItemName");
-        let addItemButton = document.getElementById("addItemButton");
-        let addItemButton2 = document.getElementById("addItemButton2");
-        let addItemButton3 = document.getElementById("addItemButton3");
-        let addItemButton4 = document.getElementById("addItemButton4");
-        let addItemButton5 = document.getElementById("addItemButton5");
-        let clearItemButton = document.getElementById("clearItemButton");
-        let autoClearInput = document.getElementById("autoClearInput");
-        let personList = document.getElementById("personList");
-        let items = document.getElementById("giftItems");
-        let itemTemplate = document.getElementById("giftItemTemplate");
-        let fioInput = document.getElementById("fioInput");
-        let phoneInput = document.getElementById("phoneInput");
-        let passportInput = document.getElementById("passportInput");
-        let dateInput = document.getElementById("dateInput");
-        dateInput.value = getDateTimeInputValue(new Date());
-        let offenderInput = document.getElementById("offenderInput");
-        let saveButton = document.getElementById("save");
-        let giftNumber = document.getElementById("giftNumber");
-        let loadGiftButton = document.getElementById("loadGift");
-        let getSelectedPerson = () => {
-            return personList.querySelector(".gift-add-item__person-list-item.selected")?.getAttribute("data-name");
-        };
-        let addItem = async (id, person, count = 1) => {
-            let code = null;
-            try {
-                code = parseInt(id);
-            }
-            catch {
-            }
-            let deleteItem = (ev) => {
-                ev.target.parentElement.remove();
-            };
-            for (let i = 0; i < count; i++) {
-                if (code) {
-                    let name = itemNames[code];
-                    let itemElement = document.importNode(itemTemplate.content, true);
-                    itemElement.querySelector(".gift-item__name").textContent = name;
-                    itemElement.querySelector(".gift-item__person").textContent = person;
-                    itemElement.querySelector(".gift-item__id").textContent = id;
-                    itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                    items.prepend(itemElement);
-                }
-                else {
-                    let itemElement = document.importNode(itemTemplate.content, true);
-                    itemElement.querySelector(".gift-item__id").textContent = id;
-                    itemElement.querySelector(".gift-item__person").textContent = person;
-                    itemElement.querySelector(".gift-item__delete")?.addEventListener("click", deleteItem);
-                    items.prepend(itemElement);
-                }
-            }
-        };
-        let onAddItem = (count = 1, clearInput = null) => {
-            addItem(addItemInput.value, getSelectedPerson() || "", count);
-            if (clearInput || (clearInput === null && autoClearInput.checked)) {
-                addItemInput.value = "";
-                addItemInput.focus();
-            }
-            if (onVisitorGiftAddedCallback) {
-                let gift = getCurrentGift();
-                onVisitorGiftAddedCallback(gift);
-            }
-        };
-        addItemInput.addEventListener("keypress", (ev) => {
-            if (ev.key === "Enter") {
-                onAddItem();
-            }
-        });
-        addItemInput.addEventListener("keydown", (ev) => {
-            if (ev.key === "Enter" && ev.ctrlKey) {
-                ev?.preventDefault();
-                onAddItem(1, false);
-            }
-            if (ev.key === "Backspace") {
-                addItemInput.value = "";
-            }
-        });
-        addItemButton.addEventListener("click", () => onAddItem(1));
-        addItemButton2.addEventListener("click", () => onAddItem(2));
-        addItemButton3.addEventListener("click", () => onAddItem(3));
-        addItemButton4.addEventListener("click", () => onAddItem(4));
-        addItemButton5.addEventListener("click", () => onAddItem(5));
-        clearItemButton.addEventListener("click", () => {
-            addItemInput.value = "";
-            addItemInput.focus();
-        });
-        const disableAutoClearInputKey = "disableAutoClearInput";
-        autoClearInput.addEventListener("change", () => {
-            if (!autoClearInput.checked) {
-                localStorage[disableAutoClearInputKey] = "true";
-            }
-            else {
-                delete localStorage[disableAutoClearInputKey];
-            }
-        });
-        autoClearInput.checked = !localStorage[disableAutoClearInputKey];
-        let saving = false;
-        let save = async () => {
-            if (!phoneInput.value && !passportInput.value && !fioInput.value) {
-                alert("Укажите либо номер телефона, либо номер паспорта, либо фамилию и инициалы");
-                return;
-            }
-            if (saving) {
-                console.info("Already saving...");
-                return;
-            }
-            saving = true;
-            try {
-                let gift = getCurrentGift();
-                gift.items = gift.items.map(x => JSON.stringify(x));
-                let id = await saveGift(gift);
-                giftNumber.value = id;
-            }
-            finally {
-                saving = false;
-            }
-        };
-        let getCurrentGift = () => {
-            let itemsElements = document.querySelectorAll(".gift-item");
-            let items = [].map.call(itemsElements, (element) => {
-                let id = element.querySelector(".gift-item__id").textContent;
-                let person = element.querySelector(".gift-item__person").textContent;
-                let name = element.querySelector(".gift-item__name").textContent;
-                return { id: id || name, person };
-            });
-            return {
-                id: giftNumber.value,
-                fio: fioInput.value?.toLowerCase(),
-                phone: phoneInput.value,
-                passport: passportInput.value,
-                date: new Date(dateInput.value),
-                offender: offenderInput.checked,
-                items
-            };
-        };
-        saveButton.addEventListener("click", save);
-        let load = async () => {
-            items.innerHTML = "";
-            let gift = await getGift(giftNumber.value);
-            fioInput.value = gift.fio;
-            phoneInput.value = gift.phone;
-            passportInput.value = gift.passport;
             dateInput.value = getDateTimeInputValue(gift.date);
             offenderInput.checked = gift.offender;
             for (let item of gift.items) {
@@ -22798,45 +23346,21 @@
         }
         initPersonSelect();
     }
-    function loadPersons(visits) {
-        let persons = [];
-        for (let visit of visits) {
-            if (visit.items) {
-                for (let item of visit.items) {
-                    if (typeof (item) == "object") {
-                        if (!persons.includes(item.person)) {
-                            persons.push(item.person);
-                            addPerson(item.person);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    function cleanGift() {
-        let personList = document.getElementById("personList");
-        let items = document.getElementById("giftItems");
-        let fioInput = document.getElementById("fioInput");
-        let phoneInput = document.getElementById("phoneInput");
-        let passportInput = document.getElementById("passportInput");
-        let dateInput = document.getElementById("dateInput");
-        dateInput.value = getDateTimeInputValue(new Date());
-        let offenderInput = document.getElementById("offenderInput");
-        let giftNumber = document.getElementById("giftNumber");
-        items.innerHTML = "";
-        fioInput.value = "";
-        phoneInput.value = "";
-        passportInput.value = "";
-        dateInput.value = getDateTimeInputValue(new Date());
-        offenderInput.checked = false;
-        giftNumber.value = "";
-        personList.innerHTML = "";
-    }
     function getDateTimeInputValue(date) {
         if (!date)
             return "";
         return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 16);
     }
+
+    const START_PARAM = "start";
+    const COUNT_PARAM = "count";
+    const TEMPLATE_PARAM = "template";
+    const AGE_PARAM = "age";
+    const GENDER_PARAM = "gender";
+    const CATEGORY_PARAM = "category";
+    const SIZE_PARAM = "size";
+    const STYLE_PARAM = "style";
+    const QUALITY_PARAM = "quality";
 
     const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
     let LIMITS_PASPORT = "<b>Лимит по паспорту:</b> 5 детских вещей одной категории на человека в сезон";
@@ -22919,8 +23443,8 @@
                 let visitElement = createVisitView(visit);
                 historyElement.append(visitElement);
             }
-            let currentSeason = Seasons.find(months => months.includes(new Date().getMonth()));
-            let currentMonth = {
+            let currentSeasonMonths = Seasons.find(months => months.includes(new Date().getMonth()));
+            let currentSeason = {
                 date: "В этом сезоне",
                 fio: visits.find(x => x.fio)?.fio || "",
                 id: "",
@@ -22928,17 +23452,18 @@
                 phone: visits.find(x => x.phone)?.phone || "",
                 passport: visits.find(x => x.passport)?.passport || "",
                 items: visits.filter(x => monthDiff(x.date, new Date()) <= 6 &&
-                    currentSeason.includes(x.date.getMonth()))
+                    currentSeasonMonths.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
-            currentMonth.date += " (" + currentMonth.items.filter(x => isChildItem(x)).length + " детского)";
-            let visitElement = createVisitView(currentMonth);
+            currentSeason.date += " (" + currentSeason.items.filter(x => isChildItem(x)).length + " детского)";
+            let visitElement = createVisitView(currentSeason);
             currentMonthElement.append(visitElement);
-            if (currentMonth.items.length == 0) {
+            if (currentSeason.items.length == 0) {
                 var noItemsTemplate = document.getElementById("noVisitTemplate");
                 var noItemsElement = document.importNode(noItemsTemplate.content, true);
                 currentMonthElement.firstElementChild.appendChild(noItemsElement);
             }
+            processCurrentSeasonVisits(currentSeason);
         }
         function onCodeInput() {
             return async (ev) => {
@@ -22950,7 +23475,7 @@
                         await show();
                         phoneCodeInput.value = '';
                         passportCodeInput.value = '';
-                        window.print();
+                        // window.print();
                     }
                 }
             };
