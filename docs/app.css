@@ -193,6 +193,13 @@
     flex-direction: column;
 }
 
+@media print {
+    .visitor-body {
+        height: initial;
+        display: block;
+    }
+}
+
 .visitor-controls {
     padding: 5px;
     text-align: center;
