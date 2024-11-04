@@ -23363,6 +23363,7 @@
     const QUALITY_PARAM = "quality";
 
     const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
+    const MOTH_VISITS_LIMIT = 8;
     let LIMITS_PASPORT = "<b>Лимит по паспорту:</b> 5 детских вещей одной категории на человека в сезон";
     let LIMITS_PHONE = "<b>Лимит по телефону:</b> 10 детских вещей в сезон, не более 3 одной категории";
     let LIMITS_CHILDREN = "<b>Если больше 3-х детей:</b> нужны подтверждающие документы";
@@ -23393,6 +23394,12 @@
             identityElement.innerText = phoneCode + " " + passportCode;
             if (visits.length == 0) {
                 identityElement.innerText += " (новый)";
+            }
+            let currentMonthVisits = visits.filter(x => x.date.getMonth() == (new Date()).getMonth() &&
+                x.date.getFullYear() == (new Date()).getFullYear());
+            identityElement.innerText += ` (посещений в этом месяце: ${currentMonthVisits.length})`;
+            if (currentMonthVisits.length >= MOTH_VISITS_LIMIT) {
+                identityElement.innerText += ` (посещений в этом месяце: ${currentMonthVisits.length} [ЛИМИТ ИСЧЕРПАН])`;
             }
             if (visits.some(x => x.offender)) {
                 offenderBlock.className = "";
