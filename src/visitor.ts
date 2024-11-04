@@ -86,7 +86,7 @@ export function onVisitorOpen() {
 
         setOnVisitorGiftAddedCallback(gift => {
             (gift as any)["current"] = true;
-            let index = visits.findIndex(x => (x as any)["current"]);
+            let index = visits.findIndex(x => (x as any)["current"] || x.id === gift.id);
             if (index >= 0) {
                 visits[index] = gift;
             } else {

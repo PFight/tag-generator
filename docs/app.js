@@ -23429,7 +23429,7 @@
             showVisits(visits);
             setOnVisitorGiftAddedCallback(gift => {
                 gift["current"] = true;
-                let index = visits.findIndex(x => x["current"]);
+                let index = visits.findIndex(x => x["current"] || x.id === gift.id);
                 if (index >= 0) {
                     visits[index] = gift;
                 }
