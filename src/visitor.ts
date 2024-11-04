@@ -3,7 +3,7 @@ import { Gift, GiftItem } from "interfaces";
 import { chlidrenItems, isChildItem, itemNames, itemRestrictions } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./visitor.css";
-import { cleanGift, loadPersons, onVisitorGiftOpen, processCurrentSeasonVisits, setOnVisitorGiftAddedCallback } from "visitor-gift";
+import { cleanGift, loadPersons, onVisitorGiftOpen, processCurrentSeasonVisits, setOnOnLoadGiftCallback, setOnVisitorGiftAddedCallback } from "visitor-gift";
 
 const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
 const MOTH_VISITS_LIMIT = 8;
@@ -95,6 +95,16 @@ export function onVisitorOpen() {
             showVisits(visits);
         });
     };
+
+    setOnOnLoadGiftCallback(async (gift) => {
+        if (gift.passport) {
+            passportCodeInput.value = gift.passport;
+        }
+        if (gift.phone) {
+            phoneCodeInput.value = gift.phone;
+        }
+        await show();
+    });
 
     viewHistoryButton.addEventListener("click", show);
     phoneCodeInput.addEventListener("keyup", onCodeInput());

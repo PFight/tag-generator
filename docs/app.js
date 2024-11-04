@@ -22776,6 +22776,10 @@
     function setOnVisitorGiftAddedCallback(callback) {
         onVisitorGiftAddedCallback = callback;
     }
+    let onLoadGift;
+    function setOnOnLoadGiftCallback(callback) {
+        onLoadGift = callback;
+    }
     let currentSeason = undefined;
     function processCurrentSeasonVisits(visits) {
         currentSeason = visits;
@@ -22942,6 +22946,10 @@
         let load = async () => {
             items.innerHTML = "";
             let gift = await getGift(giftNumber.value);
+            if (onLoadGift) {
+                await onLoadGift(gift);
+            }
+            giftNumber.value = gift.id;
             fioInput.value = gift.fio;
             phoneInput.value = gift.phone;
             passportInput.value = gift.passport;
@@ -23439,6 +23447,15 @@
                 showVisits(visits);
             });
         };
+        setOnOnLoadGiftCallback(async (gift) => {
+            if (gift.passport) {
+                passportCodeInput.value = gift.passport;
+            }
+            if (gift.phone) {
+                phoneCodeInput.value = gift.phone;
+            }
+            await show();
+        });
         viewHistoryButton.addEventListener("click", show);
         phoneCodeInput.addEventListener("keyup", onCodeInput());
         passportCodeInput.addEventListener("keyup", onCodeInput());

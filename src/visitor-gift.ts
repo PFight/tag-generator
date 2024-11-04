@@ -13,6 +13,12 @@ export function setOnVisitorGiftAddedCallback(callback: typeof onVisitorGiftAdde
     onVisitorGiftAddedCallback = callback;
 }
 
+export let onLoadGift: (gift: Gift) => Promise<void>;
+
+export function setOnOnLoadGiftCallback(callback: typeof onLoadGift) {
+    onLoadGift = callback;
+}
+
 let currentSeason: Gift | undefined = undefined;
 
 export function processCurrentSeasonVisits(visits: Gift) {
@@ -198,7 +204,11 @@ export function onVisitorGiftOpen() {
 
     let load = async () => {
         items.innerHTML = "";
-        let gift = await getGift(giftNumber.value);         
+        let gift = await getGift(giftNumber.value); 
+        if (onLoadGift) {
+            await onLoadGift(gift);
+        }
+        giftNumber.value = gift.id;
         fioInput.value = gift.fio;
         phoneInput.value = gift.phone;
         passportInput.value = gift.passport;
