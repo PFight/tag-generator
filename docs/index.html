@@ -4,290 +4,39 @@
 		<link rel="stylesheet" href="app.css?v=9">
 	</head>
 
-	<body>
+	<body class="generation-body">
 		<div id="pageType" data-value="generation"></div>
 		<div id="loading">Загрузка...</div>
 		<div id="settings">
 			<div id="generation-block">
 				<div id="login-info" class="settings__login-info"></div>
-				<div class="settings__option">
-					<span class="setting-header">
-						Возраст:
-					</span>
-					<label>
-						<input type="radio" name="age" id="ageAdult" value="adult" onchange="onGenderChange()">
-						Взрослая
-					</label>
-					<label>
-						<input type="radio" name="age" id="ageKid" value="kid" onchange="onGenderChange()">
-						Детская
-					</label>
-					<label>
-						<input type="radio" name="age" id="ageBaby" value="baby" onchange="onGenderChange()">
-						Младенческая
-					</label>
-				</div>
-				<div class="settings__option">
-					<span class="setting-header">
-						Пол:
-					</span>
-					<label>
-						<input type="radio" name="gender" id="genderFemale" value="female" onchange="onGenderChange()">
-						Женская
-					</label>
-					<label>
-						<input type="radio" name="gender" id="genderMale" value="male" onchange="onGenderChange()">
-						Мужская
-					</label>
-					<label id="genderKidLabel">
-						<input type="radio" name="gender" id="genderKid" value="universal" onchange="onGenderChange()">
-						Универсальная
-					</label>
-
-				</div>
-			
-				<div class="settings__option settings__option_categories" id="femaleCategories">
-					<span class="setting-header">
-						Категория:
-					</span>
-					<div class="setting-values-multiline">
-						<label>
-							<input type="radio" name="category" id="categoryF" value="F">
-							Ф (футболки, майки, блузы, топы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryS" value="S">
-							С (свитеры, олимпийки, кардиганы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryB" value="B">
-							Б (брюки, джинсы и шорты)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryP" value="P">
-							П (платья и сарафаны)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryU" value="U">
-							Ю (юбки)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryU" value="D">
-							Д (домашняя одежда, ночнушки, халаты и т.д.)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryG" value="G">
-							Г (головные уборы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryV" value="V">
-							В (верхняя одежда)
-						</label>
-					</div>
-				</div>
-				<div class="settings__option settings__option_categories" id="maleCategories">
-					<span class="setting-header">
-						Категория:
-					</span>
-					<div class="setting-values-multiline">
-						<label>
-							<input type="radio" name="category" id="categoryF" value="F">
-							Ф (футболки, майки, блузы, топы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryF" value="R">
-							Р (рубашки)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryS" value="S">
-							С (свитеры, олимпийки, кардиганы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryB" value="B">
-							Б (брюки, джинсы и шорты)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryU" value="D">
-							Д (домашняя одежда, ночнушки, халаты и т.д.)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryG" value="G">
-							Г (головные уборы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryV" value="V">
-							В (верхняя одежда)
-						</label>
-					</div>
-				</div>
-				<div class="settings__option settings__option_categories" id="babyСategories">
-					<span class="setting-header">
-						Категория:
-					</span>
-					<div class="setting-values-multiline">
-						<label>
-							<input type="radio" name="category" id="categoryF" value="F">
-							Ф (футболки, майки, блузы, топы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryS" value="SM">
-							С (свитеры, распашонки, кофточки, жакеты, джемперы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryB" value="BM">
-							Б (штанишки, шорты и ползунки)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryB" value="BK">
-							БК (боди)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryP" value="P">
-							П (платья и сарафаны)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryU" value="U">
-							Ю (юбки)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryU" value="D">
-							Д (домашняя одежда, ночнушки, халаты и т.д.)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryG" value="G">
-							Г (головные уборы)
-						</label>
-						<label>
-							<input type="radio" name="category" id="categoryV" value="V">
-							В (верхняя одежда)
-						</label>
-					</div>
-				</div>
-				<div class="settings__option" id="size">
-					<span class="setting-header">
-						Размер:
-					</span>
-					<label>
-						<input type="radio" name="size" id="sizeXS" value="XS">
-						XS
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeS" value="S">
-						S
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeM" value="M">
-						M
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeL" value="L">
-						L
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeXL" value="XL">
-						XL
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeXXL" value="XXL">
-						XXL
-					</label>
-					<label>
-						<input type="radio" name="size" id="sizeXXXL" value="XXXL">
-						XXXL+
-					</label>
-				</div>
-				<div class="settings__option">
-					<span class="setting-header">
-						Стиль:
-					</span>
-					<label>
-						<input type="radio" name="style" id="styleNeutral" value="neutral">
-						Нейтральный (1)
-					</label>
-					<label>
-						<input type="radio" name="style" id="styleBright" value="bright">
-						Яркий стиль (2)
-					</label>
-					<label>
-						<input type="radio" name="style" id="styleExpressive" value="expressive">
-						Экспрессивный / устаревший (3)
-					</label>
-				</div>
-				<div class="settings__option">
-					<span class="setting-header">
-						Ткань:
-					</span>
-					<label>
-						<input type="radio" name="quality" id="qualityLow" value="low">
-						Синтетика / заношенность (3)
-					</label>
-					<label>
-						<input type="radio" name="quality" id="qualityMiddle" value="middle">
-						Натуральные ткани (2)
-					</label>
-					<label>
-						<input type="radio" name="quality" id="qualityHigh" value="high">
-						Брендовая одежда (1)
-					</label>
-				</div>
-				<label class="settings__option_hidden">
-					Начальный номер:
-					<input id="start" type="number" value="1" />
-				</label>
+				
 				<label id="option-count" class="settings__option">
 					Количество:
-					<input id="count" type="number" value="1" max="48" />
+					<input id="count" type="number" value="1" />
 				</label>
-				
 				<button id="generate" class=settings__main-button>Создать бирки</button>
 			</div>
 		</div>
 		<div id="print"></div>
-		<template id="female-male">
-			<div class="birka">
-				<table>
-					<tr>
-						<td class="label"><b>Возраст:</b></td>						
-						<td class="value" colspan="3">
-							<span id="ageValue"></span>
-						</td>
-					</tr>
-					<tr>
-						<td class="label"><b>Принадл.:</b></td>						
-						<td class="value" colspan="3">
-							<span id="genderValue"></span>
-						</td>
-					</tr>
-					<tr>
-						<td class="label"><b>Категория:</b></td>						
-						<td class="value" colspan="3">
-							<span id="categoryValue"></span>
-						</td>
-					</tr>
-					<tr id="sizeRow">
-						<td class="label" ><b>Размер:</b></td>
-						<td class="value" colspan="3">
-							<span id="sizeValue"></span>
-						</td>
-					</tr>
-					<tr>
-						<td class="label" ><b>Стиль:</b></td>
-						<td class="value" colspan="3">
-							<span id="styleValue"></span>
-						</td>
-					</tr>
-					<tr>
-						<td class="label" ><b>Ткань:</b></td>
-						<td class="value" colspan="3">
-							<span id="qualityValue"></span>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="4" class="bottom">
-							<center><svg class="code"></svg></center>
-						</td>
-					</tr>
-				</table>
+		<template id="visitor-card">
+			<div class="visitor-card">
+				<div class="visitor-card__head">
+					<img src="logo.jpg" class="visitor-card__head-logo" />
+					<div class="visitor-card__head-text">
+						Свято-Троицкий центр нужных вещей <br/>"В добрые руки"
+					</div>
+				</div>
+				<div class="visitor-card__center">
+					<div class="visitor-card__name" >Карта посетителя</div>
+					<div class="visitor-card__code">
+						<svg class="code"></svg>
+					</div>
+				</div>
+				<div class="visitor-card__contacts">
+					<div>trinityhelp.ru</div>
+					<div>vk.com/3dobro57</div>
+				</div>
 			</div>
 		</template>
 		<script src="app.js?v=26"></script>

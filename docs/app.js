@@ -21773,41 +21773,6 @@
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    async function getLastGeneration() {
-        let latest = await firebase.firestore().doc("generation/latest").get();
-        return {
-            start: latest.get("start"),
-            end: latest.get("end"),
-            template: latest.get("template"),
-            userId: latest.get("userId"),
-            userName: latest.get("userName")
-        };
-    }
-    async function saveLastGeneration(gen) {
-        let latestDoc = firebase.firestore().doc("generation/latest");
-        let latest = await firebase.firestore().doc("generation/latest").get();
-        if (latest.get("end") > gen.end) {
-            throw Error("Выделенные номера уже заняты. Пожалуйста, обновите страницу и попробуйте снова.");
-        }
-        await latestDoc.set(gen);
-        let historyRecort = firebase.firestore().collection("generation").doc();
-        await historyRecort.set(gen);
-        await createItems(gen);
-    }
-    async function createItems(gen) {
-        for (let i = gen.start; i <= gen.end; i++) {
-            let item = firebase.firestore().collection("items").doc(i.toString());
-            await item.set({
-                age: gen.age,
-                gender: gen.gender,
-                category: gen.category,
-                size: gen.size,
-                style: gen.style,
-                quality: gen.quality,
-                template: gen.template
-            });
-        }
-    }
     async function saveGift(gift) {
         if (!gift.id) {
             let latest = firebase.firestore().collection("gifts").doc("latest");
@@ -23360,15 +23325,8 @@
         return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 16);
     }
 
-    const START_PARAM = "start";
     const COUNT_PARAM = "count";
     const TEMPLATE_PARAM = "template";
-    const AGE_PARAM = "age";
-    const GENDER_PARAM = "gender";
-    const CATEGORY_PARAM = "category";
-    const SIZE_PARAM = "size";
-    const STYLE_PARAM = "style";
-    const QUALITY_PARAM = "quality";
 
     const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
     const MOTH_VISITS_LIMIT = 8;
@@ -26892,208 +26850,70 @@
     // Export to commonJS
     var JsBarcode_1 = JsBarcode;
 
-    const ageLocalization = {
-        'adult': "Взрослое",
-        'kid': "Детское",
-        'baby': "Младенческое"
-    };
-    const genderLocalization = {
-        'male': "Мужское",
-        'female': "Женское",
-        'universal': "Универсальная"
-    };
-    const categoryLocalization = {
-        'F': "Ф (футболки, майки, блузы, топы)",
-        'S': "С (свитеры, олимпийки, кардиганы)",
-        'B': "Б (брюки, джинсы и шорты)",
-        'D': "Д (домашняя одежда, ночнушки, халаты и т.д.)",
-        'P': "П (платья и сарафаны)",
-        'U': "Ю (юбки)",
-        'G': "Г (головные уборы)",
-        'V': "В (верхняя одежда)",
-        'R': "Р (рубашки)",
-        'BK': "БК (боди)",
-        'BM': "Б (штанишки, шорты и ползунки)",
-        'SM': "С (свитеры, распашонки, кофточки, жакеты, джемперы)"
-    };
-    const sizeLocalization = {
-        'adult': {
-            'male': {
-                'XS': "XS (< 44)",
-                'S': "S (44)",
-                'M': "M (46-48)",
-                'L': "L (50-52)",
-                'XL': "XL (54-56)",
-                'XXL': "XXL (58-62)",
-                'XXXL': "XXXL+ (64+)"
-            },
-            'female': {
-                'XS': "XS (< 38)",
-                'S': "S (40-42)",
-                'M': "M (44-46)",
-                'L': "L (48-50)",
-                'XL': "XL (52-54)",
-                'XXL': "XXL (56)",
-                'XXXL': "XXXL+ (58+)"
-            },
-        },
-        'kid': {
-            'male': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            },
-            'female': {
-                'XS': "50-62",
-                'S': "68-86",
-                'M': "92-110",
-                'L': "116-128",
-                'XL': "134-140",
-                'XXL': "146-152",
-                'XXXL': "158+"
-            }
-        }
-    };
-    const styleLocalization = {
-        'neutral': "1",
-        'bright': "2",
-        'expressive': "3"
-    };
-    const qualityLocalization = {
-        'low': "3",
-        'middle': "2",
-        'high': "1"
-    };
-
-    function generate(templateSelector, start, count, options) {
+    const NUMBERS_ITEM = "Numbers";
+    function generate(templateSelector, count) {
         document.querySelector("#settings").style.display = "none";
         document.querySelector("#loading").style.display = "none";
         let print = document.querySelector("#print");
+        let numbers = JSON.parse(localStorage.getItem(NUMBERS_ITEM) || "[]");
         let template = document.querySelector(templateSelector);
         if (template) {
-            for (let i = start; i < (start + count); i++) {
+            for (let i = 0; i < count; i++) {
                 let clone = document.importNode(template.content, true);
+                let number = "";
+                do {
+                    number = Math.round(999999 * Math.random()).toString();
+                    while (number.length < 6) {
+                        number = "0" + number;
+                    }
+                } while (numbers.includes(number));
+                numbers.push(number);
                 // Render QR code
                 let code = clone.querySelector(".code");
                 JsBarcode_1(code).options({
-                    height: 70,
-                    fontSize: 25
+                    height: 40,
+                    fontSize: 20
                 })
-                    .CODE128(i.toString(), {})
+                    .CODE128(number.toString(), {})
                     .render();
-                const age = clone.querySelector('#' + AGE_PARAM + "Value");
-                age.textContent = ageLocalization[options.age];
-                const gender = clone.querySelector('#' + GENDER_PARAM + "Value");
-                gender.textContent = genderLocalization[options.gender];
-                const category = clone.querySelector('#' + CATEGORY_PARAM + "Value");
-                category.textContent = categoryLocalization[options.category];
-                if (options.age !== "baby") {
-                    const size = clone.querySelector('#' + SIZE_PARAM + "Value");
-                    size.textContent = sizeLocalization[options.age][options.gender][options.size];
-                }
-                else {
-                    const sizeRow = clone.querySelector("#sizeRow");
-                    sizeRow.style.display = "none";
-                }
-                const style = clone.querySelector('#' + STYLE_PARAM + "Value");
-                style.textContent = styleLocalization[options.style];
-                const quality = clone.querySelector('#' + QUALITY_PARAM + "Value");
-                quality.textContent = qualityLocalization[options.quality];
                 print.appendChild(clone);
             }
-            window.print();
-            window.onafterprint = () => window.close();
+            //window.print();
+            //window.onafterprint = () => window.close();
         }
         else {
             alert("Template not found!");
         }
+        localStorage.setItem(NUMBERS_ITEM, JSON.stringify(numbers));
     }
 
     async function generateClick() {
-        let template = document.querySelector("#template")?.value || "#female-male";
-        let start = parseInt(document.querySelector("#start")?.value || "0");
-        let count = parseInt(document.querySelector("#count")?.value || "12");
-        let gender = getRadio(GENDER_PARAM);
-        let category = getRadio(CATEGORY_PARAM);
-        let size = getRadio(SIZE_PARAM) || '';
-        let quality = getRadio(QUALITY_PARAM) || '';
-        let style = getRadio(STYLE_PARAM) || '';
-        let age = getRadio(AGE_PARAM);
-        if (!gender || !category || !age) {
-            alert("Не все обязательные поля заполнены (пол, категория, возраст)!");
-            return;
-        }
+        let template = "#visitor-card";
+        let count = parseInt(document.querySelector("#count")?.value || "10");
         document.querySelector("#generate").disabled = true;
-        let generation = {
-            start,
-            end: start + count - 1,
-            template,
-            userId: 'x',
-            userName: 'x',
-            gender,
-            category,
-            size,
-            quality,
-            style,
-            age
-        };
         try {
-            await saveLastGeneration(generation);
-            let openedWindow = window.open(location.pathname + `?${START_PARAM}=${start}&${COUNT_PARAM}=${count}` +
-                `&${TEMPLATE_PARAM}=${encodeURIComponent(template)}` +
-                `&${GENDER_PARAM}=${gender}` +
-                `&${CATEGORY_PARAM}=${category}` +
-                `&${SIZE_PARAM}=${size}` +
-                `&${STYLE_PARAM}=${style}` +
-                `&${AGE_PARAM}=${age}` +
-                `&${QUALITY_PARAM}=${quality}`, 'Print', 'width=1000,height=800,left=300,top=200');
+            let openedWindow = window.open(location.pathname + `?${COUNT_PARAM}=${count}` +
+                `&${TEMPLATE_PARAM}=${encodeURIComponent(template)}`, '_blank', 'width=1000,height=800,left=300,top=200');
         }
         catch (err) {
             alert(err.message);
         }
-        document.querySelector("#start").value = (generation.end + 1).toString();
         document.querySelector("#generate").disabled = false;
-    }
-    function getRadio(name) {
-        var radio = document.getElementsByName(name);
-        for (var i = 0; i < radio.length; i++) {
-            let item = radio[i];
-            if (item.checked) {
-                return item.value;
-            }
-        }
     }
     function initFormHandlers() {
         document.querySelector("#generate")?.addEventListener("click", generateClick);
     }
     function processQueryParametes() {
         const urlParams = new URLSearchParams(window.location.search);
-        const start = urlParams.get(START_PARAM);
         const count = urlParams.get(COUNT_PARAM);
         const template = urlParams.get(TEMPLATE_PARAM);
-        const age = urlParams.get(AGE_PARAM);
-        const gender = urlParams.get(GENDER_PARAM);
-        const category = urlParams.get(CATEGORY_PARAM);
-        const size = urlParams.get(SIZE_PARAM);
-        const style = urlParams.get(STYLE_PARAM);
-        const quality = urlParams.get(QUALITY_PARAM);
-        if (start && count && template) {
-            generate(template, parseInt(start), parseInt(count), {
-                age, gender, category, size, style, quality
-            });
+        if (count && template) {
+            generate(template, parseInt(count));
             return true;
         }
         else {
             return false;
         }
-    }
-    async function loadLatestGeneration() {
-        let lastGeneration = await getLastGeneration();
-        document.querySelector("#start").value = (lastGeneration.end + 1).toString();
     }
     function showLoader(show) {
         if (show) {
@@ -27105,46 +26925,6 @@
             document.querySelector("#loading").style.display = "none";
         }
     }
-    function onInputChange() {
-        let gender = getRadio(GENDER_PARAM);
-        let age = getRadio(AGE_PARAM);
-        let male = document.getElementById("maleCategories");
-        let female = document.getElementById("femaleCategories");
-        let baby = document.getElementById("babyСategories");
-        let categories = [male, female, baby];
-        let selectedCategory = null;
-        if (age == "adult" || age == "kid") {
-            if (gender === "male") {
-                selectedCategory = male;
-            }
-            else if (gender === "female") {
-                selectedCategory = female;
-            }
-            else {
-                selectedCategory = male;
-            }
-        }
-        else if (age === "baby") {
-            selectedCategory = baby;
-        }
-        else {
-            selectedCategory = female;
-        }
-        for (let category of categories) {
-            if (category == selectedCategory) {
-                category.style.display = '';
-            }
-            else {
-                category.style.display = 'none';
-            }
-        }
-        let genderKid = document.getElementById("genderKidLabel");
-        genderKid.style.display = age === "baby" ? "" : "none";
-        let category = getRadio(CATEGORY_PARAM);
-        let size = document.getElementById("size");
-        size.style.display = (category == "G" || age === "baby") ? "none" : "";
-    }
-    window["onGenderChange"] = onInputChange;
     async function onOpen() {
         let pageType = document.getElementById("pageType")?.getAttribute("data-value");
         if (pageType == "generation") {
@@ -27152,13 +26932,8 @@
             if (!parametersExists) {
                 showLoader(true);
                 try {
-                    await loadLatestGeneration();
                     showLoader(false);
                     initFormHandlers();
-                    [].forEach.call(document.querySelectorAll("input"), (input) => {
-                        input.addEventListener("change", onInputChange);
-                    });
-                    onInputChange();
                 }
                 catch (err) {
                     alert(err.message);

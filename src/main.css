@@ -1,8 +1,3 @@
-#print {
-    width: 100vw;
-    height: 100vh;
-}
-
 .birka {
     display: block;
     width: 100vw;
@@ -165,4 +160,61 @@ td.bottom {
 
 .hide {
     display: none !important;
+}
+
+.generation-body {
+    margin: 0;
+    display: flex;
+    width: 210mm;
+    height: 297mm;
+}
+
+#print {
+    margin: auto;
+}
+
+.visitor-card {
+    flex: 0 0 auto;
+    width: 90mm;
+    height: 50mm;
+    font-family: cursive;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-left: 3mm;
+    padding-right: 3mm;
+    padding-top: 3mm;
+    padding-bottom: 3mm;
+}
+
+.visitor-card__head {
+    display: flex;
+    font-size: 15px;
+}
+
+.visitor-card__head-logo {
+    width: 50px;
+}
+
+.visitor-card__center {
+    display: flex;
+}
+
+.visitor-card__name {
+    font-size: 25px;
+    flex: 1 1 0;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: -10px;
+}
+
+.visitor-card__contacts {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.visitor-card__code {
+    flex: 1 1 0;
 }
