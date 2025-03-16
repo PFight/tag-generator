@@ -23462,6 +23462,20 @@
                 }
             };
         }
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlPhone = urlParams.get('phone');
+        const urlPassport = urlParams.get('passport');
+        if (urlPhone) {
+            phoneCodeInput.value = urlPhone;
+            urlParams.delete('phone');
+            history.pushState({}, '', location.href.split('?')[0]);
+            show();
+        }
+        else if (urlPassport) {
+            passportCodeInput.value = urlPassport;
+            history.pushState({}, '', location.href.split('?')[0]);
+            show();
+        }
     }
     function createVisitView(visit) {
         let visitTemplate = document.getElementById("visitTemplate");
