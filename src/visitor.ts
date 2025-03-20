@@ -134,7 +134,10 @@ export function onVisitorOpen() {
                 currentSeasonMonths.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
-        currentSeason.date += " (" + currentSeason.items.filter(x => isChildItem(x as GiftItem)).length + " детского)" as any;
+        const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) <= 1)
+            .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
+        currentSeason.date += " (" + currentMonthItems.filter(x => isChildItem(x as GiftItem)).length + " детского в этом месяце)" as any;
+        
         let visitElement = createVisitView(currentSeason);
         currentMonthElement.append(visitElement);
         if (currentSeason.items.length == 0) {
@@ -166,12 +169,10 @@ export function onVisitorOpen() {
     if (urlPhone) {
         phoneCodeInput.value = urlPhone;
         urlParams.delete('phone');
-        history.pushState({}, '', location.href.split('?')[0]);
         show();
     } else if (urlPassport) {
         passportCodeInput.value = urlPassport;
-        history.pushState({}, '', location.href.split('?')[0]); 
-        show();
+        show(); 
     }
 }
 

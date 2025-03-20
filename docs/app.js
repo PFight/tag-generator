@@ -22959,13 +22959,23 @@
     }
     function loadPersons(visits) {
         let persons = [];
-        for (let visit of visits) {
-            if (visit.items) {
-                for (let item of visit.items) {
-                    if (typeof (item) == "object") {
-                        if (!persons.includes(item.person)) {
-                            persons.push(item.person);
-                            addPerson(item.person);
+        const urlParams = new URLSearchParams(window.location.search);
+        const personsParam = urlParams.get('persons');
+        if (personsParam) {
+            persons = JSON.parse(personsParam);
+            for (const p of persons) {
+                addPerson(p);
+            }
+        }
+        else {
+            for (let visit of visits) {
+                if (visit.items) {
+                    for (let item of visit.items) {
+                        if (typeof (item) == "object") {
+                            if (!persons.includes(item.person)) {
+                                persons.push(item.person);
+                                addPerson(item.person);
+                            }
                         }
                     }
                 }
@@ -23437,7 +23447,9 @@
                     currentSeasonMonths.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
-            currentSeason.date += " (" + currentSeason.items.filter(x => isChildItem(x)).length + " детского)";
+            const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) <= 1)
+                .reduce((arr, val) => arr.concat(val.items), []);
+            currentSeason.date += " (" + currentMonthItems.filter(x => isChildItem(x)).length + " детского в этом месяце)";
             let visitElement = createVisitView(currentSeason);
             currentMonthElement.append(visitElement);
             if (currentSeason.items.length == 0) {
@@ -23468,12 +23480,10 @@
         if (urlPhone) {
             phoneCodeInput.value = urlPhone;
             urlParams.delete('phone');
-            history.pushState({}, '', location.href.split('?')[0]);
             show();
         }
         else if (urlPassport) {
             passportCodeInput.value = urlPassport;
-            history.pushState({}, '', location.href.split('?')[0]);
             show();
         }
     }

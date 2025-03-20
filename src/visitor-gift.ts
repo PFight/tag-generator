@@ -256,13 +256,23 @@ export function loadCardRestrictions() {
 
 export function loadPersons(visits: Gift[]) {
     let persons: string[] = [];
-    for (let visit of visits) {
-        if (visit.items) {
-            for (let item of visit.items) {
-                if (typeof(item) == "object") {
-                    if (!persons.includes(item.person)) {
-                        persons.push(item.person);
-                        addPerson(item.person);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const personsParam = urlParams.get('persons');
+    if (personsParam) {
+        persons = JSON.parse(personsParam);
+        for (const p of persons) {
+            addPerson(p);
+        }
+    } else {
+        for (let visit of visits) {
+            if (visit.items) {
+                for (let item of visit.items) {
+                    if (typeof(item) == "object") {
+                        if (!persons.includes(item.person)) {
+                            persons.push(item.person);
+                            addPerson(item.person);
+                        }
                     }
                 }
             }
