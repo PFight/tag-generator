@@ -23447,7 +23447,7 @@
                     currentSeasonMonths.includes(x.date.getMonth()))
                     .reduce((arr, val) => arr.concat(val.items), [])
             };
-            const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) <= 1)
+            const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) < 1)
                 .reduce((arr, val) => arr.concat(val.items), []);
             currentSeason.date += " (" + currentMonthItems.filter(x => isChildItem(x)).length + " детского в этом месяце)";
             let visitElement = createVisitView(currentSeason);

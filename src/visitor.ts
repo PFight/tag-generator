@@ -134,7 +134,7 @@ export function onVisitorOpen() {
                 currentSeasonMonths.includes(x.date.getMonth()))
                 .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         };
-        const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) <= 1)
+        const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) < 1)
             .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
         currentSeason.date += " (" + currentMonthItems.filter(x => isChildItem(x as GiftItem)).length + " детского в этом месяце)" as any;
         
