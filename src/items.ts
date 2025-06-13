@@ -58,6 +58,7 @@ export const itemNames: any = {
     48: "Бытовые принадлежности",
     49: "Другое",
     50: "Ремни / пояса",
+    58: "Книги",
 }
 
 export const itemRestrictions: any = {
@@ -117,7 +118,8 @@ export const itemRestrictions: any = {
     47: undefined,
     48: undefined,
     49: undefined,
-    50: undefined
+    50: undefined,
+    58: undefined,
 }
 
 export const chlidrenItems = [

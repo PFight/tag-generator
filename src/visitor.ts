@@ -3,7 +3,8 @@ import { Gift, GiftItem } from "interfaces";
 import { chlidrenItems, isChildItem, itemNames, itemRestrictions } from "items";
 import { ageLocalization, categoryLocalization, genderLocalization } from "localization";
 import "./visitor.css";
-import { cleanGift, loadPersons, onVisitorGiftOpen, processCurrentSeasonVisits, setOnOnLoadGiftCallback, setOnVisitorGiftAddedCallback } from "visitor-gift";
+import { cleanGift, loadGift, loadPersons, onVisitorGiftOpen, processCurrentSeasonVisits, setOnOnLoadGiftCallback, setOnVisitorGiftAddedCallback } from "visitor-gift";
+import Toastify from "toastify-js";
 
 const Seasons = [[11, 0, 1], [2, 3, 4], [5, 6, 7], [8, 9, 10]];
 const MOTH_VISITS_LIMIT = 8;
@@ -33,7 +34,7 @@ export function onVisitorOpen() {
         offenderBlock.className = "hide";
     }
     
-    let show = async () => {
+    let show = async (gift?: Gift) => {
         clean();
         let giftElement = document.getElementById("gift");
         giftElement?.classList.remove("hide");
@@ -95,19 +96,45 @@ export function onVisitorOpen() {
             }
             showVisits(visits);
         });
+
+        let todayVisits = visits.filter(x => 
+            x.date.getDay() == (new Date()).getDay() &&
+            x.date.getMonth() == (new Date()).getMonth() && 
+            x.date.getFullYear() == (new Date()).getFullYear());
+        if (todayVisits.length > 0 && !gift) {
+            loadGift(todayVisits[0].id);
+            setTimeout(() => {
+                Toastify({
+                    text: `Посетитель уже был сегодня, загружена последняя анкета!`,
+                    position: "center"
+                }).showToast();
+            }, 200);
+        } else if (gift?.id) {
+            setTimeout(() => {
+                Toastify({
+                    text: `Загружена анкета #${gift.id}!`,
+                    position: "center"
+                }).showToast();
+            }, 200);
+        }
     };
 
     setOnOnLoadGiftCallback(async (gift) => {
+        let changed = false;
         if (gift.passport) {
+            changed = passportCodeInput.value != gift.passport; 
             passportCodeInput.value = gift.passport;
         }
         if (gift.phone) {
+            changed = changed || phoneCodeInput.value != gift.phone; 
             phoneCodeInput.value = gift.phone;
         }
-        await show();
+        if (changed) {
+            await show(gift);
+        }
     });
 
-    viewHistoryButton.addEventListener("click", show);
+    viewHistoryButton.addEventListener("click", show as any);
     phoneCodeInput.addEventListener("keyup", onCodeInput());
     passportCodeInput.addEventListener("keyup", onCodeInput());
 
@@ -136,7 +163,13 @@ export function onVisitorOpen() {
         };
         const currentMonthItems = visits.filter(x => monthDiff(x.date, new Date()) < 1)
             .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
-        currentSeason.date += " (" + currentMonthItems.filter(x => isChildItem(x as GiftItem)).length + " детского в этом месяце)" as any;
+        const currentMonthCount = currentMonthItems.filter(x => isChildItem(x as GiftItem)).length;
+        const lastThreeMonthItems = visits.filter(x => monthDiff(x.date, new Date()) < 3)
+            .reduce((arr, val) => arr.concat(val.items), [] as (GiftItem | string | number)[])
+        const lastThreeMonthCount = lastThreeMonthItems.filter(x => isChildItem(x as GiftItem)).length;
+    
+        currentSeason.date += " (детское: " + currentMonthCount + " за месяц, " 
+            + lastThreeMonthCount + " за квартал)" as any;
         
         let visitElement = createVisitView(currentSeason);
         currentMonthElement.append(visitElement);
@@ -181,7 +214,7 @@ function createVisitView(visit: Gift) {
     let visitElement = document.importNode(visitTemplate.content, true);
     if (visit.id) {
         visitElement.querySelector(".visit__id")!.textContent = visit.id ? ("Номер посещения: " + visit.id) : "";
-        (visitElement.querySelector(".visit__id")! as HTMLLinkElement).href = "gift.html?gift=" + visit.id;
+        (visitElement.querySelector(".visit__id")! as HTMLLinkElement).href = "visitor.html?gift=" + visit.id;
     }
     if (visit.offender) {
         visitElement.querySelector(".visit__offender")!.classList.remove("hide");

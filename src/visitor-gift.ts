@@ -19,6 +19,12 @@ export function setOnOnLoadGiftCallback(callback: typeof onLoadGift) {
     onLoadGift = callback;
 }
 
+var loadGiftIml: (giftNumber: string) => void = () => {};
+
+export function loadGift(giftNumber: string) {
+    loadGiftIml(giftNumber);
+}
+
 let currentSeason: Gift | undefined = undefined;
 
 export function processCurrentSeasonVisits(visits: Gift) {
@@ -228,6 +234,11 @@ export function onVisitorGiftOpen() {
     const urlGiftNumber = urlParams.get('gift');
     if (urlGiftNumber) {
         giftNumber.value = urlGiftNumber;
+        urlParams.delete('gift');
+        load();
+    }
+    loadGiftIml = (number) => {
+        giftNumber.value = number;
         load();
     }
 
@@ -261,6 +272,7 @@ export function loadPersons(visits: Gift[]) {
     const personsParam = urlParams.get('persons');
     if (personsParam) {
         persons = JSON.parse(personsParam);
+        urlParams.delete('persons');
         for (const p of persons) {
             addPerson(p);
         }
