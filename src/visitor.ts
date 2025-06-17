@@ -98,7 +98,7 @@ export function onVisitorOpen() {
         });
 
         let todayVisits = visits.filter(x => 
-            x.date.getDay() == (new Date()).getDay() &&
+            x.date.getDate() == (new Date()).getDate() &&
             x.date.getMonth() == (new Date()).getMonth() && 
             x.date.getFullYear() == (new Date()).getFullYear());
         if (todayVisits.length > 0 && !gift) {
