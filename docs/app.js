@@ -21958,7 +21958,8 @@
         50: "Ремни / пояса",
         58: "Книги",
         62: "Нижнее белье",
-        63: "Канцтовары"
+        63: "Канцтовары",
+        65: "Журнал/брошюра"
     };
     const itemRestrictions = {
         1: undefined,
@@ -22024,7 +22025,8 @@
         61: undefined,
         62: undefined,
         63: undefined,
-        64: undefined
+        64: undefined,
+        65: undefined
     };
     const chlidrenItems = [
         19,

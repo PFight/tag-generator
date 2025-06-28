@@ -64,7 +64,8 @@ export const itemNames: any = {
     50: "Ремни / пояса",
     58: "Книги",
     62: "Нижнее белье",
-    63: "Канцтовары"
+    63: "Канцтовары",
+    65: "Журнал/брошюра"
 }
 
 export const itemRestrictions: any = {
@@ -131,7 +132,8 @@ export const itemRestrictions: any = {
     61: undefined,
     62: undefined,
     63: undefined,
-    64: undefined
+    64: undefined,
+    65: undefined
 }
 
 export const chlidrenItems = [
